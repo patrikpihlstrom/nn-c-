@@ -48,18 +48,18 @@ void PlayerEntity::control(const float deltaTime)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		if (m_grounded[1])
-			m_velocity.y = -12.5;
+			m_velocity.y = -15;
 		else
 		{
-			if (m_grounded[0])
+			if (m_grounded[0] && sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
-				m_velocity.y = -12.5 - (m_horizontalSpeed == 5 ? 0:2);
+				m_velocity.y = -15 - (m_horizontalSpeed == 5 ? 0:2);
 				m_velocity.x = m_horizontalSpeed + m_horizontalSpeed/5;
 			}
 
-			if (m_grounded[2])
+			if (m_grounded[2] && sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			{
-				m_velocity.y = -12.5 - (m_horizontalSpeed == 5 ? 0:2);
+				m_velocity.y = -15 - (m_horizontalSpeed == 5 ? 0:2);
 				m_velocity.x = -m_horizontalSpeed - m_horizontalSpeed/5;
 			}
 		}
