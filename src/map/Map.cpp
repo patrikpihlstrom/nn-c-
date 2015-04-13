@@ -4,7 +4,6 @@
 Map::Map() :
 	m_index(0)
 {
-	std::cout << "ASDF" << std::endl;
 	m_quadtree.reset(new Quadtree(sf::Vector2f(0, 0), sf::Vector2f(2048, 2048), false, 0));
 }
 
@@ -14,7 +13,6 @@ Map::~Map()
 
 void Map::addPolygon(const math::Polygon& polygon)
 {
-	std::cout << "Adding polygon." << std::endl;
 	m_quadtree->insert(std::shared_ptr<math::Polygon>(new math::Polygon(polygon)), m_index);
 
 	sf::ConvexShape shape;
