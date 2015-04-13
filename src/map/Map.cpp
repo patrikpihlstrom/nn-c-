@@ -20,6 +20,7 @@ void Map::addPolygon(const math::Polygon& polygon)
 
 	for (int i = 0; i < shape.getPointCount(); ++i)
 		shape.setPoint(i, polygon.getPoint(i));
+	shape.setFillColor(sf::Color(255, 255, 255/(m_index == 0 ? 1:m_index), 100));
 	
 	m_polygons[m_index] = shape;
 	m_index++;
@@ -39,8 +40,6 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (auto it = m_polygons.begin(); it != m_polygons.end(); ++it)
 		target.draw(it->second, states);
-
-	m_quadtree->draw(target, states);
 }
 
 void Map::save() const

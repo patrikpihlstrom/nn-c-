@@ -11,8 +11,5 @@ public:
 
 protected:
 	void control(const float deltaTime);
-
-private:
-	float m_horizontalSpeed;
 };
 

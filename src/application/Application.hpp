@@ -12,6 +12,7 @@
 #include "Math.hpp"
 #include "../map/Map.hpp"
 #include "../entity/PlayerEntity.hpp"
+#include "Camera.hpp"
 
 
 class Application
@@ -36,9 +37,9 @@ private:
 
 	Map m_map;
 
-	std::unique_ptr<PlayerEntity> m_player;
+	std::shared_ptr<PlayerEntity> m_player;
 
 	sf::RenderWindow m_window;
-	sf::View m_view;
+	Camera m_camera;
 };
 

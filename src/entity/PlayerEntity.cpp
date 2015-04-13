@@ -9,6 +9,7 @@ PlayerEntity::PlayerEntity() :
 	m_polygon.addPoint(sf::Vector2f(32, 32));
 	m_polygon.addPoint(sf::Vector2f(0, 32));
 	m_polygon.constructEdges();
+	m_polygon.offset(100, 100);
 
 	m_shape.setPointCount(m_polygon.getPointCount());
 	for (int i = 0; i < m_polygon.getPointCount(); ++i)
@@ -31,7 +32,10 @@ PlayerEntity::PlayerEntity() :
 	m_checks[2].addPoint(sf::Vector2f(22, 18));
 
 	for (int i = 0; i < 3; ++i)
+	{
 		m_checks[i].constructEdges();
+		m_checks[i].offset(100, 100);
+	}
 }
 
 PlayerEntity::~PlayerEntity()
@@ -41,9 +45,9 @@ PlayerEntity::~PlayerEntity()
 void PlayerEntity::control(const float deltaTime)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-		m_horizontalSpeed = 10;
+		m_maxHorizontalSpeed = 10;
 	else
-		m_horizontalSpeed = 5;
+		m_maxHorizontalSpeed = 5;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
@@ -53,32 +57,32 @@ void PlayerEntity::control(const float deltaTime)
 		{
 			if (m_grounded[0] && sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
-				m_velocity.y = -15 - (m_horizontalSpeed == 5 ? 0:2);
-				m_velocity.x = m_horizontalSpeed + m_horizontalSpeed/5;
+				m_velocity.y = -15 - (m_maxHorizontalSpeed == 5 ? 0:2);
+				m_velocity.x = m_maxHorizontalSpeed + m_maxHorizontalSpeed/5;
 			}
 
 			if (m_grounded[2] && sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			{
-				m_velocity.y = -15 - (m_horizontalSpeed == 5 ? 0:2);
-				m_velocity.x = -m_horizontalSpeed - m_horizontalSpeed/5;
+				m_velocity.y = -15 - (m_maxHorizontalSpeed == 5 ? 0:2);
+				m_velocity.x = -m_maxHorizontalSpeed - m_maxHorizontalSpeed/5;
 			}
 		}
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		if (m_velocity.x < -m_horizontalSpeed)
+		if (m_velocity.x < -m_maxHorizontalSpeed)
 			m_velocity.x += .5;
 		else
-			m_velocity.x = m_velocity.x <= -m_horizontalSpeed ? m_velocity.x:m_velocity.x - .5;
+			m_velocity.x = m_velocity.x <= -m_maxHorizontalSpeed ? m_velocity.x:m_velocity.x - .5;
 	}
 	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		if (m_velocity.x > m_horizontalSpeed)
+		if (m_velocity.x > m_maxHorizontalSpeed)
 			m_velocity.x -= .5;
 		else
-			m_velocity.x = m_velocity.x >= m_horizontalSpeed ? m_velocity.x:m_velocity.x + .5;
+			m_velocity.x = m_velocity.x >= m_maxHorizontalSpeed ? m_velocity.x:m_velocity.x + .5;
 	}
 	
 	if (!sf::Keyboard::isKeyPressed(sf::Keyboard::A) && ! sf::Keyboard::isKeyPressed(sf::Keyboard::D))

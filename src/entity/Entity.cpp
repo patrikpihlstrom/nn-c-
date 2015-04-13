@@ -3,6 +3,7 @@
 
 Entity::Entity()
 {
+	m_maxHorizontalSpeed = 12.5;
 	m_grounded[0] = false;
 	m_grounded[1] = false;
 	m_grounded[2] = false;
@@ -88,5 +89,30 @@ void Entity::move(const sf::Vector2f& offset)
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_shape, states);
+}
+
+sf::Vector2f Entity::getPosition() const
+{
+	float x = 0, y = 0;
+	for (int i = 0; i < m_polygon.getPointCount(); ++i)	
+	{
+		x += m_polygon.getPoint(i).x;
+		y += m_polygon.getPoint(i).y;
+	}
+
+	x /= m_polygon.getPointCount();
+	y /= m_polygon.getPointCount();
+
+	return sf::Vector2f(x, y);
+}
+
+sf::Vector2f Entity::getVelocity() const
+{
+	return m_velocity;
+}
+
+float Entity::getMaxHorizontalSpeed() const
+{
+	return m_maxHorizontalSpeed;
 }
 

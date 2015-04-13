@@ -16,11 +16,12 @@ void Application::initialize()
 	settings.antialiasingLevel = 32;
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
-	m_view.reset(sf::FloatRect(0, 0, 1600, 900));
+	m_camera.reset(sf::FloatRect(0, 0, 1600, 900));
 
 	m_player.reset(new PlayerEntity());
 	m_map.load("level.obj");
 	m_player->setQuadtree(m_map.getQuadtree());
+	m_camera.trackEntity(m_player);
 
 	m_running = true;
 	m_active = true;
@@ -112,11 +113,12 @@ void Application::handleEvents()
 void Application::update(sf::Time & p_deltaTime)
 {
 	m_player->update(p_deltaTime.asSeconds());
+	m_camera.update();
 }
 
 void Application::render()
 {
-	m_window.setView(m_view);
+	m_window.setView(m_camera);
 	m_window.clear(sf::Color(46, 46, 46));
 
 	m_window.draw(m_map);
