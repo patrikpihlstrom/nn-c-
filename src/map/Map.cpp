@@ -23,9 +23,8 @@ void Map::addPolygon(const math::Polygon& polygon, const std::string& mtl)
 	for (int i = 0; i < shape.getPointCount(); ++i)
 		shape.setPoint(i, polygon.getPoint(i));
 
-	if (mtl != "")
+	if (mtl != "(null)")
 	{
-		std::cout << mtl << std::endl;
 		shape.setTexture(m_textureHolder->getTexture(mtl).lock().get());
 	}
 	

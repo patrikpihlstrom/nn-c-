@@ -15,7 +15,7 @@ public:
 	Map();
 	~Map();
 
-	void addPolygon(const math::Polygon& polygon, const std::string& mtl = "");
+	void addPolygon(const math::Polygon& polygon, const std::string& mtl = "(null)");
 	void removePolygon(std::shared_ptr<math::Polygon> polygon);
 
 	std::shared_ptr<math::Polygon> getPolygon(const sf::Vector2f& position);
