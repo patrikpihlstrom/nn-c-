@@ -10,6 +10,8 @@ sources = Split("""
 src/application/main.cpp
 src/application/Application.cpp
 src/application/Math.cpp
+src/application/Camera.cpp
+src/application/TextureHolder.cpp
 src/map/Map.cpp
 src/map/Quadtree.cpp
 src/entity/Entity.cpp

@@ -17,6 +17,7 @@ void Application::initialize()
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
 	m_camera.reset(sf::FloatRect(0, 0, 1600, 900));
+	m_window.setVerticalSyncEnabled(true);
 
 	m_player.reset(new PlayerEntity());
 	m_map.load("level.obj");

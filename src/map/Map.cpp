@@ -4,14 +4,16 @@
 Map::Map() :
 	m_index(0)
 {
-	m_quadtree.reset(new Quadtree(sf::Vector2f(0, 0), sf::Vector2f(2048, 2048), false, 0));
+	m_quadtree.reset(new Quadtree(sf::Vector2f(0, 0), sf::Vector2f(2048*2, 2048*2), false, 0));
+	m_textureHolder.reset(new TextureHolder());
+	m_textureHolder->loadTextures("level.mtl");
 }
 
 Map::~Map()
 {
 }
 
-void Map::addPolygon(const math::Polygon& polygon)
+void Map::addPolygon(const math::Polygon& polygon, const std::string& mtl)
 {
 	m_quadtree->insert(std::shared_ptr<math::Polygon>(new math::Polygon(polygon)), m_index);
 
@@ -20,7 +22,12 @@ void Map::addPolygon(const math::Polygon& polygon)
 
 	for (int i = 0; i < shape.getPointCount(); ++i)
 		shape.setPoint(i, polygon.getPoint(i));
-	shape.setFillColor(sf::Color(255, 255, 255/(m_index == 0 ? 1:m_index), 100));
+
+	if (mtl != "")
+	{
+		std::cout << mtl << std::endl;
+		shape.setTexture(m_textureHolder->getTexture(mtl).lock().get());
+	}
 	
 	m_polygons[m_index] = shape;
 	m_index++;
@@ -62,7 +69,7 @@ void Map::load(const std::string& filePath)
 		while (!file.eof())
 		{
 			std::getline(file, line);
-			if (line.substr(0, 6) == "usemtl") // new polygon
+			if ((line.substr(0, 6) == "usemtl" || line[0] == 'o') && !points.empty()) // new polygon
 			{
 				math::Polygon polygon;
 
@@ -73,7 +80,7 @@ void Map::load(const std::string& filePath)
 					polygon.addPoint(points[i]);
 
 				polygon.constructEdges();
-				addPolygon(polygon);
+				addPolygon(polygon, line.substr(0, 6) == "usemtl" ? line.substr(7, line.size() - 1):"");
 				points.clear();
 			}
 			else if (line[0] == 'v')
