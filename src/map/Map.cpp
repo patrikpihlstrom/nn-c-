@@ -4,7 +4,7 @@
 Map::Map() :
 	m_index(0)
 {
-	m_quadtree.reset(new Quadtree(sf::Vector2f(0, 0), sf::Vector2f(2048*2, 2048*2), false, 0));
+	m_quadtree.reset(new Quadtree(sf::Vector2f(0, 0), sf::Vector2f(2048*5, 2048*5), false, 0));
 	m_textureHolder.reset(new TextureHolder());
 	m_textureHolder->loadTextures("level.mtl");
 }
@@ -23,9 +23,10 @@ void Map::addPolygon(const math::Polygon& polygon, const std::string& mtl)
 	for (int i = 0; i < shape.getPointCount(); ++i)
 		shape.setPoint(i, polygon.getPoint(i));
 
-	if (mtl != "(null)")
+	if (mtl != "(null)" && mtl != "None")
 	{
 		shape.setTexture(m_textureHolder->getTexture(mtl).lock().get());
+		shape.setTextureRect(sf::Rect<int>(shape.getGlobalBounds()));
 	}
 	
 	m_polygons[m_index] = shape;

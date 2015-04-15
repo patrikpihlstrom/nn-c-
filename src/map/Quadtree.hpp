@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "../application/Math.hpp"
+#include "../entity/JumpCheck.hpp"
 
 
 const unsigned char MAX_LEVEL = 3;
@@ -40,6 +41,8 @@ public:
 
 	void getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const math::Polygon& polygon) const;
 	std::vector<std::shared_ptr<math::Polygon>> getPolygons(std::vector<unsigned char>& indices) const;
+
+	sf::Vector2f checkCollisions(const math::Polygon& polygon, JumpCheck& jumpCheckLeft, JumpCheck& jumpCheckBottom, JumpCheck& jumpCheckRight, const sf::Vector2f& velocity, std::vector<unsigned int>& indices) const;
 
 private:
 	std::shared_ptr<Quadtree> m_children[4];

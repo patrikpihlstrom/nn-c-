@@ -4,9 +4,9 @@
 Entity::Entity()
 {
 	m_maxHorizontalSpeed = 12.5;
-	m_grounded[0] = false;
-	m_grounded[1] = false;
-	m_grounded[2] = false;
+	m_jumpChecks[0].grounded = false;
+	m_jumpChecks[1].grounded = false;
+	m_jumpChecks[2].grounded = false;
 }
 
 Entity::~Entity()
@@ -26,30 +26,28 @@ void Entity::collide(const math::Polygon& polygon)
 
 	for (int i = 0; i < 3; ++i)
 	{
-		intersection = math::SAT(m_checks[i], polygon, m_velocity);
+		intersection = math::SAT(m_jumpChecks[i].polygon, polygon, m_velocity);
 		if (intersection.willIntersect || intersection.intersect)
-			m_grounded[i] = true;
+			m_jumpChecks[i].grounded = true;
 	}
 }
 
 void Entity::update(const float deltaTime)
 {
-	m_velocity.y += .5;
+	m_velocity.y += .75;
 
 	if (m_velocity.y > 20)
 		m_velocity.y = 20;
 
 	control(deltaTime);
-
 	checkCollisions();
 	move(m_velocity);
 }
 
 void Entity::checkCollisions()
 {
-	m_grounded[0] = false;
-	m_grounded[1] = false;
-	m_grounded[2] = false;
+	for (int i = 0; i < 3; ++i)
+		m_jumpChecks[i].grounded = false;
 
 	if (auto quadtree = m_quadtree.lock())
 	{
@@ -58,18 +56,20 @@ void Entity::checkCollisions()
 
 		if (!quadtrees.empty())
 		{
-			std::vector<unsigned char> indices;
+			std::vector<unsigned int> indices;
 
 			for (int i = 0; i < quadtrees.size(); ++i)
 			{
 				if (auto _quadtree = quadtrees[i].lock())
 				{
-					auto polygons = _quadtree->getPolygons(indices);
+					m_velocity = _quadtree->checkCollisions(m_polygon, m_jumpChecks[0], m_jumpChecks[1], m_jumpChecks[2], m_velocity, indices);
+
+					/*auto polygons = _quadtree->getPolygons(indices);
 
 					for (int j = 0; j < polygons.size(); ++j)
 					{
 						collide(*polygons[j]);
-					}
+					}*/
 				}
 			}
 		}
@@ -81,7 +81,7 @@ void Entity::move(const sf::Vector2f& offset)
 	m_polygon.offset(offset.x, offset.y);
 
 	for (int i = 0; i < 3; ++i)
-		m_checks[i].offset(offset.x, offset.y);
+		m_jumpChecks[i].polygon.offset(offset.x, offset.y);
 
 	m_shape.move(offset.x, offset.y);
 }

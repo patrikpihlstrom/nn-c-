@@ -18,23 +18,23 @@ PlayerEntity::PlayerEntity() :
 	m_shape.setFillColor(sf::Color(255, 0, 0, 255));
 
 
-	m_checks[0].addPoint(sf::Vector2f(-3, 14));
-	m_checks[0].addPoint(sf::Vector2f(10, 14));
-	m_checks[0].addPoint(sf::Vector2f(10, 18));
-	m_checks[0].addPoint(sf::Vector2f(-3, 18));
-	m_checks[1].addPoint(sf::Vector2f(2, 22));
-	m_checks[1].addPoint(sf::Vector2f(30, 22));
-	m_checks[1].addPoint(sf::Vector2f(30, 34));
-	m_checks[1].addPoint(sf::Vector2f(2, 34));
-	m_checks[2].addPoint(sf::Vector2f(22, 14));
-	m_checks[2].addPoint(sf::Vector2f(34, 14));
-	m_checks[2].addPoint(sf::Vector2f(34, 18));
-	m_checks[2].addPoint(sf::Vector2f(22, 18));
+	m_jumpChecks[0].polygon.addPoint(sf::Vector2f(-3, 14));
+	m_jumpChecks[0].polygon.addPoint(sf::Vector2f(10, 14));
+	m_jumpChecks[0].polygon.addPoint(sf::Vector2f(10, 18));
+	m_jumpChecks[0].polygon.addPoint(sf::Vector2f(-3, 18));
+	m_jumpChecks[1].polygon.addPoint(sf::Vector2f(2, 22));
+	m_jumpChecks[1].polygon.addPoint(sf::Vector2f(30, 22));
+	m_jumpChecks[1].polygon.addPoint(sf::Vector2f(30, 34));
+	m_jumpChecks[1].polygon.addPoint(sf::Vector2f(2, 34));
+	m_jumpChecks[2].polygon.addPoint(sf::Vector2f(22, 14));
+	m_jumpChecks[2].polygon.addPoint(sf::Vector2f(34, 14));
+	m_jumpChecks[2].polygon.addPoint(sf::Vector2f(34, 18));
+	m_jumpChecks[2].polygon.addPoint(sf::Vector2f(22, 18));
 
 	for (int i = 0; i < 3; ++i)
 	{
-		m_checks[i].constructEdges();
-		m_checks[i].offset(100, 100);
+		m_jumpChecks[i].polygon.constructEdges();
+		m_jumpChecks[i].polygon.offset(100, 100);
 	}
 }
 
@@ -51,17 +51,20 @@ void PlayerEntity::control(const float deltaTime)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		if (m_grounded[1])
+		if (m_velocity.y < 0)
+			m_velocity.y -= 0.25;
+
+		if (m_jumpChecks[1].grounded)
 			m_velocity.y = -15;
 		else
 		{
-			if (m_grounded[0] && sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+			if (m_jumpChecks[0].grounded && sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
 				m_velocity.y = -15 - (m_maxHorizontalSpeed == 5 ? 0:2);
 				m_velocity.x = m_maxHorizontalSpeed + m_maxHorizontalSpeed/5;
 			}
 
-			if (m_grounded[2] && sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+			if (m_jumpChecks[2].grounded && sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			{
 				m_velocity.y = -15 - (m_maxHorizontalSpeed == 5 ? 0:2);
 				m_velocity.x = -m_maxHorizontalSpeed - m_maxHorizontalSpeed/5;

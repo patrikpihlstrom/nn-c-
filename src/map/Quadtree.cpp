@@ -235,3 +235,33 @@ std::vector<std::shared_ptr<math::Polygon>> Quadtree::getPolygons(std::vector<un
 	return polygons;
 }
 
+sf::Vector2f Quadtree::checkCollisions(const math::Polygon& polygon, JumpCheck& jumpCheckLeft, JumpCheck& jumpCheckBottom, JumpCheck& jumpCheckRight, const sf::Vector2f& velocity, std::vector<unsigned int>& indices) const
+{
+	sf::Vector2f vel = velocity;
+	for (auto it = m_polygons.begin(); it != m_polygons.end(); ++it)
+	{
+		if (std::find(indices.begin(), indices.end(), it->first) == indices.end())
+		{
+			indices.push_back(it->first);
+			auto intersection = math::SAT(polygon, *it->second, vel);
+
+			if (intersection.willIntersect)
+				vel = sf::Vector2f(vel.x + intersection.minimumTranslationVector.x, vel.y + intersection.minimumTranslationVector.y);
+
+			intersection = math::SAT(jumpCheckLeft.polygon, *it->second, vel);
+			if (intersection.willIntersect || intersection.intersect)
+				jumpCheckLeft.grounded = true;
+
+			intersection = math::SAT(jumpCheckBottom.polygon, *it->second, vel);
+			if (intersection.willIntersect || intersection.intersect)
+				jumpCheckBottom.grounded = true;
+			
+			intersection = math::SAT(jumpCheckRight.polygon, *it->second, vel);
+			if (intersection.willIntersect || intersection.intersect)
+				jumpCheckRight.grounded = true;
+		}
+	}
+
+	return vel;
+}
+

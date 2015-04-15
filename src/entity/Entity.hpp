@@ -5,6 +5,7 @@
 
 #include "../map/Quadtree.hpp"
 #include "../application/Math.hpp"
+#include "JumpCheck.hpp"
 
 
 class Entity : public sf::Drawable
@@ -25,14 +26,14 @@ public:
 protected:
 	virtual void control(const float deltaTime) = 0;
 
-	bool m_grounded[3];
-
-	math::Polygon m_polygon, m_checks[3];
+	math::Polygon m_polygon;
 	sf::ConvexShape m_shape;
 
 	sf::Vector2f m_velocity;
 
 	float m_maxHorizontalSpeed;
+
+	JumpCheck m_jumpChecks[3];
 
 private:
 	void collide(const math::Polygon& polygon);
