@@ -97,11 +97,11 @@ void PlayerEntity::control()
 
 void PlayerEntity::terminalVelocity()
 {
-	if (math::magnitude<float>(m_velocity) > 56)
+	if (math::magnitude<float>(m_velocity) > 35)
 	{
 		math::normalize(m_velocity);
-		m_velocity.x *= 56;
-		m_velocity.y *= 56;
+		m_velocity.x *= 35;
+		m_velocity.y *= 35;
 	}
 }
 

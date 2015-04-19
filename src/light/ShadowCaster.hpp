@@ -18,13 +18,14 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void setQuadtree(const std::weak_ptr<Quadtree> quadtree);
+	void setPosition(const sf::Vector2f& position);
 
-	std::shared_ptr<math::Polygon> m_bounds; // Rectangle with half-extents of the radius.
+	std::shared_ptr<math::Polygon> bounds;
 
 private:
 	std::vector<std::unique_ptr<sf::ConvexShape>> m_shadows;
-	float m_radius;
 	sf::Color m_color;
+	sf::Vector2f m_position;
 
 	std::weak_ptr<Quadtree> m_quadtree;
 	std::shared_ptr<sf::Texture> m_texture;

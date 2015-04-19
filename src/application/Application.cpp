@@ -80,7 +80,8 @@ void Application::update(sf::Time p_deltaTime)
 {
 	m_player->update(p_deltaTime.asSeconds());
 	m_camera.update();
-	m_shadowCaster.m_bounds->offset(m_player->getPosition().x - m_shadowCaster.m_bounds->getCenter().x, m_player->getPosition().y - m_shadowCaster.m_bounds->getCenter().y);
+	m_shadowCaster.bounds->offset(m_player->getPosition().x - m_shadowCaster.bounds->getCenter().x, m_player->getPosition().y - m_shadowCaster.bounds->getCenter().y);
+	m_shadowCaster.setPosition(m_player->getPosition());
 	//m_shadowCaster.m_bounds->offset((sf::Mouse::getPosition(m_window).x + m_camera.getCenter().x - 800) - m_shadowCaster.m_bounds->getCenter().x, (sf::Mouse::getPosition(m_window).y + m_camera.getCenter().y - 450) - m_shadowCaster.m_bounds->getCenter().y);
 	m_shadowCaster.updateShape();
 }

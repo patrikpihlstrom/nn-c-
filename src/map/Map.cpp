@@ -66,6 +66,7 @@ void Map::load(const std::string& filePath)
 	{
 		std::string line;
 		std::vector<sf::Vector2f> points;
+		float depth = 0;
 		while (!file.eof())
 		{
 			std::getline(file, line);
@@ -80,12 +81,14 @@ void Map::load(const std::string& filePath)
 					polygon.addPoint(points[i]);
 
 				polygon.constructEdges();
+				polygon.setDepth(depth);
 				addPolygon(polygon, line.substr(0, 6) == "usemtl" ? line.substr(7, line.size() - 1):"");
+				depth = 0;
 				points.clear();
 			}
 			else if (line[0] == 'v')
 			{
-				std::string x, y;
+				std::string x, y, z;
 				bool _x = true;
 
 				for (int i = 2; i < line.size(); ++i)
@@ -93,7 +96,15 @@ void Map::load(const std::string& filePath)
 					if (line[i] == '.')
 					{
 						_x = false;
-						i += 16;
+						i += 8;
+
+						while (line[i] != ' ')
+						{
+							z += line[i];
+							i++;
+						}
+
+						depth = std::atof(z.c_str());
 					}
 					else
 					{

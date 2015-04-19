@@ -144,6 +144,7 @@ namespace math
 	{
 	private:
 		std::vector<sf::Vector2f> m_points, m_edges;
+		float m_depth;
 
 	public:
 		void constructEdges()
@@ -172,6 +173,16 @@ namespace math
 		int getEdgeCount() const
 		{
 			return m_edges.size();
+		}
+
+		float getDepth() const
+		{
+			return m_depth;
+		}
+
+		void setDepth(const float& depth)
+		{
+			m_depth = depth;
 		}
 
 		sf::Vector2f getPoint(const int& index) const
