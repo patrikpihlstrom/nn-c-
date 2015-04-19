@@ -16,6 +16,7 @@ src/map/Map.cpp
 src/map/Quadtree.cpp
 src/entity/Entity.cpp
 src/entity/PlayerEntity.cpp
+src/light/ShadowCaster.cpp
 """)
 
 Program(target = 'No-Motivation', source = sources, LIBS = libs, CXXFLAGS = "-std=c++11")

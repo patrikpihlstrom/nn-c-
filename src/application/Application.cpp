@@ -16,61 +16,21 @@ void Application::initialize()
 	settings.antialiasingLevel = 32;
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
-	m_camera.reset(sf::FloatRect(0, 0, 1600, 900));
 	m_window.setVerticalSyncEnabled(true);
+	m_window.setFramerateLimit(71);
+
+	m_camera.reset(sf::FloatRect(0, 0, 1600, 900));
 
 	m_player.reset(new PlayerEntity());
 	m_map.load("level.obj");
 	m_player->setQuadtree(m_map.getQuadtree());
 	m_camera.trackEntity(m_player);
 
+	m_shadowCaster.setQuadtree(m_map.getQuadtree());
+	m_shadowCaster.updateShape();
+
 	m_running = true;
 	m_active = true;
-}
-
-void Application::loadMap(const std::string& filePath)
-{
-	std::ifstream file;
-	file.open(filePath);
-
-	if (file.is_open())
-	{
-		std::string line;
-		math::Polygon polygon;
-		while (!file.eof())
-		{
-			std::getline(file, line);
-			if (line.size() == 1 && line[0] == '-') // new polygon
-			{
-				polygon.constructEdges();
-				m_map.addPolygon(polygon);
-				polygon.clear();
-			}
-			else
-			{
-				std::string x, y;
-				bool _x = true;
-
-				for (int i = 0; i < line.size(); ++i)
-				{
-					if (line[i] == ':')
-					{
-						_x = false;
-						++i;
-					}
-
-					if (_x)
-						x += line[i];
-					else
-						y += line[i];
-				}
-
-				polygon.addPoint(sf::Vector2f(std::atoi(x.c_str()), std::atoi(y.c_str())));
-			}
-		}
-
-		file.close();
-	}
 }
 
 void Application::run()
@@ -87,12 +47,17 @@ void Application::run()
 		dt.restart();
 
 		handleEvents();
-		render();
-		while (deltaTime >= updateTime && m_active)
+
+		if (deltaTime > sf::seconds(.2f))
+			deltaTime = sf::seconds(.2f);
+
+		while (deltaTime > updateTime)
 		{
-			update(deltaTime);
+			update(updateTime);
 			deltaTime -= updateTime;
 		}
+
+		render();
 	}
 }
 
@@ -111,10 +76,13 @@ void Application::handleEvents()
 	}
 }
 
-void Application::update(sf::Time & p_deltaTime)
+void Application::update(sf::Time p_deltaTime)
 {
 	m_player->update(p_deltaTime.asSeconds());
 	m_camera.update();
+	m_shadowCaster.m_bounds->offset(m_player->getPosition().x - m_shadowCaster.m_bounds->getCenter().x, m_player->getPosition().y - m_shadowCaster.m_bounds->getCenter().y);
+	//m_shadowCaster.m_bounds->offset((sf::Mouse::getPosition(m_window).x + m_camera.getCenter().x - 800) - m_shadowCaster.m_bounds->getCenter().x, (sf::Mouse::getPosition(m_window).y + m_camera.getCenter().y - 450) - m_shadowCaster.m_bounds->getCenter().y);
+	m_shadowCaster.updateShape();
 }
 
 void Application::render()
@@ -122,6 +90,7 @@ void Application::render()
 	m_window.setView(m_camera);
 	m_window.clear(sf::Color(46, 46, 46));
 
+	m_window.draw(m_shadowCaster);
 	m_window.draw(m_map);
 	m_window.draw(*m_player);
 

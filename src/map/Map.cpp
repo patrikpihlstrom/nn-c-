@@ -76,7 +76,7 @@ void Map::load(const std::string& filePath)
 				if (points.size() > 3)
 					points = math::ConvexHull<float>(points);
 
-				for (int i = 0; i < points.size(); ++i)
+				for (int i = 0; i < points.size() - 1; ++i)
 					polygon.addPoint(points[i]);
 
 				polygon.constructEdges();
@@ -107,6 +107,8 @@ void Map::load(const std::string& filePath)
 				points.push_back(sf::Vector2f(std::atoi(x.c_str()), std::atoi(y.c_str())));
 			}
 		}
+
+		file.close();
 	}
 }
 

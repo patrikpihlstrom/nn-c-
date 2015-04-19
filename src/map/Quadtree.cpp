@@ -235,6 +235,24 @@ std::vector<std::shared_ptr<math::Polygon>> Quadtree::getPolygons(std::vector<un
 	return polygons;
 }
 
+sf::Vector2f Quadtree::checkCollisions(const math::Polygon& polygon, const sf::Vector2f& velocity, std::vector<unsigned int>& indices) const
+{
+	sf::Vector2f vel = velocity;
+	for (auto it = m_polygons.begin(); it != m_polygons.end(); ++it)
+	{
+		if (std::find(indices.begin(), indices.end(), it->first) == indices.end())
+		{
+			indices.push_back(it->first);
+			auto intersection = math::SAT(polygon, *it->second, vel);
+
+			if (intersection.willIntersect)
+				vel = sf::Vector2f(vel.x + intersection.minimumTranslationVector.x, vel.y + intersection.minimumTranslationVector.y);
+		}
+	}
+
+	return vel;
+}
+
 sf::Vector2f Quadtree::checkCollisions(const math::Polygon& polygon, JumpCheck& jumpCheckLeft, JumpCheck& jumpCheckBottom, JumpCheck& jumpCheckRight, const sf::Vector2f& velocity, std::vector<unsigned int>& indices) const
 {
 	sf::Vector2f vel = velocity;
@@ -263,5 +281,28 @@ sf::Vector2f Quadtree::checkCollisions(const math::Polygon& polygon, JumpCheck& 
 	}
 
 	return vel;
+}
+
+void Quadtree::populateWithPolygons(std::vector<std::weak_ptr<math::Polygon>>& polygons, std::vector<unsigned int>& indices) const
+{
+	if (m_hasChildren)
+	{
+		for (int i = 0; i < 4; ++i)
+			m_children[i]->populateWithPolygons(polygons, indices);
+	}
+	else
+	{
+		indices.reserve(m_polygons.size());
+		polygons.reserve(m_polygons.size());
+
+		for (auto it = m_polygons.begin(); it != m_polygons.end(); ++it)
+		{
+			if (std::find(indices.begin(), indices.end(), it->first) == indices.end())
+			{
+				indices.push_back(it->first);
+				polygons.push_back(it->second);
+			}
+		}
+	}
 }
 

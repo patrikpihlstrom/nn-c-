@@ -22,6 +22,43 @@ namespace math
 		return true;
 	}
 
+	bool lineIntersectsLine(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, sf::Vector2f& e)
+	{
+		float a1 = signed2DTriArea<float>(a, b, d);
+		float a2 = signed2DTriArea<float>(a, b, c);
+
+		if (a1*a2 < 0.0f)
+		{
+			float a3 = signed2DTriArea<float>(c, d, a);
+			float a4 = a3 + a2 - a1;
+
+			if (a3*a4 < 0.0f)
+			{
+				float t = a3/(a3 - a4);
+				e = sf::Vector2f(a.x + t*(b.x - a.x), a.y + t*(b.y - a.y));
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, sf::Vector2f& c, const Polygon& polygon)
+	{
+		bool result = false;
+		auto bounds = polygon.getBounds();
+
+		for (int i = polygon.getPointCount() - 1; i >= 0; --i)
+		{
+			auto segment = polygon.getEdgeSegment<float>(i);
+
+			if (lineIntersectsLine(a, b, segment.a, segment.b, c))
+				result = true;
+		}
+
+		return result;
+	}
+
 	bool pointInPolygon(const sf::Vector2f& point, const Polygon& polygon)
 	{
 		auto bounds = polygon.getBounds();

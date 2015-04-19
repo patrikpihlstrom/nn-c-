@@ -4,9 +4,6 @@
 Entity::Entity()
 {
 	m_maxHorizontalSpeed = 12.5;
-	m_jumpChecks[0].grounded = false;
-	m_jumpChecks[1].grounded = false;
-	m_jumpChecks[2].grounded = false;
 }
 
 Entity::~Entity()
@@ -18,37 +15,23 @@ void Entity::setQuadtree(const std::weak_ptr<Quadtree> quadtree)
 	m_quadtree = quadtree;
 }
 
-void Entity::collide(const math::Polygon& polygon)
-{
-	auto intersection = math::SAT(m_polygon, polygon, m_velocity);
-	if (intersection.willIntersect)
-		m_velocity += intersection.minimumTranslationVector;
-
-	for (int i = 0; i < 3; ++i)
-	{
-		intersection = math::SAT(m_jumpChecks[i].polygon, polygon, m_velocity);
-		if (intersection.willIntersect || intersection.intersect)
-			m_jumpChecks[i].grounded = true;
-	}
-}
-
 void Entity::update(const float deltaTime)
 {
-	m_velocity.y += .75;
+	m_acceleration.y = 9.82*4*deltaTime;
+	m_velocity.y += m_acceleration.y;
 
-	if (m_velocity.y > 20)
-		m_velocity.y = 20;
-
-	control(deltaTime);
+	control();
+	terminalVelocity();
 	checkCollisions();
 	move(m_velocity);
 }
 
+void Entity::terminalVelocity()
+{
+}
+
 void Entity::checkCollisions()
 {
-	for (int i = 0; i < 3; ++i)
-		m_jumpChecks[i].grounded = false;
-
 	if (auto quadtree = m_quadtree.lock())
 	{
 		std::vector<std::weak_ptr<Quadtree>> quadtrees;
@@ -57,19 +40,11 @@ void Entity::checkCollisions()
 		if (!quadtrees.empty())
 		{
 			std::vector<unsigned int> indices;
-
 			for (int i = 0; i < quadtrees.size(); ++i)
 			{
 				if (auto _quadtree = quadtrees[i].lock())
 				{
-					m_velocity = _quadtree->checkCollisions(m_polygon, m_jumpChecks[0], m_jumpChecks[1], m_jumpChecks[2], m_velocity, indices);
-
-					/*auto polygons = _quadtree->getPolygons(indices);
-
-					for (int j = 0; j < polygons.size(); ++j)
-					{
-						collide(*polygons[j]);
-					}*/
+					m_velocity = _quadtree->checkCollisions(m_polygon, m_velocity, indices);
 				}
 			}
 		}
@@ -80,10 +55,14 @@ void Entity::move(const sf::Vector2f& offset)
 {
 	m_polygon.offset(offset.x, offset.y);
 
-	for (int i = 0; i < 3; ++i)
-		m_jumpChecks[i].polygon.offset(offset.x, offset.y);
-
+	
 	m_shape.move(offset.x, offset.y);
+
+	entitySpecificMovement(offset);
+}
+
+void Entity::entitySpecificMovement(const sf::Vector2f& offset)
+{
 }
 
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const

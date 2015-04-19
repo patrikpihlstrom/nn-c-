@@ -5,7 +5,7 @@
 
 #include "../map/Quadtree.hpp"
 #include "../application/Math.hpp"
-#include "JumpCheck.hpp"
+#include "Units.hpp"
 
 
 class Entity : public sf::Drawable
@@ -24,22 +24,20 @@ public:
 	float getMaxHorizontalSpeed() const;
 
 protected:
-	virtual void control(const float deltaTime) = 0;
+	virtual void control() = 0;
+	virtual void entitySpecificMovement(const sf::Vector2f& offset);
+	virtual void checkCollisions();
+	virtual void terminalVelocity();
 
 	math::Polygon m_polygon;
 	sf::ConvexShape m_shape;
 
-	sf::Vector2f m_velocity;
-
+	sf::Vector2f m_velocity, m_acceleration;
 	float m_maxHorizontalSpeed;
 
-	JumpCheck m_jumpChecks[3];
-
-private:
-	void collide(const math::Polygon& polygon);
-	void checkCollisions();
-	void move(const sf::Vector2f& offset);
-	
 	std::weak_ptr<Quadtree> m_quadtree;
+	
+private:
+	void move(const sf::Vector2f& offset);
 };
 

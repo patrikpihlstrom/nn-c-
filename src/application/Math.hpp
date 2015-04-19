@@ -27,6 +27,12 @@ namespace math
 	}
 
 	template <typename T>
+	T signed2DTriArea(const sf::Vector2<T> a, const sf::Vector2<T> b, const sf::Vector2<T> c)
+	{
+		return (T)((a.x - c.x)*(b.y - c.y) - (a.y - c.y)*(b.x - c.x));
+	}
+
+	template <typename T>
 	T toDegrees(const T& radians)
 	{
 		return T(radians*(180/M_PI));
@@ -69,6 +75,32 @@ namespace math
 	}
 
 	template <typename T>
+	void rotateVector(const sf::Vector2<T>& anchor, sf::Vector2<T>& vector, const float angle)
+	{
+		float s = std::sin(angle), c = std::cos(angle);
+
+		vector.x -= anchor.x;
+		vector.y -= anchor.y;
+
+		float x = vector.x*c - vector.y*s;
+		float y = vector.x*s + vector.y*c;
+
+		vector.x = x + anchor.x;
+		vector.y = y + anchor.y;
+
+		/*vector.x = std::cos(angle)*(vector.x - anchor.x) - std::sin(angle)*(vector.y - anchor.y) + anchor.x;
+		vector.y = std::sin(angle)*(vector.x - anchor.x) + std::cos(angle)*(vector.y - anchor.y) + anchor.y;*/
+	}
+
+	template <typename T>
+	void extendSegment(const sf::Vector2<T>& a, sf::Vector2<T>& b, const T extension)
+	{
+		float length = std::sqrt(std::pow(a.x - b.x, 2) + std::pow(a.y - b.y, 2));
+		sf::Vector2<T> c{b.x + (b.x - a.x)/length*extension, b.y + (b.y - a.y)/length*extension};
+		b = c;
+	}
+
+	template <typename T>
 	std::vector<sf::Vector2<T>> ConvexHull(std::vector<sf::Vector2<T>> & p_points)
 	{
 		int n = p_points.size();
@@ -101,6 +133,12 @@ namespace math
 		H.resize(k);
 		return H;
 	}
+
+	template <typename T>
+	struct Segment
+	{
+		sf::Vector2<T> a, b;
+	};
 
 	class Polygon
 	{
@@ -146,6 +184,17 @@ namespace math
 		{
 			assert(index < m_edges.size());
 			return m_edges[index];
+		}
+
+		template <typename T>
+		Segment<T> getEdgeSegment(const int& index) const
+		{
+			assert(index < m_points.size());
+			
+			if (index < m_points.size() - 1)
+				return {m_points[index], m_points[index + 1]};
+			else
+				return {m_points[index], m_points[0]};
 		}
 
 		sf::Vector2f getCenter() const
@@ -208,6 +257,8 @@ namespace math
 	};
 
 	bool lineIntersectsLine(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d);
+	bool lineIntersectsLine(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, sf::Vector2f& e);
+	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, sf::Vector2f& c, const Polygon& polygon);
 	bool pointInPolygon(const sf::Vector2f& point, const Polygon& polygon);
 
 	struct Intersection

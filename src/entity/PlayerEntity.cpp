@@ -9,7 +9,7 @@ PlayerEntity::PlayerEntity() :
 	m_polygon.addPoint(sf::Vector2f(32, 32));
 	m_polygon.addPoint(sf::Vector2f(0, 32));
 	m_polygon.constructEdges();
-	m_polygon.offset(100, 100);
+	m_polygon.offset(1482, 100);
 
 	m_shape.setPointCount(m_polygon.getPointCount());
 	for (int i = 0; i < m_polygon.getPointCount(); ++i)
@@ -33,8 +33,9 @@ PlayerEntity::PlayerEntity() :
 
 	for (int i = 0; i < 3; ++i)
 	{
+		m_jumpChecks[i].grounded = false;
 		m_jumpChecks[i].polygon.constructEdges();
-		m_jumpChecks[i].polygon.offset(100, 100);
+		m_jumpChecks[i].polygon.offset(1482, 100);
 	}
 }
 
@@ -42,7 +43,7 @@ PlayerEntity::~PlayerEntity()
 {
 }
 
-void PlayerEntity::control(const float deltaTime)
+void PlayerEntity::control()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 		m_maxHorizontalSpeed = 10;
@@ -51,9 +52,6 @@ void PlayerEntity::control(const float deltaTime)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		if (m_velocity.y < 0)
-			m_velocity.y -= 0.25;
-
 		if (m_jumpChecks[1].grounded)
 			m_velocity.y = -15;
 		else
@@ -93,7 +91,47 @@ void PlayerEntity::control(const float deltaTime)
 		if (std::abs(m_velocity.x) <= 0.001)
 			m_velocity.x = 0;
 		else
-			m_velocity.x /= 2;
+			m_velocity.x /= 1.25;
 	}
+}
+
+void PlayerEntity::terminalVelocity()
+{
+	if (math::magnitude<float>(m_velocity) > 56)
+	{
+		math::normalize(m_velocity);
+		m_velocity.x *= 56;
+		m_velocity.y *= 56;
+	}
+}
+
+void PlayerEntity::checkCollisions()
+{
+	for (int i = 0; i < 3; ++i)
+		m_jumpChecks[i].grounded = false;
+
+	if (auto quadtree = m_quadtree.lock())
+	{
+		std::vector<std::weak_ptr<Quadtree>> quadtrees;
+		quadtree->getQuadtrees(quadtrees, m_polygon);
+
+		if (!quadtrees.empty())
+		{
+			std::vector<unsigned int> indices;
+			for (int i = 0; i < quadtrees.size(); ++i)
+			{
+				if (auto _quadtree = quadtrees[i].lock())
+				{
+					m_velocity = _quadtree->checkCollisions(m_polygon, m_jumpChecks[0], m_jumpChecks[1], m_jumpChecks[2], m_velocity, indices);
+				}
+			}
+		}
+	}
+}
+
+void PlayerEntity::entitySpecificMovement(const sf::Vector2f& offset)
+{
+	for (int i = 0; i < 3; ++i)
+	m_jumpChecks[i].polygon.offset(offset.x, offset.y);
 }
 
