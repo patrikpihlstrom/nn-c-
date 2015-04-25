@@ -47,6 +47,8 @@ void TextureHolder::loadTextures(const std::string& path)
 	{
 		std::cout << "Unable to open texture file." << std::endl;
 	}
+
+	loadTexture("light=light.png");
 }
 
 void TextureHolder::loadTexture(const std::string& line)
@@ -62,6 +64,7 @@ void TextureHolder::loadTexture(const std::string& line)
 	auto key = line.substr(0, line.find('='));
 	m_textures[key].reset(new sf::Texture());
 	m_textures[key]->loadFromImage(image, sf::IntRect(0, 0, image.getSize().x, image.getSize().y));
-	m_textures[key]->setRepeated(true);
+	m_textures[key]->setRepeated(key == "light" ? false:true);
+	m_textures[key]->setSmooth(key == "light" ? false:true);
 }
 

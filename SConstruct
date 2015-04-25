@@ -9,14 +9,18 @@ sfml-system
 sources = Split("""
 src/application/main.cpp
 src/application/Application.cpp
-src/application/Math.cpp
 src/application/Camera.cpp
+src/application/Math.cpp
 src/application/TextureHolder.cpp
 src/map/Map.cpp
 src/map/Quadtree.cpp
-src/entity/Entity.cpp
-src/entity/PlayerEntity.cpp
-src/light/ShadowCaster.cpp
+src/object/Entity.cpp
+src/object/GameObject.cpp
+src/object/Light.cpp
+src/object/Object.cpp
+src/object/ObjectIdTracker.cpp
+src/object/PlayerEntity.cpp
+src/object/ShadowUpdater.cpp
 """)
 
 Program(target = 'No-Motivation', source = sources, LIBS = libs, CXXFLAGS = "-std=c++11")

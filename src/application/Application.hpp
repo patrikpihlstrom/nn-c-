@@ -11,10 +11,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "Math.hpp"
 #include "../map/Map.hpp"
-#include "../entity/PlayerEntity.hpp"
-#include "../light/ShadowCaster.hpp"
 #include "Camera.hpp"
 
 
@@ -33,15 +30,12 @@ private:
 
 	bool m_running, m_active;
 
-	bool m_mouse;
-	int m_index;
-
 	Map m_map;
-	ShadowCaster m_shadowCaster;
+
+	Camera m_camera;
 
 	std::shared_ptr<PlayerEntity> m_player;
 
 	sf::RenderWindow m_window;
-	Camera m_camera;
 };
 

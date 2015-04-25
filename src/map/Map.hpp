@@ -7,6 +7,10 @@
 
 #include "Quadtree.hpp"
 #include "../application/TextureHolder.hpp"
+#include "../application/Camera.hpp"
+#include "../object/ObjectIdTracker.hpp"
+#include "../object/GameObject.hpp"
+#include "../object/ShadowUpdater.hpp"
 
 
 class Map : public sf::Drawable
@@ -15,10 +19,8 @@ public:
 	Map();
 	~Map();
 
-	void addPolygon(const math::Polygon& polygon, const std::string& mtl = "(null)");
-	void removePolygon(std::shared_ptr<math::Polygon> polygon);
+	void update(const sf::RenderWindow& window, const Camera& camera);
 
-	std::shared_ptr<math::Polygon> getPolygon(const sf::Vector2f& position);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void load(const std::string& file);
@@ -27,9 +29,13 @@ public:
 	std::weak_ptr<Quadtree> getQuadtree() const;
 
 private:
-	unsigned int m_index;
+	void addObject(GameObject& object, const std::string& mtl = "(null)");
+
 	std::shared_ptr<Quadtree> m_quadtree;
+	std::vector<std::shared_ptr<Object>> m_objects;
 	std::unique_ptr<TextureHolder> m_textureHolder;
-	std::map<unsigned int, sf::ConvexShape> m_polygons;
+	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
+	std::unique_ptr<ShadowUpdater> m_shadowUpdater;
+	std::weak_ptr<Object> m_light;
 };
 

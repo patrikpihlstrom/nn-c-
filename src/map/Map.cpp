@@ -1,11 +1,14 @@
 #include "Map.hpp"
 
 
-Map::Map() :
-	m_index(0)
+Map::Map()
 {
 	m_quadtree.reset(new Quadtree(sf::Vector2f(0, 0), sf::Vector2f(2048*5, 2048*5), false, 0));
 	m_textureHolder.reset(new TextureHolder());
+	m_objectIdTracker.reset(new ObjectIdTracker());
+	m_shadowUpdater.reset(new ShadowUpdater());
+
+	m_shadowUpdater->setQuadtree(getQuadtree());
 	m_textureHolder->loadTextures("level.mtl");
 }
 
@@ -13,48 +16,39 @@ Map::~Map()
 {
 }
 
-void Map::addPolygon(const math::Polygon& polygon, const std::string& mtl)
+void Map::update(const sf::RenderWindow& window, const Camera& camera)
 {
-	m_quadtree->insert(std::shared_ptr<math::Polygon>(new math::Polygon(polygon)), m_index);
+	math::Polygon viewport;
+	viewport.addPoint(sf::Vector2f(-5000, -5000));
+	viewport.addPoint(sf::Vector2f(5000, -5000));
+	viewport.addPoint(sf::Vector2f(5000, 5000));
+	viewport.addPoint(sf::Vector2f(0, 5000));
+	viewport.constructEdges();
 
-	sf::ConvexShape shape;
-	shape.setPointCount(polygon.getPointCount());
+	if (auto light = m_light.lock())
+		light->setPosition((sf::Vector2f)sf::Mouse::getPosition(window) + camera.getCenter() - sf::Vector2f(camera.getSize().x/2, camera.getSize().y/2));
 
-	for (int i = 0; i < shape.getPointCount(); ++i)
-		shape.setPoint(i, polygon.getPoint(i));
+	m_shadowUpdater->updateShadows(viewport);
+}
 
+void Map::addObject(GameObject& object, const std::string& mtl)
+{
 	if (mtl != "(null)" && mtl != "None")
 	{
-		shape.setTexture(m_textureHolder->getTexture(mtl).lock().get());
-		shape.setTextureRect(sf::Rect<int>(shape.getGlobalBounds()));
+		object.setTexture(m_textureHolder->getTexture(mtl));
+		object.setTextureRect(sf::Rect<int>(object.getGlobalBounds()));
 	}
-	
-	m_polygons[m_index] = shape;
-	m_index++;
-}
 
-void Map::removePolygon(std::shared_ptr<math::Polygon> polygon)
-{
-//	m_quadtree->remove(polygon);
-}
-
-std::shared_ptr<math::Polygon> Map::getPolygon(const sf::Vector2f& position)
-{
-	return m_quadtree->getPolygon(position);
+	object.assign(m_objectIdTracker->addObject());
+	m_quadtree->insert(object);
+	m_objects.push_back(m_quadtree->getObject(object.getId()));
 }
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	for (auto it = m_polygons.begin(); it != m_polygons.end(); ++it)
-		target.draw(it->second, states);
-}
-
-void Map::save() const
-{
-	std::ofstream file;
-	file.open("level");
-	std::vector<unsigned char> saved;
-	m_quadtree->save(file, saved);
+	states.blendMode = sf::BlendMode::BlendMultiply;
+	for (int i = 0; i < m_objects.size(); ++i)
+		m_objects[i]->draw(target, states);
 }
 
 void Map::load(const std::string& filePath)
@@ -75,14 +69,16 @@ void Map::load(const std::string& filePath)
 				math::Polygon polygon;
 
 				if (points.size() > 3)
-					points = math::ConvexHull<float>(points);
+					points = math::convexHull<float>(points);
 
-				for (int i = 0; i < points.size() - 1; ++i)
-					polygon.addPoint(points[i]);
-
+				polygon.setPoints(points);
 				polygon.constructEdges();
 				polygon.setDepth(depth);
-				addPolygon(polygon, line.substr(0, 6) == "usemtl" ? line.substr(7, line.size() - 1):"");
+				
+				GameObject object;
+				object.setPolygon(polygon);
+
+				addObject(object, line.substr(0, 6) == "usemtl" ? line.substr(7, line.size() - 1):"");
 				depth = 0;
 				points.clear();
 			}
@@ -121,6 +117,29 @@ void Map::load(const std::string& filePath)
 
 		file.close();
 	}
+
+	Light light;
+
+	for (int i = 0; i < 1; ++i)
+	{
+		light.assign(m_objectIdTracker->addObject());
+		light.setPosition(sf::Vector2f(std::rand()%1000 + 800, std::rand()%1000 + 500));
+		light.setTexture(m_textureHolder->getTexture("light"));
+		light.setColor(sf::Color(std::rand()%255, std::rand()%255, std::rand()%255));
+		m_quadtree->insert(light);
+		m_objects.push_back(m_quadtree->getObject(light.getId()));
+	}
+	
+	m_light = m_quadtree->getObject(light.getId());
+
+	/*if (m_quadtree->remove(ObjectId{0}))
+	{
+		auto it = std::find_if(m_objects.begin(), m_objects.end(), Quadtree::compare(ObjectId{0}));
+		m_objects.erase(it);
+		m_objectIdTracker->removeObject(ObjectId{0});
+		m_quadtree->update();
+	}
+	*/
 }
 
 std::weak_ptr<Quadtree> Map::getQuadtree() const

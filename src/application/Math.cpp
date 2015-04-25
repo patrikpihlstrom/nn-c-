@@ -4,55 +4,93 @@
 
 namespace math
 {
-	bool lineIntersectsLine(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d)
+	std::vector<sf::Vector2f> cutTri(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, const sf::Vector2f& e)
 	{
-		float q = (a.y - c.y)*(d.x - c.x) - (a.x - c.x)*(d.y - c.y);
-		float D = (b.x - a.x)*(d.y - c.y) - (b.y - a.y)*(d.x - c.x);
+		std::vector<sf::Vector2f> points;
+		math::Polygon polygon;
+		polygon.addPoint(a);
+		polygon.addPoint(b);
+		polygon.addPoint(c);
+		polygon.constructEdges();
 
-		if (D == 0)
-			return false;
+		bool containsD = polygon.containsPoint(d);
+		bool containsE = polygon.containsPoint(e);
 
-		float r = q/D;
-		q = (a.y - c.y)*(b.x - a.x) - (a.x - c.x)*(b.y - a.y);
-		float s = q/D;
+		if (containsD && !containsE)
+		{
+			sf::Vector2f point;
 
-		if (r < 0 || r > 1 || s < 0 || s > 1)
-			return false;
+			for (int i = 0; i < polygon.getEdgeCount(); ++i)
+			{
+				auto edge = polygon.getEdgeSegment<float>(i);
+				if (lineIntersectsLine(edge.a, edge.b, d, e, point))
+				{
+					points.push_back(a);
+					points.push_back(point);
+					points.push_back(d);
+				}
+			}
+		}
+		else if (containsE && !containsD)
+		{
+			sf::Vector2f point;
 
-		return true;
+			for (int i = 0; i < polygon.getEdgeCount(); ++i)
+			{
+				auto edge = polygon.getEdgeSegment<float>(i);
+				if (lineIntersectsLine(edge.a, edge.b, d, e, point))
+				{
+					points.push_back(a);
+					points.push_back(point);
+					points.push_back(d);
+				}
+			}
+		}
+		else if (containsD && containsE)
+		{
+			
+		}
+
+		return points;
 	}
 
-	bool lineIntersectsLine(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, sf::Vector2f& e)
+	sf::Vector2f getLineIntersection(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, bool& interrupted)
 	{
-		float a1 = signed2DTriArea<float>(a, b, d);
-		float a2 = signed2DTriArea<float>(a, b, c);
+		sf::Vector2f intersection;
 
-		if (a1*a2 < 0.0f)
+		if (lineIntersectsLine(a, b, c, d, intersection))
 		{
-			float a3 = signed2DTriArea<float>(c, d, a);
-			float a4 = a3 + a2 - a1;
+			interrupted = true;
+			return intersection;
+		}
+		else
+			return b;
+	}
 
-			if (a3*a4 < 0.0f)
-			{
-				float t = a3/(a3 - a4);
-				e = sf::Vector2f(a.x + t*(b.x - a.x), a.y + t*(b.y - a.y));
-				return true;
-			}
+	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, const Polygon& polygon)
+	{
+		for (int i = 0; i < polygon.getEdgeCount(); ++i)
+		{
+			auto segment = polygon.getEdgeSegment<float>(i);
+
+			if (lineIntersectsLine(a, b, segment.a, segment.b))
+					return true;
 		}
 
 		return false;
 	}
 
-	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, sf::Vector2f& c, const Polygon& polygon)
+	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, sf::Vector2f& c, sf::Vector2f& d, const Polygon& polygon)
 	{
 		bool result = false;
-		auto bounds = polygon.getBounds();
 
-		for (int i = polygon.getPointCount() - 1; i >= 0; --i)
+		for (int i = 0; i < polygon.getEdgeCount(); ++i)
 		{
 			auto segment = polygon.getEdgeSegment<float>(i);
 
-			if (lineIntersectsLine(a, b, segment.a, segment.b, c))
+			if (result)
+				lineIntersectsLine(a, b, segment.a, segment.b, d);
+			else if (lineIntersectsLine(a, b, segment.a, segment.b, c))
 				result = true;
 		}
 

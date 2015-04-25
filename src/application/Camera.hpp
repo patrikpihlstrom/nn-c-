@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics/View.hpp>
 
-#include "../entity/Entity.hpp"
+#include "../object/Entity.hpp"
 
 
 class Camera : public sf::View

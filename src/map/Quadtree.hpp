@@ -6,15 +6,16 @@
 #include <iostream>
 #include <fstream>
 
-#include <SFML/Graphics.hpp>
-
 #include "../application/Math.hpp"
-#include "../entity/JumpCheck.hpp"
+#include "../object/GameObject.hpp"
+#include "../object/Light.hpp"
+#include "../object/Entity.hpp"
+#include "../object/PlayerEntity.hpp"
 
 
-const unsigned char MAX_LEVEL = 6;
+const unsigned char MAX_LEVEL = 0;
 
-class Quadtree : public sf::Drawable
+class Quadtree
 {
 public:
 	Quadtree();
@@ -23,42 +24,73 @@ public:
 
 	void update();
 
-	void insert(std::shared_ptr<math::Polygon> polygon, unsigned char index);
-	bool remove(unsigned char index);
+	void insert(const GameObject& object);
+	void insert(const PlayerEntity& object);
+	void insert(const Light& object);
+	void insert(const std::shared_ptr<Object> object);
+
+	bool remove(const std::shared_ptr<Object> object);
+	bool remove(const ObjectId& id);
 
 	bool canMerge() const; // Checks itself and its siblings.
 	bool canMergeChildren() const;
 	bool empty() const;
 	bool hasChildren() const;
 
-	void save(std::ofstream& file, std::vector<unsigned char>& saved) const;
-
 	math::Polygon polygon;
 
-	std::shared_ptr<math::Polygon> getPolygon(const sf::Vector2f& position);
-
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
 	void getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const math::Polygon& polygon) const;
-	std::vector<std::shared_ptr<math::Polygon>> getPolygons(std::vector<unsigned char>& indices) const;
+	void getObjects(std::vector<std::shared_ptr<Object>>& objects, std::vector<ObjectId>& objectIds) const;
 
-	sf::Vector2f checkCollisions(const math::Polygon& polygon, const sf::Vector2f& velocity, std::vector<unsigned int>& indices) const;
-	sf::Vector2f checkCollisions(const math::Polygon& polygon, JumpCheck& jumpCheckLeft, JumpCheck& jumpCheckBottom, JumpCheck& jumpCheckRight, const sf::Vector2f& velocity, std::vector<unsigned int>& indices) const;
+	void getGameObjects(std::vector<GameObject*>& objects, const math::Polygon& polygon) const;
+	void getLights(std::vector<Light*>& objects, const math::Polygon& polygon) const;
 
-	void populateWithPolygons(std::vector<std::weak_ptr<math::Polygon>>& polygons, std::vector<unsigned int>& indices) const;
+	std::shared_ptr<Object> getObject(const ObjectId& id) const;
+
+	struct compare : public std::unary_function<ObjectId, bool>
+	{
+		explicit compare(const ObjectId& id) :
+			id(id)
+		{
+		}
+
+		bool operator() (const GameObject& arg)
+		{
+			return arg.getId() == id;
+		}
+
+		bool operator() (const PlayerEntity& arg)
+		{
+			return arg.getId() == id;
+		}
+
+		bool operator() (const Light& arg)
+		{
+			return arg.getId() == id;
+		}
+
+		bool operator() (const std::shared_ptr<Object> arg)
+		{
+			return arg->getId() == id;
+		}
+
+		ObjectId id;
+	};
 
 private:
 	std::shared_ptr<Quadtree> m_children[4];
 	std::weak_ptr<Quadtree> m_parent;
-	std::map<unsigned int, std::shared_ptr<math::Polygon>> m_polygons;
+	std::vector<std::shared_ptr<Object>> m_objects;
 
 	void split();
 	void mergeChildren();
+	bool m_hasChildren;
 
 	unsigned char m_level;
 
 	sf::Vector2f m_position, m_dimensions;
 
-	bool m_hasChildren;
+	void getGameObjects(std::vector<GameObject*>& objects, const math::Polygon& polygon, std::vector<ObjectId>& ids) const;
+	void getLights(std::vector<Light*>& objects, const math::Polygon& polygon, std::vector<ObjectId>& ids) const;
 };
 
