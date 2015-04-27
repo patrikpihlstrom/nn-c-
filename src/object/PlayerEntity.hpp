@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.hpp"
+#include "object/Entity.hpp"
 
 
 class PlayerEntity : public Entity

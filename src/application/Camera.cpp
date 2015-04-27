@@ -27,6 +27,18 @@ void Camera::update()
 		{
 			m_velocity.x = (entity->getPosition().x - getCenter().x)/11;
 			m_velocity.y = (entity->getPosition().y - getCenter().y)/20;
+
+			if (std::abs(m_velocity.x) < 0.01)
+			{
+				move(entity->getPosition().x - getCenter().x, 0);
+				m_velocity.x = 0;
+			}
+
+			if (std::abs(m_velocity.y) < 0.01)
+			{
+				move(0, entity->getPosition().y - getCenter().y);
+				m_velocity.y = 0;
+			}
 		}
 
 		move(m_velocity);

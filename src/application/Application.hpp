@@ -10,9 +10,10 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 
-#include "../map/Map.hpp"
-#include "Camera.hpp"
+#include "map/Map.hpp"
+#include "application/Camera.hpp"
 
 
 class Application

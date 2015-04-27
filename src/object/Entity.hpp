@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Object.hpp"
+#include "object/Object.hpp"
 
 
 class Entity : public Object

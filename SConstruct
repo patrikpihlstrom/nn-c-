@@ -4,6 +4,8 @@ libs = Split("""
 sfml-graphics
 sfml-window
 sfml-system
+GL
+GLEW
 """)
 
 sources = Split("""
@@ -13,6 +15,7 @@ src/application/Camera.cpp
 src/application/Math.cpp
 src/application/TextureHolder.cpp
 src/map/Map.cpp
+src/map/procedural/RockGenerator.cpp
 src/map/Quadtree.cpp
 src/object/Entity.cpp
 src/object/GameObject.cpp
@@ -23,5 +26,6 @@ src/object/PlayerEntity.cpp
 src/object/ShadowUpdater.cpp
 """)
 
-Program(target = 'No-Motivation', source = sources, LIBS = libs, CXXFLAGS = "-std=c++11")
+environment = Environment(CPPPATH='src')
+environment.Program(target = 'No-Motivation', source = sources, LIBS = libs, CXXFLAGS = "-std=c++11")
 

@@ -18,7 +18,7 @@ void Application::initialize()
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
 	m_window.setVerticalSyncEnabled(true);
 
-	m_map.load("level.obj");
+	//m_map.load("level.obj");
 
 	m_player.reset(new PlayerEntity());
 
@@ -64,10 +64,17 @@ void Application::handleEvents()
 	while(m_window.pollEvent(event))
 	{
 		if (event.type == sf::Event::Closed)
+		{
+			m_window.close();
 			m_running = false;
+		}
 		else if (event.type == sf::Event::KeyPressed)
 		{
-
+			if (event.key.code == sf::Keyboard::Escape)
+			{
+				m_window.close();
+				m_running = false;
+			}
 		}
 	}
 }
@@ -81,7 +88,7 @@ void Application::update(sf::Time deltaTime)
 
 void Application::render()
 {
-	m_window.clear(sf::Color(20, 20, 20));
+	m_window.clear(sf::Color(200, 200, 200));
 	m_window.setView(m_camera);
 
 	m_window.draw(m_map);

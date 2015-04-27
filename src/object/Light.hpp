@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Object.hpp"
+#include "object/Object.hpp"
 
 
 class Light : public Object
@@ -26,6 +26,9 @@ public:
 	bool isGameObject() const;
 	bool isLight() const;
 
+	void setTarget(const sf::Vector2f& target);
+	void update();
+
 private:
 	sf::Vector2f castRay(const float& angle);
 
@@ -34,9 +37,10 @@ private:
 	std::vector<float> m_angles;
 	std::vector<math::Segment<float>> m_objects;
 	std::vector<sf::Vector2f> m_points;
-
 	std::weak_ptr<sf::Texture> m_texture;
 
 	float m_radius;
+
+	sf::Vector2f m_target;
 };
 

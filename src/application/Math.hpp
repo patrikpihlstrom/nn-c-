@@ -192,7 +192,7 @@ namespace math
 	{
 		sf::Vector2<T> a, b;
 	};
-	
+
 	class Polygon
 	{
 	private:

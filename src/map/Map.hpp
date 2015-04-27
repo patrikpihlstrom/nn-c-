@@ -5,12 +5,13 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Quadtree.hpp"
-#include "../application/TextureHolder.hpp"
-#include "../application/Camera.hpp"
-#include "../object/ObjectIdTracker.hpp"
-#include "../object/GameObject.hpp"
-#include "../object/ShadowUpdater.hpp"
+#include "map/Quadtree.hpp"
+#include "map/procedural/RockGenerator.hpp"
+#include "application/TextureHolder.hpp"
+#include "application/Camera.hpp"
+#include "object/ObjectIdTracker.hpp"
+#include "object/GameObject.hpp"
+#include "object/ShadowUpdater.hpp"
 
 
 class Map : public sf::Drawable
@@ -29,6 +30,7 @@ public:
 	std::weak_ptr<Quadtree> getQuadtree() const;
 
 private:
+	bool space;
 	void addObject(GameObject& object, const std::string& mtl = "(null)");
 
 	std::shared_ptr<Quadtree> m_quadtree;
@@ -37,5 +39,7 @@ private:
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ShadowUpdater> m_shadowUpdater;
 	std::weak_ptr<Object> m_light;
+
+	std::unique_ptr<RockGenerator> m_rockGenerator;
 };
 

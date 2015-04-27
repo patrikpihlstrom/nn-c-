@@ -6,16 +6,11 @@ Quadtree::Quadtree() :
 {
 }
 
-Quadtree::Quadtree(const sf::Vector2f& position, const sf::Vector2f& dimensions, const bool hasChildren, const unsigned char level) :
-	m_position(position),
-	m_dimensions(dimensions),
+Quadtree::Quadtree(const sf::Rect<int>& boundingBox, const bool hasChildren, const unsigned char level) :
 	m_hasChildren(hasChildren),
-	m_level(level)
+	m_level(level),
+	m_boundingBox(boundingBox)
 {
-	polygon.addPoint((sf::Vector2f)position);
-	polygon.addPoint(sf::Vector2f(position.x + dimensions.x, position.y));
-	polygon.addPoint(sf::Vector2f(position.x + dimensions.x, position.y + dimensions.y));
-	polygon.addPoint(sf::Vector2f(position.x, position.y + dimensions.y));
 }
 
 Quadtree::~Quadtree()
@@ -39,7 +34,7 @@ void Quadtree::insert(const GameObject& object)
 	else
 	{
 		for (int i = 0; i < 4; ++i)
-			if (math::polygonIntersectsPolygon(m_children[i]->polygon, object.getPolygon()))
+			if (m_children[i]->getBoundingBox().intersects(object.getBoundingBox()))
 				m_children[i]->insert(object);
 	}
 }
@@ -55,7 +50,7 @@ void Quadtree::insert(const PlayerEntity& object)
 	else
 	{
 		for (int i = 0; i < 4; ++i)
-			if (math::polygonIntersectsPolygon(m_children[i]->polygon, object.getPolygon()))
+			if (m_children[i]->getBoundingBox().intersects(object.getBoundingBox()))
 				m_children[i]->insert(object);
 	}
 }
@@ -71,7 +66,7 @@ void Quadtree::insert(const Light& object)
 	else
 	{
 		for (int i = 0; i < 4; ++i)
-			if (math::polygonIntersectsPolygon(m_children[i]->polygon, object.getPolygon()))
+			if (m_children[i]->getBoundingBox().intersects(object.getBoundingBox()))
 				m_children[i]->insert(object);
 	}
 }
@@ -87,7 +82,7 @@ void Quadtree::insert(const std::shared_ptr<Object> object)
 	else
 	{
 		for (int i = 0; i < 4; ++i)
-			if (math::polygonIntersectsPolygon(m_children[i]->polygon, object->getPolygon()))
+			if (m_children[i]->getBoundingBox().intersects(object->getBoundingBox()))
 				m_children[i]->insert(object);
 	}
 }
@@ -131,19 +126,17 @@ void Quadtree::split()
 
 	m_hasChildren = true;
 
-	m_children[0].reset(new Quadtree(m_position, sf::Vector2f(m_dimensions.x/2, m_dimensions.y/2), false, m_level + 1));
-	m_children[1].reset(new Quadtree(sf::Vector2f(m_position.x + m_dimensions.x/2, m_position.y), sf::Vector2f(m_dimensions.x/2, m_dimensions.y/2), false, m_level + 1));
-	m_children[2].reset(new Quadtree(sf::Vector2f(m_position.x, m_position.y + m_dimensions.y/2), sf::Vector2f(m_dimensions.x/2, m_dimensions.y/2), false, m_level + 1));
-	m_children[3].reset(new Quadtree(sf::Vector2f(m_position.x + m_dimensions.x/2, m_position.y + m_dimensions.y/2), sf::Vector2f(m_dimensions.x/2, m_dimensions.y/2), false, m_level + 1));
+	m_children[0].reset(new Quadtree(sf::Rect<int>(m_boundingBox.left, m_boundingBox.top, m_boundingBox.width/2, m_boundingBox.height/2), false, m_level + 1));
+	m_children[1].reset(new Quadtree(sf::Rect<int>(m_boundingBox.left + m_boundingBox.width/2, m_boundingBox.top, m_boundingBox.width/2, m_boundingBox.height/2), false, m_level + 1));
+	m_children[2].reset(new Quadtree(sf::Rect<int>(m_boundingBox.left, m_boundingBox.top + m_boundingBox.height/2, m_boundingBox.width/2, m_boundingBox.height/2), false, m_level + 1));
+	m_children[3].reset(new Quadtree(sf::Rect<int>(m_boundingBox.left + m_boundingBox.width/2, m_boundingBox.top + m_boundingBox.height/2, m_boundingBox.width/2, m_boundingBox.height/2), false, m_level + 1));
 
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < m_objects.size(); ++j)
 		{
-			if (math::polygonIntersectsPolygon(m_children[i]->polygon, m_objects[j]->getPolygon()))
-			{
+			if (m_children[i]->getBoundingBox().intersects(m_objects[i]->getBoundingBox()))
 				m_children[i]->insert(m_objects[j]);
-			}
 		}
 	}
 
@@ -198,15 +191,15 @@ bool Quadtree::hasChildren() const
 	return m_hasChildren;
 }
 
-void Quadtree::getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const math::Polygon& polygon) const
+void Quadtree::getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const sf::Rect<int>& boundingBox) const
 {
 	if (m_hasChildren)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
 			if (m_children[i]->hasChildren())
-				m_children[i]->getQuadtrees(quadtrees, polygon);
-			else if (math::polygonIntersectsPolygon(polygon, m_children[i]->polygon))
+				m_children[i]->getQuadtrees(quadtrees, boundingBox);
+			else if (m_children[i]->getBoundingBox().intersects(boundingBox))
 				quadtrees.push_back(m_children[i]);
 		}
 	}
@@ -249,25 +242,26 @@ std::shared_ptr<Object> Quadtree::getObject(const ObjectId& id) const
 	return nullptr;
 }
 
-void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const math::Polygon& polygon) const
+void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const sf::Rect<int>& boundingBox) const
 {
 	std::vector<ObjectId> ids;
-	getGameObjects(objects, polygon, ids);
+	getGameObjects(objects, boundingBox, ids);
 }
 
-void Quadtree::getLights(std::vector<Light*>& objects, const math::Polygon& polygon) const
+void Quadtree::getLights(std::vector<Light*>& objects, const sf::Rect<int>& boundingBox) const
 {
 	std::vector<ObjectId> ids;
-	getLights(objects, polygon, ids);
+	getLights(objects, boundingBox, ids);
 }
 
-void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const math::Polygon& polygon, std::vector<ObjectId>& ids) const
+void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const sf::Rect<int>& boundingBox, std::vector<ObjectId>& ids) const
 {
 	if (m_hasChildren)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			m_children[i]->getGameObjects(objects, polygon, ids);
+			if (boundingBox.intersects(m_children[i]->getBoundingBox()))
+				m_children[i]->getGameObjects(objects, boundingBox, ids);
 		}
 	}
 	else
@@ -276,10 +270,13 @@ void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const math::Pol
 		{
 			if (m_objects[i]->isGameObject())
 			{
-				if (std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
+				if (ids.empty() || std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
 				{
-					ids.push_back(m_objects[i]->getId());
-					objects.push_back(static_cast<GameObject*>(m_objects[i].get()));
+					if (boundingBox.intersects(m_objects[i]->getBoundingBox()))
+					{
+						ids.push_back(m_objects[i]->getId());
+						objects.push_back(static_cast<GameObject*>(m_objects[i].get()));
+					}
 
 				}
 			}
@@ -287,13 +284,14 @@ void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const math::Pol
 	}
 }
 
-void Quadtree::getLights(std::vector<Light*>& objects, const math::Polygon& polygon, std::vector<ObjectId>& ids) const
+void Quadtree::getLights(std::vector<Light*>& objects, const sf::Rect<int>& boundingBox, std::vector<ObjectId>& ids) const
 {
 	if (m_hasChildren)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			m_children[i]->getLights(objects, polygon, ids);
+			if (boundingBox.intersects(m_children[i]->getBoundingBox()))
+				m_children[i]->getLights(objects, boundingBox, ids);
 		}
 	}
 	else
@@ -302,9 +300,9 @@ void Quadtree::getLights(std::vector<Light*>& objects, const math::Polygon& poly
 		{
 			if (m_objects[i]->isLight())
 			{
-				if (std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
+				if (ids.empty() || std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
 				{
-					if (Light* object = dynamic_cast<Light*>(m_objects[i].get()))
+					if (boundingBox.intersects(m_objects[i]->getBoundingBox()))
 					{
 						ids.push_back(m_objects[i]->getId());
 						objects.push_back(static_cast<Light*>(m_objects[i].get()));
@@ -313,5 +311,10 @@ void Quadtree::getLights(std::vector<Light*>& objects, const math::Polygon& poly
 			}
 		}
 	}
+}
+
+sf::Rect<int> Quadtree::getBoundingBox() const
+{
+	return m_boundingBox;
 }
 

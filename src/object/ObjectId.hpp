@@ -9,5 +9,10 @@ struct ObjectId
 	{
 		return id == compare.id;
 	}
+
+	bool operator< (const ObjectId& compare) const
+	{
+		return id < compare.id;
+	}
 };
 

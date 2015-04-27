@@ -6,11 +6,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "../application/Math.hpp"
-#include "../object/GameObject.hpp"
-#include "../object/Light.hpp"
-#include "../object/Entity.hpp"
-#include "../object/PlayerEntity.hpp"
+#include "application/Math.hpp"
+#include "object/GameObject.hpp"
+#include "object/Light.hpp"
+#include "object/Entity.hpp"
+#include "object/PlayerEntity.hpp"
 
 
 const unsigned char MAX_LEVEL = 0;
@@ -19,7 +19,7 @@ class Quadtree
 {
 public:
 	Quadtree();
-	Quadtree(const sf::Vector2f& position, const sf::Vector2f& dimensions, const bool hasChildren = false, const unsigned char level = 0);
+	Quadtree(const sf::Rect<int>& boundingBox, const bool hasChildren = false, const unsigned char level = 0);
 	~Quadtree();
 
 	void update();
@@ -37,13 +37,11 @@ public:
 	bool empty() const;
 	bool hasChildren() const;
 
-	math::Polygon polygon;
-
-	void getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const math::Polygon& polygon) const;
+	void getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const sf::Rect<int>& boundingBox) const;
 	void getObjects(std::vector<std::shared_ptr<Object>>& objects, std::vector<ObjectId>& objectIds) const;
 
-	void getGameObjects(std::vector<GameObject*>& objects, const math::Polygon& polygon) const;
-	void getLights(std::vector<Light*>& objects, const math::Polygon& polygon) const;
+	void getGameObjects(std::vector<GameObject*>& objects, const sf::Rect<int>& boundingBox) const;
+	void getLights(std::vector<Light*>& objects, const sf::Rect<int>& boundingBox) const;
 
 	std::shared_ptr<Object> getObject(const ObjectId& id) const;
 
@@ -77,6 +75,8 @@ public:
 		ObjectId id;
 	};
 
+	sf::Rect<int> getBoundingBox() const;
+
 private:
 	std::shared_ptr<Quadtree> m_children[4];
 	std::weak_ptr<Quadtree> m_parent;
@@ -88,9 +88,9 @@ private:
 
 	unsigned char m_level;
 
-	sf::Vector2f m_position, m_dimensions;
+	sf::Rect<int> m_boundingBox;
 
-	void getGameObjects(std::vector<GameObject*>& objects, const math::Polygon& polygon, std::vector<ObjectId>& ids) const;
-	void getLights(std::vector<Light*>& objects, const math::Polygon& polygon, std::vector<ObjectId>& ids) const;
+	void getGameObjects(std::vector<GameObject*>& objects, const sf::Rect<int>& boundingBox, std::vector<ObjectId>& ids) const;
+	void getLights(std::vector<Light*>& objects, const sf::Rect<int>& boundingBox, std::vector<ObjectId>& ids) const;
 };
 

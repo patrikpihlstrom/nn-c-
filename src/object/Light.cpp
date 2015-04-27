@@ -4,14 +4,41 @@
 Light::Light() :
 	Object()
 {
-	m_radius = 1024;
+	m_radius = 512;
 	
 	m_polygon.clear();
 	m_vertexArray.setPrimitiveType(sf::PrimitiveType::TrianglesFan);
+	m_color = sf::Color(255, 0, 255);
+	setTarget(sf::Vector2f(1000 + std::rand()%2000, std::rand()%2000));
+
+	m_boundingBox.left = -m_radius;
+	m_boundingBox.top = -m_radius;
+	m_boundingBox.width = m_radius*2;
+	m_boundingBox.height = m_radius*2;
 }
 
 Light::~Light()
 {
+}
+
+void Light::setTarget(const sf::Vector2f& target)
+{
+	m_target = target;
+}
+
+void Light::update()
+{
+	m_boundingBox.left = m_position.x - m_radius;
+	m_boundingBox.top = m_position.y - m_radius;
+	if (math::distance<float>(getPosition(), m_target) < 50)
+	{
+		setTarget(sf::Vector2f(-500 + std::rand()%1000, -500 + std::rand()%1000));
+	}
+	else
+	{
+		float angle = std::atan2(m_target.y - getPosition().y, m_target.x - getPosition().x);
+		//move(std::cos(angle)*10, std::sin(angle)*10);
+	}
 }
 
 float Light::getRadius() const
@@ -26,10 +53,23 @@ void Light::setRadius(const float& radius)
 
 void Light::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	states.blendMode = sf::BlendAdd;
-	if (auto texture = m_texture.lock())
-		states.texture = texture.get();
+	/*sf::ConvexShape shape(sf::PrimitiveType::LinesStrip);
+	shape.setOutlineThickness(1.f);
+	shape.setOutlineColor(sf::Color(255, 0, 0));
+	shape.setFillColor(sf::Color(0, 0, 0, 0));
+	shape.setPointCount(4);
+	shape.setPoint(0, sf::Vector2f(m_boundingBox.left, m_boundingBox.top));
+	shape.setPoint(1, sf::Vector2f(m_boundingBox.left + m_boundingBox.width, m_boundingBox.top));
+	shape.setPoint(2, sf::Vector2f(m_boundingBox.left + m_boundingBox.width, m_boundingBox.top + m_boundingBox.height));
+	shape.setPoint(3, sf::Vector2f(m_boundingBox.left, m_boundingBox.top + m_boundingBox.height));
 
+	target.draw(shape, states);
+	*/
+
+	if (auto texture = m_texture.lock())
+			states.texture = texture.get();
+
+	states.blendMode = sf::BlendAdd;
 	target.draw(m_vertexArray, states);
 }
 
@@ -104,7 +144,7 @@ sf::Vector2f Light::castRay(const float& angle)
 void Light::buildLightShape()
 {
 	std::sort(m_angles.begin(), m_angles.end());
-	m_points.reserve(m_angles.size()*3);
+	m_points.reserve(m_angles.size()*2);
 
 	for (int i = 0; i < m_angles.size(); ++i)
 	{
