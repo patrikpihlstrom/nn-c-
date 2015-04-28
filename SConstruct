@@ -26,6 +26,9 @@ src/object/PlayerEntity.cpp
 src/object/ShadowUpdater.cpp
 """)
 
-environment = Environment(CPPPATH='src')
-environment.Program(target = 'No-Motivation', source = sources, LIBS = libs, CXXFLAGS = "-std=c++11")
+environment = Environment(CC='gcc')
+environment.Append(CPPPATH='src')
+environment.Append(LIBS=libs)
+environment.Append(CXXFLAGS='-std=c++11')
+environment.Program(target='No-Motivation', source=sources)
 

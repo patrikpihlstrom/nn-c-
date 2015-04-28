@@ -3,7 +3,7 @@
 
 Map::Map()
 {
-	m_quadtree.reset(new Quadtree(sf::Rect<int>(-2048*2, -2048*2, 2048*4, 2048*4), 0));
+	m_quadtree.reset(new Quadtree(sf::Rect<int>(-2048*5, -2048*5, 2048*10, 2048*10), 0));
 	m_textureHolder.reset(new TextureHolder());
 	m_objectIdTracker.reset(new ObjectIdTracker());
 	m_shadowUpdater.reset(new ShadowUpdater());
@@ -14,19 +14,17 @@ Map::Map()
 
 	GameObject gameObject;
 	
-	int rocks = 50;
+	int rocks = 250;
 
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*(2*M_PI)/rocks;
-		auto polygons = m_rockGenerator->getRock(6, {10, 2},  {std::cos(angle)*(1000 + rand()%500), std::sin(angle)*(1000 + rand()%500)});
+		auto polygons = m_rockGenerator->getRock(5 + rand() % 2, {5, 2}, {std::cos(angle)*(rand()%5000), std::sin(angle)*(rand()%5000)});
 
 		for (int i = 0; i < polygons.size(); ++i)
 		{
 			gameObject.assign(m_objectIdTracker->addObject());
 			gameObject.setPolygon(polygons[i]);
-			gameObject.setTexture(m_textureHolder->getTexture("Material"));
-			gameObject.setTextureRect(sf::Rect<int>(gameObject.getBoundingBox().left/2, gameObject.getBoundingBox().top/2, gameObject.getBoundingBox().width/2, gameObject.getBoundingBox().height/2));
 
 			std::shared_ptr<Object> object;
 			object.reset(new GameObject(gameObject));
@@ -43,13 +41,6 @@ Map::~Map()
 
 void Map::update(const sf::RenderWindow& window, const Camera& camera)
 {
-	math::Polygon viewport;
-	viewport.addPoint(sf::Vector2f(-5000, -5000));
-	viewport.addPoint(sf::Vector2f(5000, -5000));
-	viewport.addPoint(sf::Vector2f(5000, 5000));
-	viewport.addPoint(sf::Vector2f(0, 5000));
-	viewport.constructEdges();
-
 	if (auto light = m_light.lock())
 		light->move(sf::Mouse::getPosition(window).x + camera.getCenter().x - camera.getSize().x/2 - light->getPosition().x, sf::Mouse::getPosition(window).y + camera.getCenter().y - camera.getSize().y/2 - light->getPosition().y);
 
@@ -59,10 +50,9 @@ void Map::update(const sf::RenderWindow& window, const Camera& camera)
 		light.assign(m_objectIdTracker->addObject());
 		//light.setPosition(sf::Vector2f(1000 + std::rand()%2000, 500 + std::rand()%1000));
 		light.setTexture(m_textureHolder->getTexture("light"));
-		light.setColor(sf::Color(std::rand()%255, std::rand()%255, std::rand()%255));
-//		light.setColor(sf::Color(72, 252, 19));
-		m_quadtree->insert(light);
-		m_objects.push_back(m_quadtree->getObject(light.getId()));
+		//light.setColor(sf::Color(std::rand()%255, std::rand()%255, std::rand()%255));
+		light.setColor(sf::Color(255, 100, 19));
+		m_objects.push_back(m_shadowUpdater->insert(light));
 		m_light = m_objects.back();
 	}
 	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
@@ -87,8 +77,6 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (int i = 0; i < m_objects.size(); ++i)
 		m_objects[i]->draw(target, states);
-
-	target.draw(*m_quadtree);
 }
 
 void Map::load(const std::string& filePath)

@@ -4,17 +4,17 @@
 Light::Light() :
 	Object()
 {
-	m_radius = 512;
+	m_radius = 1024;
 	
 	m_polygon.clear();
 	m_vertexArray.setPrimitiveType(sf::PrimitiveType::TrianglesFan);
 	m_color = sf::Color(255, 0, 255);
 	setTarget(sf::Vector2f(1000 + std::rand()%2000, std::rand()%2000));
 
-	m_boundingBox.left = -m_radius;
-	m_boundingBox.top = -m_radius;
-	m_boundingBox.width = m_radius*2;
-	m_boundingBox.height = m_radius*2;
+	m_boundingBox.left = getPosition().x - m_radius/2.5f;
+	m_boundingBox.top = getPosition().y - m_radius/2.5f;
+	m_boundingBox.width = m_radius/1.25f;
+	m_boundingBox.height = m_radius/1.25f;
 }
 
 Light::~Light()
@@ -28,8 +28,8 @@ void Light::setTarget(const sf::Vector2f& target)
 
 void Light::update()
 {
-	m_boundingBox.left = m_position.x - m_radius;
-	m_boundingBox.top = m_position.y - m_radius;
+	m_boundingBox.left = m_position.x - m_radius/2.5f;
+	m_boundingBox.top = m_position.y - m_radius/2.5f;
 	if (math::distance<float>(getPosition(), m_target) < 50)
 	{
 		setTarget(sf::Vector2f(-500 + std::rand()%1000, -500 + std::rand()%1000));
@@ -53,6 +53,14 @@ void Light::setRadius(const float& radius)
 
 void Light::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	/*sf::RectangleShape rect(sf::Vector2f(getBoundingBox().width, getBoundingBox().height));
+	rect.setPosition(sf::Vector2f(getBoundingBox().left, getBoundingBox().top));
+	rect.setFillColor(sf::Color(0, 0, 0, 0));
+	rect.setOutlineThickness(1.f);
+	rect.setOutlineColor(sf::Color(255, 0, 0));
+	target.draw(rect);
+	*/
+
 	if (auto texture = m_texture.lock())
 			states.texture = texture.get();
 

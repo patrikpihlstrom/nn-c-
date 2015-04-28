@@ -22,37 +22,17 @@ std::vector<math::Polygon> RockGenerator::getRock(const unsigned short& pointCou
 	{
 		sf::Vector2f point = position;
 
-		if (polygon.getPointCount() == 3)
-		{
-			point = polygon.getPoint(2);
-			polygon.constructEdges();
-			polygons.push_back(polygon);
-			polygon.clear();
-		}
-
 		if (polygon.getPointCount() == 0)
-		{
-			if (!polygons.empty())
-				polygon.addPoint(position);
-
 			polygon.addPoint(point);
-		}
 		
 		float angle = i*((2*M_PI)/(pointCount));
 		auto radius = size.x + rand() % size.y;
 
-		if (i == pointCount)
-		{
-			polygon.addPoint(polygons[0].getPoint(2));
-			polygon.constructEdges();
-			polygons.push_back(polygon);
-		}
-		else
-		{
-			polygon.addPoint(sf::Vector2f(std::cos(angle)*radius + position.x, std::sin(angle)*radius + position.y));
-		}
+		polygon.addPoint(sf::Vector2f(std::cos(angle)*radius + position.x, std::sin(angle)*radius + position.y));
 	}
 
+	polygon.convexHull();
+	polygon.constructEdges();
 	polygons.push_back(polygon);
 
 	return polygons;
