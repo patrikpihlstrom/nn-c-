@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {
-	srand(time(NULL));
+	srand(666);
 	Application application(argc, argv);
 	return 0;
 }

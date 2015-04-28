@@ -3,7 +3,7 @@
 
 struct ObjectId
 {
-	unsigned short id;
+	unsigned long id;
 
 	bool operator== (const ObjectId& compare) const
 	{

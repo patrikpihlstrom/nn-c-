@@ -53,19 +53,6 @@ void Light::setRadius(const float& radius)
 
 void Light::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	/*sf::ConvexShape shape(sf::PrimitiveType::LinesStrip);
-	shape.setOutlineThickness(1.f);
-	shape.setOutlineColor(sf::Color(255, 0, 0));
-	shape.setFillColor(sf::Color(0, 0, 0, 0));
-	shape.setPointCount(4);
-	shape.setPoint(0, sf::Vector2f(m_boundingBox.left, m_boundingBox.top));
-	shape.setPoint(1, sf::Vector2f(m_boundingBox.left + m_boundingBox.width, m_boundingBox.top));
-	shape.setPoint(2, sf::Vector2f(m_boundingBox.left + m_boundingBox.width, m_boundingBox.top + m_boundingBox.height));
-	shape.setPoint(3, sf::Vector2f(m_boundingBox.left, m_boundingBox.top + m_boundingBox.height));
-
-	target.draw(shape, states);
-	*/
-
 	if (auto texture = m_texture.lock())
 			states.texture = texture.get();
 

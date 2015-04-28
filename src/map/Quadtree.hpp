@@ -13,13 +13,13 @@
 #include "object/PlayerEntity.hpp"
 
 
-const unsigned char MAX_LEVEL = 0;
+const unsigned char MAX_LEVEL = 8;
 
-class Quadtree
+class Quadtree : public sf::Drawable
 {
 public:
 	Quadtree();
-	Quadtree(const sf::Rect<int>& boundingBox, const bool hasChildren = false, const unsigned char level = 0);
+	Quadtree(const sf::Rect<int>& boundingBox, const unsigned char level = 0);
 	~Quadtree();
 
 	void update();
@@ -35,7 +35,6 @@ public:
 	bool canMerge() const; // Checks itself and its siblings.
 	bool canMergeChildren() const;
 	bool empty() const;
-	bool hasChildren() const;
 
 	void getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const sf::Rect<int>& boundingBox) const;
 	void getObjects(std::vector<std::shared_ptr<Object>>& objects, std::vector<ObjectId>& objectIds) const;
@@ -77,6 +76,8 @@ public:
 
 	sf::Rect<int> getBoundingBox() const;
 
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
 private:
 	std::shared_ptr<Quadtree> m_children[4];
 	std::weak_ptr<Quadtree> m_parent;
@@ -84,7 +85,6 @@ private:
 
 	void split();
 	void mergeChildren();
-	bool m_hasChildren;
 
 	unsigned char m_level;
 

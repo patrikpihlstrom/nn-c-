@@ -36,14 +36,14 @@ ObjectId ObjectIdTracker::getFirstAvailableId() const
 	{
 		if (m_ids[i].id - id.id > 1)
 		{
-			unsigned char _id = id.id + 1;
+			unsigned long _id = id.id + 1;
 			return ObjectId{_id};
 		}
 
 		id = m_ids[i];
 	}
 
-	unsigned char _id = m_ids.back().id + 1;
+	unsigned long _id = m_ids.back().id + 1;
 	return ObjectId{_id};
 }
 

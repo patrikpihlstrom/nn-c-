@@ -32,7 +32,9 @@ std::vector<math::Polygon> RockGenerator::getRock(const unsigned short& pointCou
 
 		if (polygon.getPointCount() == 0)
 		{
-			polygon.addPoint(position);
+			if (!polygons.empty())
+				polygon.addPoint(position);
+
 			polygon.addPoint(point);
 		}
 		

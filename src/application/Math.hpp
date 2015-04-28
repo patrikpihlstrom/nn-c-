@@ -316,25 +316,28 @@ namespace math
 			if (m_points.empty())
 				return sf::Rect<int>(0, 0, 0, 0);
 
-			sf::Rect<int> rectangle(m_points[0].x, m_points[0].y, m_points[0].x, m_points[0].y);
+			sf::Vector2f min = m_points[0], max = m_points[0];
 
 			for (int i = 0; i < m_points.size(); ++i)
 			{
-				if (m_points[i].x < rectangle.left)
-					rectangle.left = m_points[i].x;
+				if (m_points[i].x < min.x)
+					min.x = m_points[i].x;
 				
-				if (m_points[i].y < rectangle.top)
-					rectangle.top = m_points[i].y;
+				if (m_points[i].y < min.y)
+					min.y = m_points[i].y;
 
-				if (m_points[i].x > rectangle.left)
-					rectangle.width = m_points[i].x;
+				if (m_points[i].x > max.x)
+					max.x = m_points[i].x;
 				
-				if (m_points[i].y > rectangle.top)
-					rectangle.height = m_points[i].y;
+				if (m_points[i].y > max.y)
+					max.y = m_points[i].y;
 			}
 
-			rectangle.width -= rectangle.left;
-			rectangle.height -= rectangle.top;
+			sf::Rect<int> rectangle;
+			rectangle.left = min.x;
+			rectangle.top = min.y;
+			rectangle.width = max.x - min.x;
+			rectangle.height = max.y - min.y;
 
 			return rectangle;
 		}

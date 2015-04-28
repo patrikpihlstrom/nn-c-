@@ -40,7 +40,7 @@ void Object::setPolygon(const math::Polygon& polygon)
 	updateShape();
 
 	if (!isLight())
-		m_boundingBox = (sf::Rect<int>)m_shape.getGlobalBounds();
+		m_boundingBox = (sf::Rect<int>)m_polygon.getBounds();
 }
 
 void Object::updateShape()
