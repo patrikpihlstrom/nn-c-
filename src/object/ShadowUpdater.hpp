@@ -5,11 +5,13 @@
 #include "map/Quadtree.hpp"
 
 
-class ShadowUpdater
+class ShadowUpdater : public sf::Drawable
 {
 public:
 	ShadowUpdater();
 	~ShadowUpdater();
+
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void setQuadtree(std::weak_ptr<Quadtree> quadtree);
 	void updateShadows(const sf::Rect<int>& boundingBox);

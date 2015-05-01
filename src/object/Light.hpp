@@ -26,7 +26,6 @@ public:
 	bool isGameObject() const;
 	bool isLight() const;
 
-	void setTarget(const sf::Vector2f& target);
 	void update();
 
 private:
@@ -38,9 +37,8 @@ private:
 	std::vector<math::Segment<float>> m_objects;
 	std::vector<sf::Vector2f> m_points;
 	std::weak_ptr<sf::Texture> m_texture;
+	sf::Vector2f m_min, m_max;
 
 	float m_radius;
-
-	sf::Vector2f m_target;
 };
 

@@ -14,24 +14,21 @@ Map::Map()
 
 	GameObject gameObject;
 	
-	int rocks = 250;
+	int rocks = 1000;
 
 	for (int j = 0; j < rocks; ++j)
 	{
-		float angle = j*(2*M_PI)/rocks;
-		auto polygons = m_rockGenerator->getRock(5 + rand() % 2, {5, 2}, {std::cos(angle)*(rand()%5000), std::sin(angle)*(rand()%5000)});
+		float angle = j*((2*M_PI)/rocks);
+		auto polygon = m_rockGenerator->getRock(10, {2, 2}, {std::cos(angle)*(rand()%2500), std::sin(angle)*(rand()%2500)});
 
-		for (int i = 0; i < polygons.size(); ++i)
-		{
-			gameObject.assign(m_objectIdTracker->addObject());
-			gameObject.setPolygon(polygons[i]);
+		gameObject.assign(m_objectIdTracker->addObject());
+		gameObject.setPolygon(polygon);
 
-			std::shared_ptr<Object> object;
-			object.reset(new GameObject(gameObject));
+		std::shared_ptr<Object> object;
+		object.reset(new GameObject(gameObject));
 
-			m_quadtree->insert(object);
-			m_objects.push_back(m_quadtree->getObject(object->getId()));
-		}
+		m_quadtree->insert(object);
+		m_objects.push_back(m_quadtree->getObject(object->getId()));
 	}
 }
 
@@ -76,7 +73,12 @@ void Map::addObject(GameObject& object, const std::string& mtl)
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (int i = 0; i < m_objects.size(); ++i)
-		m_objects[i]->draw(target, states);
+	{
+		if (!m_objects[i]->isLight())
+			m_objects[i]->draw(target, states);
+	}
+
+	m_shadowUpdater->draw(target, states);
 }
 
 void Map::load(const std::string& filePath)

@@ -10,6 +10,12 @@ ShadowUpdater::~ShadowUpdater()
 {
 }
 
+void ShadowUpdater::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	for (int i = 0; i < m_lights.size(); ++i)
+		m_lights[i]->draw(target, states);
+}
+
 void ShadowUpdater::setQuadtree(std::weak_ptr<Quadtree> quadtree)
 {
 	m_quadtree = quadtree;
@@ -29,7 +35,6 @@ void ShadowUpdater::updateShadows(const sf::Rect<int>& boundingBox)
 				m_lights[i]->clear();
 				std::vector<GameObject*> gameObjects;
 				quadtree->getGameObjects(gameObjects, m_lights[i]->getBoundingBox());
-				std::cout << gameObjects.size() << std::endl;
 				for (int j = 0; j < gameObjects.size(); ++j)
 					m_lights[i]->accountForObject(gameObjects[j]->getPolygon());
 

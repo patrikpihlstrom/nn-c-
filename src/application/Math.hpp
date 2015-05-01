@@ -47,7 +47,7 @@ namespace math
 	template <typename T>
 	T dotProduct(const sf::Vector2<T>& a, const sf::Vector2<T>& b)
 	{
-		return a.x*b.x + a.y*b.y;
+		return (T)((T)a.x*(T)b.x + (T)a.y*(T)b.y);
 	}
 
 	template <typename T>
@@ -185,6 +185,24 @@ namespace math
 		return false;
 	}
 
+	template <typename T>
+	float isLeft(const sf::Vector2<T>& a, const sf::Vector2<T>& b, const sf::Vector2<T>& c)
+	{
+		return (b.x - a.x)*(c.y - a.y) - (c.x - a.x)*(b.y - a.y);
+	}
+
+	template <typename T>
+	bool above(const sf::Vector2<T>& a, const sf::Vector2<T>& b, const sf::Vector2<T>& c)
+	{
+		return isLeft<T>(a, b, c) > 0;
+	}
+
+	template <typename T>
+	bool below(const sf::Vector2<T>& a, const sf::Vector2<T>& b, const sf::Vector2<T>& c)
+	{
+		return isLeft<T>(a, b, c) < 0;
+	}
+
 	sf::Vector2f getLineIntersection(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, bool& interrupted);
 
 	template <typename T>
@@ -276,15 +294,8 @@ namespace math
 
 		sf::Vector2f getCenter() const
 		{
-			float x = 0, y = 0;
-			
-			for (int i = 0; i < m_points.size(); ++i)
-			{
-				x += m_points[i].x;
-				y += m_points[i].y;
-			}
-
-			return sf::Vector2f{x/(float)m_points.size(), y/(float)m_points.size()};
+			auto bounds = getBounds();
+			return sf::Vector2f{(float)bounds.left + (bounds.width/2), (float)bounds.top + (bounds.height/2)};
 		}
 
 		void offset(const float& x, const float& y)
@@ -490,6 +501,29 @@ namespace math
 			}
 
 			constructEdges();
+		}
+
+		std::vector<short> projectPivot(const sf::Vector2f& axis, const sf::Vector2f& point) const
+		{
+			assert(!m_points.empty());
+
+			std::vector<short> result;
+			result.reserve(m_points.size());
+
+			float pivot = math::dotProduct<float>(axis, point);
+
+			for (int i = 0; i < m_points.size(); ++i)
+			{
+				float dotProduct = math::dotProduct<float>(axis, m_points[i]);
+				if (dotProduct < pivot)
+					result.push_back(-1);
+				else if (dotProduct > pivot)
+					result.push_back(1);
+				else
+					result.push_back(0);
+			}
+
+			return result;
 		}
 	};
 

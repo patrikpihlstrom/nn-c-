@@ -9,7 +9,6 @@ Light::Light() :
 	m_polygon.clear();
 	m_vertexArray.setPrimitiveType(sf::PrimitiveType::TrianglesFan);
 	m_color = sf::Color(255, 0, 255);
-	setTarget(sf::Vector2f(1000 + std::rand()%2000, std::rand()%2000));
 
 	m_boundingBox.left = getPosition().x - m_radius/2.5f;
 	m_boundingBox.top = getPosition().y - m_radius/2.5f;
@@ -21,24 +20,10 @@ Light::~Light()
 {
 }
 
-void Light::setTarget(const sf::Vector2f& target)
-{
-	m_target = target;
-}
-
 void Light::update()
 {
 	m_boundingBox.left = m_position.x - m_radius/2.5f;
 	m_boundingBox.top = m_position.y - m_radius/2.5f;
-	if (math::distance<float>(getPosition(), m_target) < 50)
-	{
-		setTarget(sf::Vector2f(-500 + std::rand()%1000, -500 + std::rand()%1000));
-	}
-	else
-	{
-		float angle = std::atan2(m_target.y - getPosition().y, m_target.x - getPosition().x);
-		//move(std::cos(angle)*10, std::sin(angle)*10);
-	}
 }
 
 float Light::getRadius() const
@@ -80,11 +65,6 @@ void Light::clear()
 	m_angles.push_back(-3*M_PI/4);
 	m_angles.push_back(-M_PI/4);
 
-	m_angles.push_back(M_PI/2);
-	m_angles.push_back(0);
-	m_angles.push_back(-M_PI/2);
-	m_angles.push_back(-M_PI);
-
 	math::Segment<float> edge{{getPosition().x - m_radius, getPosition().y - m_radius}, {getPosition().x + m_radius, getPosition().y - m_radius}};
 	m_objects.push_back(edge);
 	
@@ -103,16 +83,42 @@ void Light::clear()
 
 void Light::accountForObject(const math::Polygon& polygon)
 {
-	m_angles.reserve(polygon.getPointCount()*3);
+	m_angles.reserve(2);
 	m_objects.reserve(polygon.getEdgeCount());
+
+	auto center = polygon.getCenter();
+	sf::Vector2f axis{-(center.y - getPosition().y), center.x - getPosition().x};
+
+	auto projections = polygon.projectPivot(axis, getPosition());
+
+	float min = 0, max = 0;
+
+	bool minAssigned = false, maxAssigned = false;
 
 	for (int i = 0; i < polygon.getPointCount(); ++i)
 	{
-		float angle = std::atan2(polygon.getPoint(i).y - getPosition().y, polygon.getPoint(i).x - getPosition().x);
-		m_angles.push_back(angle);
+		auto point = polygon.getPoint(i);
+		float angle = std::atan2(point.y - getPosition().y, point.x - getPosition().x);
+
+		if (projections[i] < 0)
+		{
+			if (angle < min || (!minAssigned && min == 0))
+			{
+				min = angle;
+				minAssigned = true;
+			}
+		}
+		else if (projections[i] > 0)
+		{
+			if (angle > max || (!maxAssigned && max == 0))
+			{
+				max = angle;
+				maxAssigned = true;
+			}
+		}
 
 		math::Segment<float> segment;
-		segment.a = polygon.getPoint(i);
+		segment.a = point;
 
 		if (i == polygon.getPointCount() - 1)
 			segment.b = polygon.getPoint(0);
@@ -121,11 +127,14 @@ void Light::accountForObject(const math::Polygon& polygon)
 
 		m_objects.push_back(segment);
 	}
+
+	m_angles.push_back(min);
+	m_angles.push_back(max);
 }
 
 sf::Vector2f Light::castRay(const float& angle)
 {
-	sf::Vector2f ray{std::cos(angle)*m_radius*(m_points.size() < 8 ? 2:1) + getPosition().x, std::sin(angle)*m_radius*(m_points.size() < 8 ? 2:1) + getPosition().y}, intersection;
+	sf::Vector2f ray{std::cos(angle)*m_radius + getPosition().x, std::sin(angle)*m_radius + getPosition().y}, intersection;
 
 	for (int i = 0; i < m_objects.size(); ++i)
 	{

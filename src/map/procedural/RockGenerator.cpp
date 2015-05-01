@@ -9,16 +9,13 @@ RockGenerator::~RockGenerator()
 {
 }
 
-std::vector<math::Polygon> RockGenerator::getRock(const unsigned short& pointCount, const sf::Vector2<unsigned short>& size, const sf::Vector2f& position) const
+math::Polygon RockGenerator::getRock(const unsigned short& pointCount, const sf::Vector2<unsigned short>& size, const sf::Vector2f& position) const
 {
 	assert(pointCount > 2);
 
-	std::vector<math::Polygon> polygons;
-	polygons.reserve(pointCount + 1);
-
 	math::Polygon polygon;
 
-	for (unsigned short i = 0; i < pointCount + 1; ++i)
+	for (unsigned short i = 0; i < pointCount; ++i)
 	{
 		sf::Vector2f point = position;
 
@@ -33,8 +30,7 @@ std::vector<math::Polygon> RockGenerator::getRock(const unsigned short& pointCou
 
 	polygon.convexHull();
 	polygon.constructEdges();
-	polygons.push_back(polygon);
 
-	return polygons;
+	return polygon;
 }
 
