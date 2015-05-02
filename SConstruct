@@ -17,6 +17,7 @@ src/application/TextureHolder.cpp
 src/map/Map.cpp
 src/map/procedural/RockGenerator.cpp
 src/map/Quadtree.cpp
+src/object/Decal.cpp
 src/object/Entity.cpp
 src/object/GameObject.cpp
 src/object/Light.cpp

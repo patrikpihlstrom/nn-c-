@@ -12,6 +12,7 @@
 #include "object/ObjectIdTracker.hpp"
 #include "object/GameObject.hpp"
 #include "object/ShadowUpdater.hpp"
+#include "object/Decal.hpp"
 
 
 class Map : public sf::Drawable
@@ -24,17 +25,14 @@ public:
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	void load(const std::string& file);
-	void save() const;
-
 	std::weak_ptr<Quadtree> getQuadtree() const;
 
 private:
 	bool space;
-	void addObject(GameObject& object, const std::string& mtl = "(null)");
 
 	std::shared_ptr<Quadtree> m_quadtree;
-	std::vector<std::shared_ptr<Object>> m_objects;
+	std::vector<std::shared_ptr<GameObject>> m_gameObjects;
+	std::vector<std::shared_ptr<Decal>> m_decals;
 	std::unique_ptr<TextureHolder> m_textureHolder;
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ShadowUpdater> m_shadowUpdater;
