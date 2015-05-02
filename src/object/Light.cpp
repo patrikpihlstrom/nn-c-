@@ -83,39 +83,44 @@ void Light::clear()
 
 void Light::accountForObject(const math::Polygon& polygon)
 {
-	m_angles.reserve(2);
 	m_objects.reserve(polygon.getEdgeCount());
 
-	auto center = polygon.getCenter();
-	sf::Vector2f axis{-(center.y - getPosition().y), center.x - getPosition().x};
-
+	auto bounds = polygon.getBounds();
+	sf::Vector2f center{(float)bounds.left + bounds.width/2, (float)bounds.top + bounds.height/2};
+	sf::Vector2f axis{getPosition().y - center.y, center.x - getPosition().x};
 	auto projections = polygon.projectPivot(axis, getPosition());
 
 	float min = 0, max = 0;
+	bool minAssigned = false, maxAssigned = false, reverse = getPosition().x > bounds.left + bounds.width && getPosition().y >= bounds.top && getPosition().y <= bounds.top + bounds.height; // Hacky
 
-	bool minAssigned = false, maxAssigned = false;
+	m_angles.reserve(reverse ? polygon.getPointCount():2);
 
 	for (int i = 0; i < polygon.getPointCount(); ++i)
 	{
 		auto point = polygon.getPoint(i);
 		float angle = std::atan2(point.y - getPosition().y, point.x - getPosition().x);
 
-		if (projections[i] < 0)
+		if (!reverse)
 		{
-			if (angle < min || (!minAssigned && min == 0))
+			if (projections[i] < 0)
 			{
-				min = angle;
-				minAssigned = true;
+				if (angle < min || !minAssigned)
+				{
+					min = angle;
+					minAssigned = true;
+				}
+			}
+			else if (projections[i] > 0)
+			{
+				if (angle > max || !maxAssigned)
+				{
+					max = angle;
+					maxAssigned = true;
+				}
 			}
 		}
-		else if (projections[i] > 0)
-		{
-			if (angle > max || (!maxAssigned && max == 0))
-			{
-				max = angle;
-				maxAssigned = true;
-			}
-		}
+		else
+			m_angles.push_back(angle);
 
 		math::Segment<float> segment;
 		segment.a = point;
@@ -128,8 +133,11 @@ void Light::accountForObject(const math::Polygon& polygon)
 		m_objects.push_back(segment);
 	}
 
-	m_angles.push_back(min);
-	m_angles.push_back(max);
+	if (!reverse)
+	{
+		m_angles.push_back(min);
+		m_angles.push_back(max);
+	}
 }
 
 sf::Vector2f Light::castRay(const float& angle)
@@ -158,11 +166,13 @@ void Light::buildLightShape()
 
 	m_vertexArray.append(sf::Vertex(getPosition(), m_color));
 	m_vertexArray[0].texCoords = {(float)m_texture.lock()->getSize().x/2, (float)m_texture.lock()->getSize().x/2};
+
 	for (int i = 0; i < m_points.size(); ++i)
 	{
 		m_vertexArray.append(sf::Vertex(m_points[i], m_color));
 		m_vertexArray[i + 1].texCoords = {m_points[i].x - getPosition().x + (float)m_texture.lock()->getSize().x/2, m_points[i].y - getPosition().y + (float)m_texture.lock()->getSize().x/2};
 	}
+
 	m_vertexArray.append(sf::Vertex(m_points[0], m_color));
 	m_vertexArray[m_vertexArray.getVertexCount() - 1].texCoords = {m_points[0].x - getPosition().x + (float)m_texture.lock()->getSize().x/2, m_points[0].y - getPosition().y + (float)m_texture.lock()->getSize().x/2};
 }

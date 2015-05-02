@@ -14,12 +14,12 @@ Map::Map()
 
 	GameObject gameObject;
 	
-	int rocks = 1000;
+	int rocks = 500;
 
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);
-		auto polygon = m_rockGenerator->getRock(10, {2, 2}, {std::cos(angle)*(rand()%2500), std::sin(angle)*(rand()%2500)});
+		auto polygon = m_rockGenerator->getRock(8, {5, 2}, {std::cos(angle)*(rand()%2500), std::sin(angle)*(rand()%2500)});
 
 		gameObject.assign(m_objectIdTracker->addObject());
 		gameObject.setPolygon(polygon);
@@ -72,13 +72,13 @@ void Map::addObject(GameObject& object, const std::string& mtl)
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	m_shadowUpdater->draw(target, states);
+	
 	for (int i = 0; i < m_objects.size(); ++i)
 	{
 		if (!m_objects[i]->isLight())
 			m_objects[i]->draw(target, states);
 	}
-
-	m_shadowUpdater->draw(target, states);
 }
 
 void Map::load(const std::string& filePath)

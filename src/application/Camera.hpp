@@ -15,8 +15,13 @@ public:
 	void trackEntity(const std::weak_ptr<Entity> entity);
 	void update();
 
+	void zoom(const float& factor);
+	float getZoom() const;
+
 private:
 	std::weak_ptr<Entity> m_entity;
 	sf::Vector2f m_velocity;
+
+	float m_zoom;
 };
 

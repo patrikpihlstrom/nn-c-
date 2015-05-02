@@ -76,6 +76,11 @@ void Application::handleEvents()
 				m_running = false;
 			}
 		}
+		else if (event.type == sf::Event::MouseWheelMoved)
+		{
+			float zoom = 2 + event.mouseWheel.delta;
+			m_camera.zoom(zoom/2);
+		}
 	}
 }
 

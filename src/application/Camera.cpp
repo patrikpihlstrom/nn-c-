@@ -45,3 +45,14 @@ void Camera::update()
 	}
 }
 
+void Camera::zoom(const float&factor)
+{
+	sf::View::zoom(factor);
+	m_zoom += factor;
+}
+
+float Camera::getZoom() const
+{
+	return m_zoom;
+}
+
