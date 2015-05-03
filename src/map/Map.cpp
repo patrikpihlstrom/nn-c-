@@ -23,7 +23,6 @@ Map::Map()
 	decal.setColor(sf::Color(230, 230, 230));
 	addDecal(decal);
 
-
 	GameObject gameObject;
 	int rocks = 500;
 	for (int j = 0; j < rocks; ++j)
@@ -31,9 +30,7 @@ Map::Map()
 		float angle = j*((2*M_PI)/rocks);
 		auto polygon = m_rockGenerator->getRock(4, {2, 1}, {std::cos(angle)*(rand()%2500), std::sin(angle)*(rand()%2500)});
 
-		gameObject.assign(m_objectIdTracker->addObject());
 		gameObject.setPolygon(polygon);
-
 		addObject(gameObject);
 	}
 }
@@ -85,14 +82,16 @@ std::weak_ptr<Quadtree> Map::getQuadtree() const
 	return m_quadtree;
 }
 
-void Map::addObject(const GameObject& object)
+void Map::addObject(GameObject& object)
 {
+	object.assign(m_objectIdTracker->addObject());
 	m_quadtree->insert(object);
 	m_gameObjects.push_back(m_quadtree->getObject(object.getId()));
 }
 
-void Map::addDecal(const Decal& decal)
+void Map::addDecal(Decal& decal)
 {
+	decal.assign(m_objectIdTracker->addObject());
 	m_quadtree->insert(std::shared_ptr<Object>(new Decal(decal)));
 	m_decals.push_back(m_quadtree->getObject(decal.getId()));
 }

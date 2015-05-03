@@ -27,8 +27,8 @@ public:
 	std::weak_ptr<Quadtree> getQuadtree() const;
 	
 private:
-	void addObject(const GameObject& object);
-	void addDecal(const Decal& decal);
+	void addObject(GameObject& object);
+	void addDecal(Decal& decal);
 
 	bool space;
 
