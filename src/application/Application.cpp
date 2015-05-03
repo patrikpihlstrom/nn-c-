@@ -13,7 +13,7 @@ Application::~Application()
 void Application::initialize()
 {
 	sf::ContextSettings settings;
-	settings.antialiasingLevel = 4;
+	settings.antialiasingLevel = 8;
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
 	m_window.setVerticalSyncEnabled(true);
@@ -93,7 +93,7 @@ void Application::update(sf::Time deltaTime)
 
 void Application::render()
 {
-	m_window.clear(sf::Color(200, 200, 200));
+	m_window.clear(sf::Color(213, 207, 187));
 	m_window.setView(m_camera);
 
 	m_window.draw(m_map);

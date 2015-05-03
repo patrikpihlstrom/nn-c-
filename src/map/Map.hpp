@@ -22,22 +22,23 @@ public:
 	~Map();
 
 	void update(const sf::RenderWindow& window, const Camera& camera);
-
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	std::weak_ptr<Quadtree> getQuadtree() const;
-
+	
 private:
+	void addObject(const GameObject& object);
+	void addDecal(const Decal& decal);
+
 	bool space;
 
 	std::shared_ptr<Quadtree> m_quadtree;
-	std::vector<std::shared_ptr<GameObject>> m_gameObjects;
-	std::vector<std::shared_ptr<Decal>> m_decals;
+	std::vector<std::weak_ptr<Object>> m_gameObjects;
+	std::vector<std::weak_ptr<Object>> m_decals;
 	std::unique_ptr<TextureHolder> m_textureHolder;
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ShadowUpdater> m_shadowUpdater;
 	std::weak_ptr<Object> m_light;
-
 	std::unique_ptr<RockGenerator> m_rockGenerator;
 };
 

@@ -13,6 +13,12 @@
 
 namespace math
 {
+	template <typename T>
+	sf::Rect<T> getBoundingBox(const sf::Vector2<T>& a, const sf::Vector2<T>& b)
+	{
+		return sf::Rect<T>{a.x < b.x ? a.x:b.x, a.y < b.y ? a.y:b.y, std::abs(a.x - b.x), std::abs(a.y - b.y)};
+	}
+
 	std::vector<sf::Vector2f> cutTri(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, const sf::Vector2f& e);
 	template <typename T>
 	float distance(const sf::Vector2<T>& a, const sf::Vector2<T>& b)

@@ -65,33 +65,32 @@ void Light::clear()
 	m_angles.push_back(-3*M_PI/4);
 	m_angles.push_back(-M_PI/4);
 
-	math::Segment<float> edge{{getPosition().x - m_radius, getPosition().y - m_radius}, {getPosition().x + m_radius, getPosition().y - m_radius}};
-	m_objects.push_back(edge);
-	
-	edge.a = sf::Vector2f(getPosition().x + m_radius, getPosition().y - m_radius);
-	edge.b = sf::Vector2f(getPosition().x + m_radius, getPosition().y + m_radius);
-	m_objects.push_back(edge);
-
-	edge.a = sf::Vector2f(getPosition().x + m_radius, getPosition().y + m_radius);
-	edge.b = sf::Vector2f(getPosition().x - m_radius, getPosition().y + m_radius);
-	m_objects.push_back(edge);
-
-	edge.a = sf::Vector2f(getPosition().x - m_radius, getPosition().y + m_radius);
-	edge.b = sf::Vector2f(getPosition().x - m_radius, getPosition().y - m_radius);
-	m_objects.push_back(edge);
+	math::Polygon bounds;
+	bounds.addPoint(sf::Vector2f(0, 0));
+	bounds.addPoint(sf::Vector2f(0, 0));
+	bounds.addPoint(sf::Vector2f(0, 0));
+	bounds.addPoint(sf::Vector2f(0, 0));
+	bounds.constructEdges();
+	m_bounds = bounds;
 }
 
 void Light::accountForObject(const math::Polygon& polygon)
 {
-	m_objects.reserve(polygon.getEdgeCount());
+	m_objects.push_back(polygon);
 
 	auto bounds = polygon.getBounds();
-	sf::Vector2f center{(float)bounds.left + bounds.width/2, (float)bounds.top + bounds.height/2};
-	sf::Vector2f axis{getPosition().y - center.y, center.x - getPosition().x};
-	auto projections = polygon.projectPivot(axis, getPosition());
+	std::vector<short> projections;
 
 	float min = 0, max = 0;
-	bool minAssigned = false, maxAssigned = false, reverse = getPosition().x > bounds.left + bounds.width && getPosition().y >= bounds.top && getPosition().y <= bounds.top + bounds.height; // Hacky
+	bool minAssigned = false, maxAssigned = false;
+	bool reverse = getPosition().x > bounds.left + bounds.width && getPosition().y >= bounds.top && getPosition().y <= bounds.top + bounds.height; // Hacky
+
+	if (!reverse)
+	{
+		sf::Vector2f center{(float)bounds.left + bounds.width/2, (float)bounds.top + bounds.height/2};
+		sf::Vector2f axis{getPosition().y - center.y, center.x - getPosition().x};
+		projections = polygon.projectPivot(axis, getPosition());
+	}
 
 	m_angles.reserve(reverse ? polygon.getPointCount():2);
 
@@ -121,16 +120,6 @@ void Light::accountForObject(const math::Polygon& polygon)
 		}
 		else
 			m_angles.push_back(angle);
-
-		math::Segment<float> segment;
-		segment.a = point;
-
-		if (i == polygon.getPointCount() - 1)
-			segment.b = polygon.getPoint(0);
-		else
-			segment.b = polygon.getPoint(i + 1);
-
-		m_objects.push_back(segment);
 	}
 
 	if (!reverse)
@@ -142,12 +131,49 @@ void Light::accountForObject(const math::Polygon& polygon)
 
 sf::Vector2f Light::castRay(const float& angle)
 {
+	bool obstructed = false;
 	sf::Vector2f ray{std::cos(angle)*m_radius + getPosition().x, std::sin(angle)*m_radius + getPosition().y}, intersection;
+	auto rayBounds = math::getBoundingBox<int>((sf::Vector2<int>)getPosition(), (sf::Vector2<int>)ray);
+	rayBounds.left--;
+	rayBounds.top--;
+	rayBounds.width += 2;
+	rayBounds.height += 2;
 
 	for (int i = 0; i < m_objects.size(); ++i)
 	{
-		if (math::lineIntersectsLine(getPosition(), ray, m_objects[i].a, m_objects[i].b, intersection))
-			ray = intersection;
+		auto objectBounds = m_objects[i].getBounds();
+		objectBounds.left--;
+		objectBounds.top--;
+		objectBounds.width += 2;
+		objectBounds.height += 2;
+
+		if (objectBounds.intersects(rayBounds))
+		{
+			for (int j = 0; j < m_objects[i].getEdgeCount(); ++j)
+			{
+				auto edge = m_objects[i].getEdgeSegment<float>(j);
+				if (math::lineIntersectsLine(getPosition(), ray, edge.a, edge.b, intersection))
+				{
+					obstructed = true;
+					ray = intersection;
+					rayBounds = math::getBoundingBox<int>((sf::Vector2<int>)getPosition(), (sf::Vector2<int>)ray);
+					rayBounds.left--;
+					rayBounds.top--;
+					rayBounds.width += 2;
+					rayBounds.height += 2;
+				}
+			}
+		}
+	}
+
+	if (!obstructed)
+	{
+		for (int i = 0; i < m_bounds.getEdgeCount(); ++i)
+		{
+			auto edge = m_bounds.getEdgeSegment<float>(i);
+			if (math::lineIntersectsLine(getPosition(), ray, edge.a, edge.b, intersection))
+				ray = intersection;
+		}
 	}
 
 	return ray;

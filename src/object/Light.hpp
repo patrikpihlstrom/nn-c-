@@ -34,10 +34,11 @@ private:
 	sf::VertexArray m_vertexArray;
 	sf::Color m_color;
 	std::vector<float> m_angles;
-	std::vector<math::Segment<float>> m_objects;
+	std::vector<math::Polygon> m_objects;
 	std::vector<sf::Vector2f> m_points;
 	std::weak_ptr<sf::Texture> m_texture;
 	sf::Vector2f m_min, m_max;
+	math::Polygon m_bounds;
 
 	float m_radius;
 };
