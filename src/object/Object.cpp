@@ -1,12 +1,14 @@
 #include "Object.hpp"
 
 
-Object::Object()
+Object::Object() :
+	m_solid(false)
 {
 }
 
 Object::Object(const ObjectId& id) :
-	m_id(id)
+	m_id(id),
+	m_solid(false)
 {
 }
 
@@ -99,5 +101,15 @@ void Object::move(const float x, const float y)
 void Object::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_shape, states);
+}
+
+void Object::setSolid(const bool solid)
+{
+	m_solid = solid;
+}
+
+bool Object::getSolid() const
+{
+	return m_solid;
 }
 

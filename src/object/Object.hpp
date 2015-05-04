@@ -40,11 +40,15 @@ public:
 	virtual bool isGameObject() const = 0;
 	virtual bool isLight() const = 0;
 
+	void setSolid(const bool solid);
+	bool getSolid() const;
+
 protected:
 	ObjectId m_id;
 	math::Polygon m_polygon;
 	sf::Rect<int> m_boundingBox;
 	sf::Vector2f m_position;
+	bool m_solid;
 
 	sf::ConvexShape m_shape;
 

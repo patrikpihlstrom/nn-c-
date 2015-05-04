@@ -16,15 +16,16 @@ Map::Map()
 	decal.setTexture(m_textureHolder->getTexture("Decal"));
 	math::Polygon polygon;
 	polygon.addPoint(sf::Vector2f(0, 0));
-	polygon.addPoint(sf::Vector2f(500, 0));
-	polygon.addPoint(sf::Vector2f(500, 200));
-	polygon.addPoint(sf::Vector2f(0, 200));
+	polygon.addPoint(sf::Vector2f(1055, 0));
+	polygon.addPoint(sf::Vector2f(1055, 683));
+	polygon.addPoint(sf::Vector2f(0, 683));
+
 	decal.setPolygon(polygon);
-	decal.setColor(sf::Color(230, 230, 230));
+	decal.setColor(sf::Color(255, 255, 255));
 	addDecal(decal);
 
 	GameObject gameObject;
-	int rocks = 500;
+	int rocks = 100;
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);
@@ -43,7 +44,9 @@ Map::~Map()
 void Map::update(const sf::RenderWindow& window, const Camera& camera)
 {
 	if (auto light = m_light.lock())
+	{
 		light->move(sf::Mouse::getPosition(window).x + camera.getCenter().x - camera.getSize().x/2 - light->getPosition().x, sf::Mouse::getPosition(window).y + camera.getCenter().y - camera.getSize().y/2 - light->getPosition().y);
+	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !space)
 	{
@@ -51,8 +54,8 @@ void Map::update(const sf::RenderWindow& window, const Camera& camera)
 		light.assign(m_objectIdTracker->addObject());
 		//light.setPosition(sf::Vector2f(1000 + std::rand()%2000, 500 + std::rand()%1000));
 		light.setTexture(m_textureHolder->getTexture("light"));
-		//light.setColor(sf::Color(std::rand()%255, std::rand()%255, std::rand()%255));
-		light.setColor(sf::Color(255, 150, 100, 100));
+		light.setColor(sf::Color(std::rand()%255, std::rand()%255, std::rand()%255));
+		//light.setColor(sf::Color(255, 150, 100, 100));
 		m_light = m_shadowUpdater->insert(light);
 	}
 	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);

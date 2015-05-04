@@ -21,6 +21,12 @@ void Application::initialize()
 	//m_map.load("level.obj");
 
 	m_player.reset(new PlayerEntity());
+	math::Polygon polygon;
+	polygon.addPoint(sf::Vector2f(0, 0));
+	polygon.addPoint(sf::Vector2f(32, 0));
+	polygon.addPoint(sf::Vector2f(32, 32));
+	polygon.addPoint(sf::Vector2f(0, 32));
+	m_player->setPolygon(polygon);
 
 	m_camera.setSize(1600, 900);
 	m_camera.setCenter(m_player->getPosition().x, m_player->getPosition().y);
@@ -93,10 +99,11 @@ void Application::update(sf::Time deltaTime)
 
 void Application::render()
 {
-	m_window.clear(sf::Color(213, 207, 187));
+	m_window.clear(sf::Color(245, 241, 226));
 	m_window.setView(m_camera);
 
 	m_window.draw(m_map);
+	m_window.draw(*m_player);
 
 	m_window.display();
 }

@@ -83,23 +83,24 @@ void Light::accountForObject(const math::Polygon& polygon)
 
 	float min = 0, max = 0;
 	bool minAssigned = false, maxAssigned = false;
-	bool reverse = getPosition().x > bounds.left + bounds.width && getPosition().y >= bounds.top && getPosition().y <= bounds.top + bounds.height; // Hacky
+	//bool reverse = getPosition().x > bounds.left + bounds.width && getPosition().y >= bounds.top && getPosition().y <= bounds.top + bounds.height; // Hacky
 
-	if (!reverse)
+	/*if (!reverse)
 	{
 		sf::Vector2f center{(float)bounds.left + bounds.width/2, (float)bounds.top + bounds.height/2};
 		sf::Vector2f axis{getPosition().y - center.y, center.x - getPosition().x};
 		projections = polygon.projectPivot(axis, getPosition());
 	}
+	*/
 
-	m_angles.reserve(reverse ? polygon.getPointCount():2);
+	m_angles.reserve(polygon.getPointCount());
 
 	for (int i = 0; i < polygon.getPointCount(); ++i)
 	{
 		auto point = polygon.getPoint(i);
 		float angle = std::atan2(point.y - getPosition().y, point.x - getPosition().x);
 
-		if (!reverse)
+		/*if (!reverse)
 		{
 			if (projections[i] < 0)
 			{
@@ -118,15 +119,15 @@ void Light::accountForObject(const math::Polygon& polygon)
 				}
 			}
 		}
-		else
+		else*/
 			m_angles.push_back(angle);
 	}
 
-	if (!reverse)
+	/*if (!reverse)
 	{
 		m_angles.push_back(min);
 		m_angles.push_back(max);
-	}
+	}*/
 }
 
 sf::Vector2f Light::castRay(const float& angle)
