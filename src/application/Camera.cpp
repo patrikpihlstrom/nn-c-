@@ -14,14 +14,9 @@ Camera::~Camera()
 {
 }
 
-void Camera::trackEntity(const std::weak_ptr<Entity> entity)
-{
-	m_entity = entity;
-}
-
 void Camera::update()
 {
-	if (auto entity = m_entity.lock())
+	/*if (auto entity = m_entity.lock())
 	{
 		if (getCenter() != entity->getPosition())
 		{
@@ -43,6 +38,7 @@ void Camera::update()
 
 		move(m_velocity);
 	}
+	*/
 }
 
 void Camera::zoom(const float&factor)

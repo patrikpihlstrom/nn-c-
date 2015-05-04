@@ -18,19 +18,7 @@ void Application::initialize()
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
 	m_window.setVerticalSyncEnabled(true);
 
-	//m_map.load("level.obj");
-
-	m_player.reset(new PlayerEntity());
-	math::Polygon polygon;
-	polygon.addPoint(sf::Vector2f(0, 0));
-	polygon.addPoint(sf::Vector2f(32, 0));
-	polygon.addPoint(sf::Vector2f(32, 32));
-	polygon.addPoint(sf::Vector2f(0, 32));
-	m_player->setPolygon(polygon);
-
 	m_camera.setSize(1600, 900);
-	m_camera.setCenter(m_player->getPosition().x, m_player->getPosition().y);
-	m_camera.trackEntity(m_player);
 
 	m_running = true;
 	m_active = true;
@@ -92,7 +80,6 @@ void Application::handleEvents()
 
 void Application::update(sf::Time deltaTime)
 {
-	m_player->update(deltaTime.asSeconds());
 	m_camera.update();
 	m_map.update(m_window, m_camera);
 }
@@ -103,7 +90,6 @@ void Application::render()
 	m_window.setView(m_camera);
 
 	m_window.draw(m_map);
-	m_window.draw(*m_player);
 
 	m_window.display();
 }

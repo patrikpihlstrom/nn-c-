@@ -9,8 +9,6 @@
 #include "application/Math.hpp"
 #include "object/GameObject.hpp"
 #include "object/Light.hpp"
-#include "object/Entity.hpp"
-#include "object/PlayerEntity.hpp"
 
 
 const unsigned char MAX_LEVEL = 8;
@@ -25,7 +23,6 @@ public:
 	void update();
 
 	void insert(const GameObject& object);
-	void insert(const PlayerEntity& object);
 	void insert(const Light& object);
 	void insert(const std::shared_ptr<Object> object);
 
@@ -52,11 +49,6 @@ public:
 		}
 
 		bool operator() (const GameObject& arg)
-		{
-			return arg.getId() == id;
-		}
-
-		bool operator() (const PlayerEntity& arg)
 		{
 			return arg.getId() == id;
 		}

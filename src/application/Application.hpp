@@ -35,8 +35,6 @@ private:
 
 	Camera m_camera;
 
-	std::shared_ptr<PlayerEntity> m_player;
-
 	sf::RenderWindow m_window;
 };
 

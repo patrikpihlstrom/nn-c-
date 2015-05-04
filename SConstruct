@@ -9,21 +9,21 @@ GLEW
 """)
 
 sources = Split("""
+src/actor/Actor.cpp
+src/actor/PlayerActor.cpp
 src/application/main.cpp
 src/application/Application.cpp
 src/application/Camera.cpp
 src/application/Math.cpp
-src/application/TextureHolder.cpp
 src/map/Map.cpp
 src/map/procedural/RockGenerator.cpp
 src/map/Quadtree.cpp
+src/map/TextureHolder.cpp
 src/object/Decal.cpp
-src/object/Entity.cpp
 src/object/GameObject.cpp
 src/object/Light.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp
-src/object/PlayerEntity.cpp
 src/object/ShadowUpdater.cpp
 """)
 

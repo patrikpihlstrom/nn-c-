@@ -10,22 +10,23 @@ Map::Map()
 	m_rockGenerator.reset(new RockGenerator());
 
 	m_shadowUpdater->setQuadtree(getQuadtree());
-	m_textureHolder->loadTextures("level.mtl");
+	m_textureHolder->loadTextures("assets/Textures.lst");
 
 	Decal decal;
-	decal.setTexture(m_textureHolder->getTexture("Decal"));
 	math::Polygon polygon;
 	polygon.addPoint(sf::Vector2f(0, 0));
-	polygon.addPoint(sf::Vector2f(1055, 0));
-	polygon.addPoint(sf::Vector2f(1055, 683));
+	polygon.addPoint(sf::Vector2f(1055*2, 0));
+	polygon.addPoint(sf::Vector2f(1055*2, 683));
 	polygon.addPoint(sf::Vector2f(0, 683));
 
 	decal.setPolygon(polygon);
 	decal.setColor(sf::Color(255, 255, 255));
+	decal.rotate(-M_PI/7);
+	decal.setColor(sf::Color(55, 0, 55));
 	addDecal(decal);
 
 	GameObject gameObject;
-	int rocks = 100;
+	int rocks = 750;
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);

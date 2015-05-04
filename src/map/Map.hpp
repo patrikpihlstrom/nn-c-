@@ -7,7 +7,7 @@
 
 #include "map/Quadtree.hpp"
 #include "map/procedural/RockGenerator.hpp"
-#include "application/TextureHolder.hpp"
+#include "map/TextureHolder.hpp"
 #include "application/Camera.hpp"
 #include "object/ObjectIdTracker.hpp"
 #include "object/GameObject.hpp"

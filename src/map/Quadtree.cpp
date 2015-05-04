@@ -44,29 +44,6 @@ void Quadtree::insert(const GameObject& object)
 	}
 }
 
-void Quadtree::insert(const PlayerEntity& object)
-{
-	if (object.getBoundingBox().intersects(getBoundingBox()))
-	{
-		if (!m_children[0])
-		{
-			m_objects.push_back(std::shared_ptr<Object>(new PlayerEntity(object)));
-			if (m_level < MAX_LEVEL)
-				split();
-		}
-		else
-		{
-			for (int i = 0; i < 4; ++i)
-			{
-				if (m_children[i]->getBoundingBox().intersects(object.getBoundingBox()))
-				{
-					m_children[i]->insert(object);
-				}
-			}
-		}
-	}
-}
-
 void Quadtree::insert(const Light& object)
 {
 	if (object.getBoundingBox().intersects(getBoundingBox()))
