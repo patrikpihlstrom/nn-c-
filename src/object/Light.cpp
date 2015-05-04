@@ -134,37 +134,16 @@ sf::Vector2f Light::castRay(const float& angle)
 {
 	bool obstructed = false;
 	sf::Vector2f ray{std::cos(angle)*m_radius + getPosition().x, std::sin(angle)*m_radius + getPosition().y}, intersection;
-	auto rayBounds = math::getBoundingBox<int>((sf::Vector2<int>)getPosition(), (sf::Vector2<int>)ray);
-	rayBounds.left--;
-	rayBounds.top--;
-	rayBounds.width += 2;
-	rayBounds.height += 2;
 
 	for (int i = 0; i < m_objects.size(); ++i)
 	{
-		auto objectBounds = m_objects[i].getBounds();
-		objectBounds.left--;
-		objectBounds.top--;
-		objectBounds.width += 2;
-		objectBounds.height += 2;
-
-		if (objectBounds.intersects(rayBounds))
+		for (int j = 0; j < m_objects[i].getEdgeCount(); ++j)
 		{
-			for (int j = 0; j < m_objects[i].getEdgeCount(); ++j)
-			{
-				auto edge = m_objects[i].getEdgeSegment<float>(j);
-				if (math::lineIntersectsLine(getPosition(), ray, edge.a, edge.b, intersection))
-				{
-					obstructed = true;
-					ray = intersection;
-					rayBounds = math::getBoundingBox<int>((sf::Vector2<int>)getPosition(), (sf::Vector2<int>)ray);
-					rayBounds.left--;
-					rayBounds.top--;
-					rayBounds.width += 2;
-					rayBounds.height += 2;
-				}
-			}
+			auto edge = m_objects[i].getEdgeSegment<float>(j);
+			if (math::lineIntersectsLine(getPosition(), ray, edge.a, edge.b, intersection))
+				ray = intersection;
 		}
+
 	}
 
 	if (!obstructed)
