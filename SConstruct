@@ -10,6 +10,10 @@ GLEW
 
 sources = Split("""
 src/actor/Actor.cpp
+src/actor/ActorIdTracker.cpp
+src/actor/ActorHolder.cpp
+src/actor/ActorManager.cpp
+src/actor/NPCActor.cpp
 src/actor/PlayerActor.cpp
 src/application/main.cpp
 src/application/Application.cpp

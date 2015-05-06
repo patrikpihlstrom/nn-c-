@@ -33,8 +33,6 @@ private:
 
 	Map m_map;
 
-	Camera m_camera;
-
 	sf::RenderWindow m_window;
 };
 

@@ -14,31 +14,35 @@ Camera::~Camera()
 {
 }
 
+void Camera::trackActor(const std::weak_ptr<Actor> actor)
+{
+	m_actor = actor;
+}
+
 void Camera::update()
 {
-	/*if (auto entity = m_entity.lock())
+	if (auto actor = m_actor.lock())
 	{
-		if (getCenter() != entity->getPosition())
+		if (getCenter() != actor->getPosition())
 		{
-			m_velocity.x = (entity->getPosition().x - getCenter().x)/11;
-			m_velocity.y = (entity->getPosition().y - getCenter().y)/20;
+			m_velocity.x = (actor->getPosition().x - getCenter().x)/11;
+			m_velocity.y = (actor->getPosition().y - getCenter().y)/20;
 
 			if (std::abs(m_velocity.x) < 0.01)
 			{
-				move(entity->getPosition().x - getCenter().x, 0);
+				move(actor->getPosition().x - getCenter().x, 0);
 				m_velocity.x = 0;
 			}
 
 			if (std::abs(m_velocity.y) < 0.01)
 			{
-				move(0, entity->getPosition().y - getCenter().y);
+				move(0, actor->getPosition().y - getCenter().y);
 				m_velocity.y = 0;
 			}
 		}
 
 		move(m_velocity);
 	}
-	*/
 }
 
 void Camera::zoom(const float&factor)

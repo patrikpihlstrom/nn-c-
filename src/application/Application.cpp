@@ -18,8 +18,6 @@ void Application::initialize()
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
 	m_window.setVerticalSyncEnabled(true);
 
-	m_camera.setSize(1600, 900);
-
 	m_running = true;
 	m_active = true;
 }
@@ -70,24 +68,18 @@ void Application::handleEvents()
 				m_running = false;
 			}
 		}
-		else if (event.type == sf::Event::MouseWheelMoved)
-		{
-			float zoom = 2 + event.mouseWheel.delta;
-			m_camera.zoom(zoom/2);
-		}
 	}
 }
 
 void Application::update(sf::Time deltaTime)
 {
-	m_camera.update();
-	m_map.update(m_window, m_camera);
+	m_map.update(deltaTime.asSeconds(), m_window);
 }
 
 void Application::render()
 {
 	m_window.clear(sf::Color(245, 241, 226));
-	m_window.setView(m_camera);
+	m_window.setView(m_map.getCamera());
 
 	m_window.draw(m_map);
 

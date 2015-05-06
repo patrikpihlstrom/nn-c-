@@ -5,6 +5,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "actor/ActorManager.hpp"
+#include "actor/ActorIdTracker.hpp"
 #include "map/Quadtree.hpp"
 #include "map/procedural/RockGenerator.hpp"
 #include "map/TextureHolder.hpp"
@@ -21,10 +23,12 @@ public:
 	Map();
 	~Map();
 
-	void update(const sf::RenderWindow& window, const Camera& camera);
+	void update(const float& deltaTime, const sf::RenderWindow& window);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	std::weak_ptr<Quadtree> getQuadtree() const;
+
+	Camera getCamera() const;
 	
 private:
 	void addObject(GameObject& object);
@@ -33,12 +37,15 @@ private:
 	bool space;
 
 	std::shared_ptr<Quadtree> m_quadtree;
-	std::vector<std::weak_ptr<Object>> m_gameObjects;
-	std::vector<std::weak_ptr<Object>> m_decals;
+	std::unique_ptr<ActorManager> m_actorManager;
+	std::unique_ptr<RockGenerator> m_rockGenerator;
 	std::unique_ptr<TextureHolder> m_textureHolder;
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
+	std::unique_ptr<ActorIdTracker> m_actorIdTracker;
 	std::unique_ptr<ShadowUpdater> m_shadowUpdater;
+	std::unique_ptr<Camera> m_camera;
+	std::vector<std::weak_ptr<Object>> m_gameObjects;
+	std::vector<std::weak_ptr<Object>> m_decals;
 	std::weak_ptr<Object> m_light;
-	std::unique_ptr<RockGenerator> m_rockGenerator;
 };
 
