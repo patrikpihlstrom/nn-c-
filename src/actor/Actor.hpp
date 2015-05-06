@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "actor/ActorId.hpp"
+#include "application/Math.hpp"
 
 
 class Actor : public sf::Transformable, public sf::Drawable
@@ -31,6 +32,9 @@ public:
 	sf::Rect<int> getBounds() const;
 	void setBounds(const sf::Rect<int>& bounds);
 
+	math::Polygon getPolygon() const;
+	void setPolygon(const math::Polygon& polygon);
+
 	sf::ConvexShape getShape() const;
 	void setShape(const sf::ConvexShape& shape);
 	
@@ -42,6 +46,7 @@ protected:
 	sf::Rect<int> m_bounds;
 	uint8_t m_health;
 
+	math::Polygon m_polygon;
 	sf::ConvexShape m_shape;
 
 	ActorId m_id;

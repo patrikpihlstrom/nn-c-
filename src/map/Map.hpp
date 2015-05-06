@@ -27,6 +27,7 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	std::weak_ptr<Quadtree> getQuadtree() const;
+	std::weak_ptr<ActorManager> getActorManager() const;
 
 	Camera getCamera() const;
 	
@@ -37,7 +38,7 @@ private:
 	bool space;
 
 	std::shared_ptr<Quadtree> m_quadtree;
-	std::unique_ptr<ActorManager> m_actorManager;
+	std::shared_ptr<ActorManager> m_actorManager;
 	std::unique_ptr<RockGenerator> m_rockGenerator;
 	std::unique_ptr<TextureHolder> m_textureHolder;
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;

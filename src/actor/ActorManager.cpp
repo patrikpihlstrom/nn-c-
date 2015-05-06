@@ -88,19 +88,19 @@ std::vector<std::weak_ptr<ActorHolder>> ActorManager::getHolders(const sf::Rect<
 	holders.reserve(4);
 
 	// Only works for objects smaller than 1024*1024
-	auto it = m_actorHolders.find({bounds.left, bounds.top});
+	auto it = m_actorHolders.find({(int)(bounds.left/ACTOR_HOLDER_SIZE), (int)(bounds.top/ACTOR_HOLDER_SIZE)});
 	if (it != m_actorHolders.end())
 		holders.push_back(it->second);
 
-	it = m_actorHolders.find({bounds.left + bounds.width, bounds.top});
+	it = m_actorHolders.find({(int)((bounds.left + bounds.width)/ACTOR_HOLDER_SIZE), (int)(bounds.top/ACTOR_HOLDER_SIZE)});
 	if (it != m_actorHolders.end())
 		holders.push_back(it->second);
 
-	it = m_actorHolders.find({bounds.left, bounds.top + bounds.height});
+	it = m_actorHolders.find({(int)(bounds.left/ACTOR_HOLDER_SIZE), (int)((bounds.top + bounds.height)/ACTOR_HOLDER_SIZE)});
 	if (it != m_actorHolders.end())
 		holders.push_back(it->second);
 
-	it = m_actorHolders.find({bounds.left + bounds.width, bounds.top + bounds.height});
+	it = m_actorHolders.find({(int)((bounds.left + bounds.width)/ACTOR_HOLDER_SIZE), (int)((bounds.top + bounds.height)/ACTOR_HOLDER_SIZE)});
 	if (it != m_actorHolders.end())
 		holders.push_back(it->second);
 

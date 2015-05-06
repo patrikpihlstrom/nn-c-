@@ -13,9 +13,17 @@ Map::Map()
 	m_camera.reset(new Camera());
 	m_camera->setSize(1600, 900);
 
+	math::Polygon polygon;
 	PlayerActor playerActor;
 	playerActor.setBounds({0, 0, 32, 32});
 	playerActor.setPosition(0, 0);
+
+	polygon.addPoint(sf::Vector2f(0, 0));
+	polygon.addPoint(sf::Vector2f(32, 0));
+	polygon.addPoint(sf::Vector2f(32, 32));
+	polygon.addPoint(sf::Vector2f(0, 32));
+	polygon.constructEdges();
+
 	sf::ConvexShape shape;
 	shape.setPointCount(4);
 	shape.setPoint(0, sf::Vector2f(0, 0));
@@ -24,16 +32,18 @@ Map::Map()
 	shape.setPoint(3, sf::Vector2f(0, 32));
 	shape.setFillColor(sf::Color(255, 0, 0));
 	playerActor.setShape(shape);
+	playerActor.setPolygon(polygon);
 	playerActor.assign(m_actorIdTracker->addActor());
 
 	m_actorManager->createNewPlayerActor(playerActor);
 	m_camera->trackActor(m_actorManager->getActor(playerActor.getId()));
+	polygon.clear();
 
 	m_shadowUpdater->setQuadtree(getQuadtree());
+	m_shadowUpdater->setActorManager(getActorManager());
 	m_textureHolder->loadTextures("assets/Textures.lst");
 
 	Decal decal;
-	math::Polygon polygon;
 	polygon.addPoint(sf::Vector2f(0, 0));
 	polygon.addPoint(sf::Vector2f(1055*2, 0));
 	polygon.addPoint(sf::Vector2f(1055*2, 683));
@@ -96,7 +106,6 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			decal->draw(target, states);
 	}
 
-	m_shadowUpdater->draw(target, states);
 	
 	for (int i = 0; i < m_gameObjects.size(); ++i)
 	{
@@ -105,11 +114,17 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 	m_actorManager->draw((sf::Rect<int>)m_camera->getViewport(), target, states);
+	m_shadowUpdater->draw(target, states);
 }
 
 std::weak_ptr<Quadtree> Map::getQuadtree() const
 {
 	return m_quadtree;
+}
+
+std::weak_ptr<ActorManager> Map::getActorManager() const
+{
+	return m_actorManager;
 }
 
 void Map::addObject(GameObject& object)

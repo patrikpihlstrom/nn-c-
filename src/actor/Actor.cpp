@@ -53,6 +53,7 @@ void Actor::updatePosition()
 	m_bounds.left += m_velocity.x;
 	m_bounds.top += m_velocity.y;
 	m_shape.move(m_velocity.x, m_velocity.y);
+	m_polygon.offset(m_velocity.x, m_velocity.y);
 	move(m_velocity.x, m_velocity.y);
 }
 
@@ -74,6 +75,16 @@ sf::Rect<int> Actor::getBounds() const
 void Actor::setBounds(const sf::Rect<int>& bounds)
 {
 	m_bounds = bounds;
+}
+
+math::Polygon Actor::getPolygon() const
+{
+	return m_polygon;
+}
+
+void Actor::setPolygon(const math::Polygon& polygon)
+{
+	m_polygon = polygon;
 }
 
 sf::ConvexShape Actor::getShape() const
