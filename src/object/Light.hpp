@@ -28,6 +28,9 @@ public:
 
 	void update();
 
+	void requireUpdate();
+	bool requiresUpdate() const;
+
 private:
 	sf::Vector2f castRay(const float& angle);
 
@@ -41,5 +44,7 @@ private:
 	math::Polygon m_bounds;
 
 	float m_radius;
+
+	bool m_requiresUpdate;
 };
 

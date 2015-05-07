@@ -193,6 +193,16 @@ void Light::setColor(const sf::Color& color)
 	m_color = color;
 }
 
+void Light::requireUpdate()
+{
+	m_requiresUpdate = true;
+}
+
+bool Light::requiresUpdate() const
+{
+	return m_requiresUpdate;
+}
+
 bool Light::isEntity() const
 {
 	return false;

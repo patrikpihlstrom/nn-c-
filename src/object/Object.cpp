@@ -113,3 +113,29 @@ bool Object::getSolid() const
 	return m_solid;
 }
 
+void Object::generateLightObstructer()
+{
+	LightObstructor lightObstructor;
+	lightObstructor.setPolygon(m_polygon);
+
+	m_lightObstructor.reset(new LightObstructor(lightObstructor));
+}
+
+void Object::addLight(std::weak_ptr<Light> light)
+{
+	if (m_lightObstructor)
+		m_lightObstructor->addLight(light);
+}
+
+void Object::removeLight(const ObjectId& id)
+{
+	if (m_lightObstructor)
+		m_lightObstructor->removeLight(id);
+}
+
+void Object::clearLights()
+{
+	if (m_lightObstructor)
+		m_lightObstructor->clearLights();
+}
+

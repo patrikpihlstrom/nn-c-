@@ -56,7 +56,7 @@ Map::Map()
 	addDecal(decal);
 
 	GameObject gameObject;
-	int rocks = 750;
+	int rocks = 250;
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);

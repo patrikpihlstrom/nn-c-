@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "object/LightObstructor.hpp"
 #include "object/ObjectIdTracker.hpp"
 #include "application/Math.hpp"
 
@@ -22,9 +23,10 @@ public:
 	sf::FloatRect getGlobalBounds() const;
 	sf::FloatRect getLocalBounds() const;
 
-	math::Polygon getPolygon() const;
 	sf::Rect<int> getBoundingBox() const;
+
 	void setPolygon(const math::Polygon& polygon);
+	math::Polygon getPolygon() const;
 
 	void updateShape();
 	virtual void setTexture(const std::weak_ptr<sf::Texture> texture);
@@ -43,6 +45,11 @@ public:
 	void setSolid(const bool solid);
 	bool getSolid() const;
 
+	void generateLightObstructer();
+	void addLight(std::weak_ptr<Light> light);
+	void removeLight(const ObjectId& id);
+	void clearLights();
+
 protected:
 	ObjectId m_id;
 	math::Polygon m_polygon;
@@ -53,5 +60,7 @@ protected:
 	sf::ConvexShape m_shape;
 
 	virtual void control(const float& deltaTime);
+
+	std::unique_ptr<LightObstructor> m_lightObstructor;
 };
 

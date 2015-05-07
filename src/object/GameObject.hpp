@@ -1,6 +1,7 @@
 #pragma once
 
 #include "object/Object.hpp"
+#include "object/Light.hpp"
 
 
 class GameObject : public Object
