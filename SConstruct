@@ -29,6 +29,7 @@ src/object/Light.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp
 src/object/ShadowUpdater.cpp
+src/object/LightObstructor.cpp
 """)
 
 environment = Environment(CC='gcc')

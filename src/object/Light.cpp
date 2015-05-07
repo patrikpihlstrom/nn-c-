@@ -22,8 +22,12 @@ Light::~Light()
 
 void Light::update()
 {
-	m_boundingBox.left = m_position.x - m_radius/2.5f;
-	m_boundingBox.top = m_position.y - m_radius/2.5f;
+	if (!(m_boundingBox.left == getPosition().x - m_radius/2.5f && m_boundingBox.top == getPosition().y - m_radius/2.5f))
+	{
+		requestUpdate();
+		m_boundingBox.left = getPosition().x - m_radius/2.5f;
+		m_boundingBox.top = getPosition().y - m_radius/2.5f;
+	}
 }
 
 float Light::getRadius() const
@@ -71,7 +75,7 @@ void Light::clear()
 	bounds.addPoint(sf::Vector2f(0, 0));
 	bounds.addPoint(sf::Vector2f(0, 0));
 	bounds.constructEdges();
-	m_bounds = bounds;
+	m_objects.push_back(bounds);
 }
 
 void Light::accountForObject(const math::Polygon& polygon)
@@ -83,15 +87,14 @@ void Light::accountForObject(const math::Polygon& polygon)
 
 	float min = 0, max = 0;
 	bool minAssigned = false, maxAssigned = false;
-	//bool reverse = getPosition().x > bounds.left + bounds.width && getPosition().y >= bounds.top && getPosition().y <= bounds.top + bounds.height; // Hacky
+	bool reverse = getPosition().x > bounds.left + bounds.width && getPosition().y >= bounds.top && getPosition().y <= bounds.top + bounds.height; // Hacky
 
-	/*if (!reverse)
+	if (!reverse)
 	{
 		sf::Vector2f center{(float)bounds.left + bounds.width/2, (float)bounds.top + bounds.height/2};
 		sf::Vector2f axis{getPosition().y - center.y, center.x - getPosition().x};
 		projections = polygon.projectPivot(axis, getPosition());
 	}
-	*/
 
 	m_angles.reserve(polygon.getPointCount());
 
@@ -100,7 +103,7 @@ void Light::accountForObject(const math::Polygon& polygon)
 		auto point = polygon.getPoint(i);
 		float angle = std::atan2(point.y - getPosition().y, point.x - getPosition().x);
 
-		/*if (!reverse)
+		if (!reverse)
 		{
 			if (projections[i] < 0)
 			{
@@ -119,15 +122,15 @@ void Light::accountForObject(const math::Polygon& polygon)
 				}
 			}
 		}
-		else*/
+		else
 			m_angles.push_back(angle);
 	}
 
-	/*if (!reverse)
+	if (!reverse)
 	{
 		m_angles.push_back(min);
 		m_angles.push_back(max);
-	}*/
+	}
 }
 
 sf::Vector2f Light::castRay(const float& angle)
@@ -146,7 +149,7 @@ sf::Vector2f Light::castRay(const float& angle)
 
 	}
 
-	if (!obstructed)
+	/*if (!obstructed)
 	{
 		for (int i = 0; i < m_bounds.getEdgeCount(); ++i)
 		{
@@ -155,12 +158,14 @@ sf::Vector2f Light::castRay(const float& angle)
 				ray = intersection;
 		}
 	}
+	*/
 
 	return ray;
 }
 
 void Light::buildLightShape()
 {
+	m_requiresUpdate = false;
 	std::sort(m_angles.begin(), m_angles.end());
 	m_points.reserve(m_angles.size()*2);
 
@@ -193,7 +198,7 @@ void Light::setColor(const sf::Color& color)
 	m_color = color;
 }
 
-void Light::requireUpdate()
+void Light::requestUpdate()
 {
 	m_requiresUpdate = true;
 }
@@ -201,16 +206,6 @@ void Light::requireUpdate()
 bool Light::requiresUpdate() const
 {
 	return m_requiresUpdate;
-}
-
-bool Light::isEntity() const
-{
-	return false;
-}
-
-bool Light::isPlayerEntity() const
-{
-	return false;
 }
 
 bool Light::isGameObject() const

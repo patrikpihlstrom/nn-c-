@@ -11,6 +11,8 @@ public:
 	LightObstructor();
 	~LightObstructor();
 
+	bool hasLight(const ObjectId& id) const;
+
 	void addLight(std::weak_ptr<Light> light);
 	void removeLight(const ObjectId& id);
 	void clearLights();
@@ -19,12 +21,13 @@ public:
 	void updateLightsVector();
 	void notifyLights();
 
-	void setPolygon(const math::Polygon& polygon);
-	math::Polygon getPolygon() const;
+	sf::Rect<int> getBoundingBox() const;
+	void setBoundingBox(const sf::Rect<int>& boundingBox);
 
 private:
 	std::vector<std::weak_ptr<Light>> m_lights;
 
-	math::Polygon m_polygon;
+	sf::Rect<int> m_boundingBox;
+
 };
 

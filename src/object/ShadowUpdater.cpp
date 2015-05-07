@@ -36,7 +36,7 @@ void ShadowUpdater::updateShadows(const sf::Rect<int>& boundingBox)
 			{
 				m_lights[i]->update();
 
-				if (m_lightPositions[m_lights[i]->getId().id] != m_lights[i]->getPosition())
+				if (m_lights[i]->requiresUpdate())
 				{
 					m_lightPositions[m_lights[i]->getId().id] = m_lights[i]->getPosition();
 					m_lights[i]->clear();

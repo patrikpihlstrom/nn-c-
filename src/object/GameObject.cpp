@@ -4,6 +4,7 @@
 GameObject::GameObject() :
 	Object()
 {
+	m_lightObstructor.reset(new LightObstructor());
 }
 
 GameObject::~GameObject()
@@ -12,6 +13,12 @@ GameObject::~GameObject()
 
 void GameObject::update(const float& deltaTime)
 {
+	if (m_lightObstructor)
+	{
+		m_lightObstructor->setBoundingBox(m_boundingBox);
+		m_lightObstructor->updateLightsVector();
+		m_lightObstructor->notifyLights();
+	}
 }
 
 void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -22,14 +29,16 @@ void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	states.blendMode = blend;
 }
 
-bool GameObject::isEntity() const
+void GameObject::addLight(std::weak_ptr<Light> light)
 {
-	return false;
+	if (m_lightObstructor)
+		m_lightObstructor->addLight(light);
 }
 
-bool GameObject::isPlayerEntity() const
+void GameObject::clearLights()
 {
-	return false;
+	if (m_lightObstructor)
+		m_lightObstructor->clearLights();
 }
 
 bool GameObject::isGameObject() const
