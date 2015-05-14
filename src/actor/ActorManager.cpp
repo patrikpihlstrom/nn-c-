@@ -262,16 +262,17 @@ void ActorManager::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, s
 			actor->draw(target, states);
 	}
 
-	for (auto it = m_actorHolders.begin(); it != m_actorHolders.end(); ++it)
+/*	for (auto it = m_actorHolders.begin(); it != m_actorHolders.end(); ++it)
 	{
 		sf::RectangleShape rect;
 		rect.setPosition(it->first.x*ACTOR_HOLDER_SIZE, it->first.y*ACTOR_HOLDER_SIZE);
 		rect.setSize(sf::Vector2f(ACTOR_HOLDER_SIZE, ACTOR_HOLDER_SIZE));
-		rect.setFillColor(sf::Color(255, 0, 0, 25));
-		rect.setOutlineColor(sf::Color(255, 0, 0));
+		rect.setFillColor(sf::Color(255, 0, 0, it->second->size()*10 > 255 ? 255:it->second->size()*10));
+		rect.setOutlineColor(sf::Color(255, 0, 0, 0));
 		rect.setOutlineThickness(1.f);
 		target.draw(rect, states);
 	}
+	*/
 }
 
 std::weak_ptr<Actor> ActorManager::getActor(const ActorId& id) const

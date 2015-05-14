@@ -9,68 +9,48 @@ PlayerActor::~PlayerActor()
 {
 }
 
-void PlayerActor::control(const float& deltaTime)
+void PlayerActor::control()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		if (m_velocity.y > -6)
-		{
-			if (m_velocity.y > 0)
-				m_velocity.y += -m_velocity.y*deltaTime*4;
-
-			m_velocity.y -= 6*deltaTime*2;
-		}
+		if (m_velocity.y > -300)
+			m_velocity.y -= 20;
 		else
-			m_velocity.y = -6;
+			m_velocity.y = -300;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		if (m_velocity.y < 6)
-		{
-			if (m_velocity.y < 0)
-				m_velocity.y += -m_velocity.y*deltaTime*4;
-
-			m_velocity.y += 6*deltaTime*2;
-		}
+		if (m_velocity.y < 300)
+			m_velocity.y += 20;
 		else
-			m_velocity.y = 6;
+			m_velocity.y = 300;
 	}
 	else
 	{
-		if (std::abs(m_velocity.y) > 0.5)
-			m_velocity.y += -m_velocity.y*deltaTime*4;
+		if (std::abs(m_velocity.y) > 50)
+			m_velocity.y += -m_velocity.y/10;
 		else
 			m_velocity.y = 0;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		if (m_velocity.x > -6)
-		{
-			if (m_velocity.x > 0)
-				m_velocity.x += -m_velocity.x*deltaTime*4;
-
-			m_velocity.x -= 6*deltaTime*2;
-		}
+		if (m_velocity.x > -300)
+			m_velocity.x -= 20;
 		else
-			m_velocity.x = -6;
+			m_velocity.x = -300;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		if (m_velocity.x < 6)
-		{
-			if (m_velocity.x < 0 )
-				m_velocity.x += -m_velocity.x*deltaTime*4;
-
-			m_velocity.x += 6*deltaTime*2;
-		}
+		if (m_velocity.x < 300)
+			m_velocity.x += 20;
 		else
-			m_velocity.x = 6;
+			m_velocity.x = 300;
 	}
 	else
 	{
-		if (std::abs(m_velocity.x) > 0.5)
-			m_velocity.x += -m_velocity.x*deltaTime*4;
+		if (std::abs(m_velocity.x) > 50)
+			m_velocity.x += -m_velocity.x/10;
 		else
 			m_velocity.x = 0;
 	}

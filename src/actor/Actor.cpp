@@ -11,8 +11,8 @@ Actor::~Actor()
 
 void Actor::update(const float& deltaTime)
 {
-	control(deltaTime);
-	updatePosition();
+	control();
+	updatePosition(deltaTime);
 }
 
 void Actor::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -44,15 +44,15 @@ void Actor::setTexture(const std::weak_ptr<sf::Texture> texture)
 		m_shape.setTexture(_texture.get());
 }
 
-void Actor::control(const float& deltaTime)
+void Actor::control()
 {
 }
 
-void Actor::updatePosition()
+void Actor::updatePosition(const float& deltaTime)
 {
-	m_shape.move(m_velocity.x, m_velocity.y);
-	m_polygon.offset(m_velocity.x, m_velocity.y);
-	move(m_velocity.x, m_velocity.y);
+	m_shape.move(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
+	m_polygon.offset(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
+	move(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
 	m_bounds.left = getPosition().x;
 	m_bounds.top = getPosition().y;
 }

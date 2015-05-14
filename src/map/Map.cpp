@@ -15,21 +15,21 @@ Map::Map()
 
 	math::Polygon polygon;
 	PlayerActor playerActor;
-	playerActor.setBounds({0, 0, 32, 32});
+	playerActor.setBounds({0, 100, 32, 32});
 	playerActor.setPosition(0, 0);
 
-	polygon.addPoint(sf::Vector2f(0, 0));
-	polygon.addPoint(sf::Vector2f(32, 0));
-	polygon.addPoint(sf::Vector2f(32, 32));
-	polygon.addPoint(sf::Vector2f(0, 32));
+	polygon.addPoint(sf::Vector2f(0, 100));
+	polygon.addPoint(sf::Vector2f(32, 100));
+	polygon.addPoint(sf::Vector2f(32, 132));
+	polygon.addPoint(sf::Vector2f(0, 132));
 	polygon.constructEdges();
 
 	sf::ConvexShape shape;
 	shape.setPointCount(4);
-	shape.setPoint(0, sf::Vector2f(0, 0));
-	shape.setPoint(1, sf::Vector2f(32, 0));
-	shape.setPoint(2, sf::Vector2f(32, 32));
-	shape.setPoint(3, sf::Vector2f(0, 32));
+	shape.setPoint(0, sf::Vector2f(0, 100));
+	shape.setPoint(1, sf::Vector2f(32, 100));
+	shape.setPoint(2, sf::Vector2f(32, 132));
+	shape.setPoint(3, sf::Vector2f(0, 132));
 	shape.setFillColor(sf::Color(255, 0, 0));
 	playerActor.setShape(shape);
 	playerActor.setPolygon(polygon);
@@ -37,28 +37,31 @@ Map::Map()
 
 	m_actorManager->addActor(std::shared_ptr<Actor>(new PlayerActor(playerActor)));
 
-	NPCActor npcActor;
-	npcActor.setBounds({0, 0, 32, 32});
-	npcActor.setPosition(0, 0);
+	for (int i = 0; i < 500; ++i)
+	{
+		NPCActor npcActor;
+		npcActor.setBounds({0, 0, 4, 4});
+		npcActor.setPosition(0, 0);
 
-	polygon.addPoint(sf::Vector2f(0, 0));
-	polygon.addPoint(sf::Vector2f(32, 0));
-	polygon.addPoint(sf::Vector2f(32, 32));
-	polygon.addPoint(sf::Vector2f(0, 32));
-	polygon.constructEdges();
+		polygon.addPoint(sf::Vector2f(0, 0));
+		polygon.addPoint(sf::Vector2f(4, 0));
+		polygon.addPoint(sf::Vector2f(4, 4));
+		polygon.addPoint(sf::Vector2f(0, 4));
+		polygon.constructEdges();
 
-	shape.setPoint(0, sf::Vector2f(0, 0));
-	shape.setPoint(1, sf::Vector2f(32, 0));
-	shape.setPoint(2, sf::Vector2f(32, 32));
-	shape.setPoint(3, sf::Vector2f(0, 32));
-	shape.setFillColor(sf::Color(255, 0, 0));
-	npcActor.setShape(shape);
-	npcActor.setPolygon(polygon);
-	npcActor.assign(m_actorIdTracker->addActor());
+		shape.setPoint(0, sf::Vector2f(0, 0));
+		shape.setPoint(1, sf::Vector2f(4, 0));
+		shape.setPoint(2, sf::Vector2f(4, 4));
+		shape.setPoint(3, sf::Vector2f(0, 4));
+		shape.setFillColor(sf::Color(255, 0, 0));
+		npcActor.setShape(shape);
+		npcActor.setPolygon(polygon);
+		npcActor.assign(m_actorIdTracker->addActor());
 
-	m_actorManager->addActor(std::shared_ptr<Actor>(new NPCActor(npcActor)));
+		m_actorManager->addActor(std::shared_ptr<Actor>(new NPCActor(npcActor)));
+	}
 
-	m_camera->trackActor(m_actorManager->getActor(playerActor.getId()));
+	m_camera->setCenter(0, 100);
 
 	Object object;
 	int rocks = 500;
@@ -85,7 +88,9 @@ void Map::update(const float& deltaTime, const sf::RenderWindow& window)
 	}
 	*/
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !space)
+	float dt = deltaTime;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
 		/*Light light;
 		light.assign(m_objectIdTracker->addObject());
@@ -95,17 +100,30 @@ void Map::update(const float& deltaTime, const sf::RenderWindow& window)
 		//light.setColor(sf::Color(255, 150, 100, 100));
 		m_light = m_shadowUpdater->insert(light);
 		*/
+		if (!space)
+			m_camera->zoom(1.1f);
+
+		dt /= 2;
 	}
 	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 
 	m_camera->update();
-	m_actorManager->update(deltaTime, m_camera->getBounds<int>());
+	m_actorManager->update(dt, m_camera->getBounds<int>());
 }
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(m_camera->getBounds<int>(), target, states);
+
+	sf::RectangleShape rect;
+	rect.setPosition(-500, -5000);
+	rect.setSize(sf::Vector2f(1000, 5500));
+	rect.setOutlineThickness(16.f);
+	rect.setOutlineColor(sf::Color(255, 0, 0, 255));
+	rect.setFillColor(sf::Color(0, 0, 0, 0));
+
+	target.draw(rect, states);
 }
 
 std::weak_ptr<Quadtree> Map::getQuadtree() const

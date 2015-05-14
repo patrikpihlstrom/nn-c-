@@ -11,5 +11,11 @@ public:
 
 	bool isPlayer() const;
 	bool isNPC() const;
+
+private:
+	void control();
+	sf::Vector2f m_target;
+
+	bool m_grounded;
 };
 

@@ -2,6 +2,13 @@
 
 #include <memory>
 
+extern "C"
+{
+#include </usr/include/lua5.2/lua.h>
+#include </usr/include/lua5.2/lualib.h>
+#include </usr/include/lua5.2/lauxlib.h>
+}
+
 #include <SFML/Graphics.hpp>
 
 #include "actor/ActorId.hpp"
@@ -39,8 +46,8 @@ public:
 	void setShape(const sf::ConvexShape& shape);
 	
 protected:
-	virtual void control(const float& deltaTime);
-	virtual void updatePosition();
+	virtual void control();
+	virtual void updatePosition(const float& deltaTime);
 
 	sf::Vector2f m_velocity;
 	sf::Rect<int> m_bounds;

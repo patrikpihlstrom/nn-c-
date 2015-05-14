@@ -7,7 +7,7 @@
 #include "actor/NPCActor.hpp"
 #include "actor/ActorHolder.hpp"
 
-const uint16_t ACTOR_HOLDER_SIZE = 512;
+const uint16_t ACTOR_HOLDER_SIZE = 128;
 
 class ActorManager
 {

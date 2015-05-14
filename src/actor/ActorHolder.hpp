@@ -24,6 +24,7 @@ public:
 	std::shared_ptr<Actor> getActor(const ActorId& actorId) const;
 
 	bool isEmpty() const;
+	uint16_t size() const;
 
 	std::vector<std::weak_ptr<Actor>> getActors(std::vector<ActorId>& actorIds) const;
 

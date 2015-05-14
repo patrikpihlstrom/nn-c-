@@ -14,6 +14,6 @@ public:
 	bool isNPC() const;
 
 private:
-	void control(const float& deltaTime);
+	void control();
 };
 

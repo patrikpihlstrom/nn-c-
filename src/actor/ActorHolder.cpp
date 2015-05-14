@@ -70,6 +70,10 @@ bool ActorHolder::isEmpty() const
 	return m_actors.empty();
 }
 
+uint16_t ActorHolder::size() const
+{
+	return m_actors.size();
+}
 
 std::vector<std::weak_ptr<Actor>> ActorHolder::getActors(std::vector<ActorId>& actorIds) const
 {

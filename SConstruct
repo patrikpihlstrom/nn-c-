@@ -6,6 +6,7 @@ sfml-window
 sfml-system
 GL
 GLEW
+lua5.2
 """)
 
 sources = Split("""
