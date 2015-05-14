@@ -15,7 +15,5 @@ public:
 private:
 	void control();
 	sf::Vector2f m_target;
-
-	bool m_grounded;
 };
 

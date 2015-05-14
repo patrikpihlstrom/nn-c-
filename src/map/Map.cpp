@@ -37,22 +37,23 @@ Map::Map()
 
 	m_actorManager->addActor(std::shared_ptr<Actor>(new PlayerActor(playerActor)));
 
-	for (int i = 0; i < 500; ++i)
+	for (int i = 0; i < 200; ++i)
 	{
+		uint8_t size = 4 + rand()%64;
 		NPCActor npcActor;
-		npcActor.setBounds({0, 0, 4, 4});
+		npcActor.setBounds({0, 0, size, size});
 		npcActor.setPosition(0, 0);
 
 		polygon.addPoint(sf::Vector2f(0, 0));
-		polygon.addPoint(sf::Vector2f(4, 0));
-		polygon.addPoint(sf::Vector2f(4, 4));
-		polygon.addPoint(sf::Vector2f(0, 4));
+		polygon.addPoint(sf::Vector2f(size, 0));
+		polygon.addPoint(sf::Vector2f(size, size));
+		polygon.addPoint(sf::Vector2f(0, size));
 		polygon.constructEdges();
 
 		shape.setPoint(0, sf::Vector2f(0, 0));
-		shape.setPoint(1, sf::Vector2f(4, 0));
-		shape.setPoint(2, sf::Vector2f(4, 4));
-		shape.setPoint(3, sf::Vector2f(0, 4));
+		shape.setPoint(1, sf::Vector2f(size, 0));
+		shape.setPoint(2, sf::Vector2f(size, size));
+		shape.setPoint(3, sf::Vector2f(0, size));
 		shape.setFillColor(sf::Color(255, 0, 0));
 		npcActor.setShape(shape);
 		npcActor.setPolygon(polygon);
@@ -61,7 +62,7 @@ Map::Map()
 		m_actorManager->addActor(std::shared_ptr<Actor>(new NPCActor(npcActor)));
 	}
 
-	m_camera->setCenter(0, 100);
+	m_camera->trackActor(m_actorManager->getActor({0}));
 
 	Object object;
 	int rocks = 500;
@@ -90,7 +91,7 @@ void Map::update(const float& deltaTime, const sf::RenderWindow& window)
 
 	float dt = deltaTime;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !space)
 	{
 		/*Light light;
 		light.assign(m_objectIdTracker->addObject());
@@ -100,10 +101,10 @@ void Map::update(const float& deltaTime, const sf::RenderWindow& window)
 		//light.setColor(sf::Color(255, 150, 100, 100));
 		m_light = m_shadowUpdater->insert(light);
 		*/
-		if (!space)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 			m_camera->zoom(1.1f);
-
-		dt /= 2;
+		else
+			m_camera->zoom(.9f);
 	}
 	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 
@@ -115,15 +116,6 @@ void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(m_camera->getBounds<int>(), target, states);
-
-	sf::RectangleShape rect;
-	rect.setPosition(-500, -5000);
-	rect.setSize(sf::Vector2f(1000, 5500));
-	rect.setOutlineThickness(16.f);
-	rect.setOutlineColor(sf::Color(255, 0, 0, 255));
-	rect.setFillColor(sf::Color(0, 0, 0, 0));
-
-	target.draw(rect, states);
 }
 
 std::weak_ptr<Quadtree> Map::getQuadtree() const

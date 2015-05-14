@@ -25,18 +25,18 @@ void Camera::update()
 	{
 		if (getCenter() != actor->getPosition())
 		{
-			m_velocity.x = (actor->getPosition().x - getCenter().x)/11;
-			m_velocity.y = (actor->getPosition().y - getCenter().y)/20;
+			m_velocity.x = (actor->getPosition().x + actor->getBounds().width/2 - getCenter().x)/11;
+			m_velocity.y = (actor->getPosition().y + actor->getBounds().height/2 - getCenter().y)/11;
 
 			if (std::abs(m_velocity.x) < 0.01)
 			{
-				move(actor->getPosition().x - getCenter().x, 0);
+				move(actor->getPosition().x + actor->getBounds().width/2 - getCenter().x, 0);
 				m_velocity.x = 0;
 			}
 
 			if (std::abs(m_velocity.y) < 0.01)
 			{
-				move(0, actor->getPosition().y - getCenter().y);
+				move(0, actor->getPosition().y + actor->getBounds().height/2 - getCenter().y);
 				m_velocity.y = 0;
 			}
 		}

@@ -57,5 +57,7 @@ protected:
 	sf::ConvexShape m_shape;
 
 	ActorId m_id;
+
+	lua_State* m_luaState;
 };
 
