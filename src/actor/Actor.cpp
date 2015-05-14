@@ -50,11 +50,11 @@ void Actor::control(const float& deltaTime)
 
 void Actor::updatePosition()
 {
-	m_bounds.left += m_velocity.x;
-	m_bounds.top += m_velocity.y;
 	m_shape.move(m_velocity.x, m_velocity.y);
 	m_polygon.offset(m_velocity.x, m_velocity.y);
 	move(m_velocity.x, m_velocity.y);
+	m_bounds.left = getPosition().x;
+	m_bounds.top = getPosition().y;
 }
 
 ActorId Actor::getId() const

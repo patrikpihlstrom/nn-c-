@@ -12,9 +12,7 @@
 #include "map/TextureHolder.hpp"
 #include "application/Camera.hpp"
 #include "object/ObjectIdTracker.hpp"
-#include "object/GameObject.hpp"
-#include "object/ShadowUpdater.hpp"
-#include "object/Decal.hpp"
+#include "object/Object.hpp"
 
 
 class Map : public sf::Drawable
@@ -32,10 +30,9 @@ public:
 	Camera getCamera() const;
 	
 private:
-	void addObject(GameObject& object);
-	void addDecal(Decal& decal);
-
 	bool space;
+
+	void addObject(const Object& object);
 
 	std::shared_ptr<Quadtree> m_quadtree;
 	std::shared_ptr<ActorManager> m_actorManager;
@@ -43,10 +40,6 @@ private:
 	std::unique_ptr<TextureHolder> m_textureHolder;
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ActorIdTracker> m_actorIdTracker;
-	std::unique_ptr<ShadowUpdater> m_shadowUpdater;
 	std::unique_ptr<Camera> m_camera;
-	std::vector<std::weak_ptr<Object>> m_gameObjects;
-	std::vector<std::weak_ptr<Object>> m_decals;
-	std::weak_ptr<Object> m_light;
 };
 

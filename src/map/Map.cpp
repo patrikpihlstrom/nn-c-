@@ -7,11 +7,11 @@ Map::Map()
 	m_textureHolder.reset(new TextureHolder());
 	m_objectIdTracker.reset(new ObjectIdTracker());
 	m_actorIdTracker.reset(new ActorIdTracker());
-	m_shadowUpdater.reset(new ShadowUpdater());
 	m_rockGenerator.reset(new RockGenerator());
 	m_actorManager.reset(new ActorManager());
 	m_camera.reset(new Camera());
 	m_camera->setSize(1600, 900);
+	m_textureHolder->loadTextures("assets/Textures.lst");
 
 	math::Polygon polygon;
 	PlayerActor playerActor;
@@ -35,35 +35,40 @@ Map::Map()
 	playerActor.setPolygon(polygon);
 	playerActor.assign(m_actorIdTracker->addActor());
 
-	m_actorManager->createNewPlayerActor(playerActor);
-	m_camera->trackActor(m_actorManager->getActor(playerActor.getId()));
-	polygon.clear();
+	m_actorManager->addActor(std::shared_ptr<Actor>(new PlayerActor(playerActor)));
 
-	m_shadowUpdater->setQuadtree(getQuadtree());
-	m_shadowUpdater->setActorManager(getActorManager());
-	m_textureHolder->loadTextures("assets/Textures.lst");
+	NPCActor npcActor;
+	npcActor.setBounds({0, 0, 32, 32});
+	npcActor.setPosition(0, 0);
 
-	Decal decal;
 	polygon.addPoint(sf::Vector2f(0, 0));
-	polygon.addPoint(sf::Vector2f(1055*2, 0));
-	polygon.addPoint(sf::Vector2f(1055*2, 683));
-	polygon.addPoint(sf::Vector2f(0, 683));
+	polygon.addPoint(sf::Vector2f(32, 0));
+	polygon.addPoint(sf::Vector2f(32, 32));
+	polygon.addPoint(sf::Vector2f(0, 32));
+	polygon.constructEdges();
 
-	decal.setPolygon(polygon);
-	decal.setColor(sf::Color(255, 255, 255));
-	decal.rotate(-M_PI/7);
-	decal.setColor(sf::Color(55, 0, 55));
-	addDecal(decal);
+	shape.setPoint(0, sf::Vector2f(0, 0));
+	shape.setPoint(1, sf::Vector2f(32, 0));
+	shape.setPoint(2, sf::Vector2f(32, 32));
+	shape.setPoint(3, sf::Vector2f(0, 32));
+	shape.setFillColor(sf::Color(255, 0, 0));
+	npcActor.setShape(shape);
+	npcActor.setPolygon(polygon);
+	npcActor.assign(m_actorIdTracker->addActor());
 
-	GameObject gameObject;
-	int rocks = 250;
+	m_actorManager->addActor(std::shared_ptr<Actor>(new NPCActor(npcActor)));
+
+	m_camera->trackActor(m_actorManager->getActor(playerActor.getId()));
+
+	Object object;
+	int rocks = 500;
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);
-		auto polygon = m_rockGenerator->getRock(4, {2, 1}, {std::cos(angle)*(rand()%2500), std::sin(angle)*(rand()%2500)});
+		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%2500), std::sin(angle)*(rand()%2500)});
 
-		gameObject.setPolygon(polygon);
-		addObject(gameObject);
+		object.setPolygon(polygon);
+		addObject(object);
 	}
 }
 
@@ -74,47 +79,33 @@ Map::~Map()
 
 void Map::update(const float& deltaTime, const sf::RenderWindow& window)
 {
-	if (auto light = m_light.lock())
+	/*if (auto light = m_light.lock())
 	{
 		light->move(sf::Mouse::getPosition(window).x + m_camera->getCenter().x - m_camera->getSize().x/2 - light->getPosition().x, sf::Mouse::getPosition(window).y + m_camera->getCenter().y - m_camera->getSize().y/2 - light->getPosition().y);
 	}
+	*/
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !space)
 	{
-		Light light;
+		/*Light light;
 		light.assign(m_objectIdTracker->addObject());
 		//light.setPosition(sf::Vector2f(1000 + std::rand()%2000, 500 + std::rand()%1000));
 		light.setTexture(m_textureHolder->getTexture("light"));
 		light.setColor(sf::Color(std::rand()%255, std::rand()%255, std::rand()%255));
 		//light.setColor(sf::Color(255, 150, 100, 100));
 		m_light = m_shadowUpdater->insert(light);
+		*/
 	}
 	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 
 	m_camera->update();
-
-	m_actorManager->update(deltaTime);
-
-	m_shadowUpdater->updateShadows(sf::Rect<int>(m_camera->getCenter().x - m_camera->getSize().x/2, m_camera->getCenter().y - m_camera->getSize().y/2, m_camera->getSize().x, m_camera->getSize().y));
+	m_actorManager->update(deltaTime, m_camera->getBounds<int>());
 }
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	for (int i = 0; i < m_decals.size(); ++i)
-	{
-		if (auto decal = m_decals[i].lock())
-			decal->draw(target, states);
-	}
-
-	
-	for (int i = 0; i < m_gameObjects.size(); ++i)
-	{
-		if (auto gameObject = m_gameObjects[i].lock())
-			gameObject->draw(target, states);
-	}
-
-	m_actorManager->draw((sf::Rect<int>)m_camera->getViewport(), target, states);
-	m_shadowUpdater->draw(target, states);
+	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
+	m_actorManager->draw(m_camera->getBounds<int>(), target, states);
 }
 
 std::weak_ptr<Quadtree> Map::getQuadtree() const
@@ -127,22 +118,15 @@ std::weak_ptr<ActorManager> Map::getActorManager() const
 	return m_actorManager;
 }
 
-void Map::addObject(GameObject& object)
-{
-	object.assign(m_objectIdTracker->addObject());
-	m_quadtree->insert(object);
-	m_gameObjects.push_back(m_quadtree->getObject(object.getId()));
-}
-
-void Map::addDecal(Decal& decal)
-{
-	decal.assign(m_objectIdTracker->addObject());
-	m_quadtree->insert(std::shared_ptr<Object>(new Decal(decal)));
-	m_decals.push_back(m_quadtree->getObject(decal.getId()));
-}
-
 Camera Map::getCamera() const
 {
 	return *m_camera;
+}
+
+void Map::addObject(const Object& object)
+{
+	std::shared_ptr<Object >newObject(new Object(object));
+	newObject->assign(m_objectIdTracker->addObject());
+	m_quadtree->insert(newObject);
 }
 

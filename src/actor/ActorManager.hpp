@@ -7,7 +7,7 @@
 #include "actor/NPCActor.hpp"
 #include "actor/ActorHolder.hpp"
 
-const uint16_t ACTOR_HOLDER_SIZE = 1024;
+const uint16_t ACTOR_HOLDER_SIZE = 512;
 
 class ActorManager
 {
@@ -15,17 +15,16 @@ public:
 	ActorManager();
 	~ActorManager();
 
-	void createNewPlayerActor(const PlayerActor& playerActor);
-	void createNewNPCActor(const NPCActor& npcActor);
+	void addActor(std::shared_ptr<Actor> actor);
 
 	void removeActor(const ActorId& id);
 	void removeActor(const ActorId& id, const sf::Rect<int>& bounds);
 
 	void createHolders(const sf::Rect<int>& bounds);
-	std::vector<std::weak_ptr<ActorHolder>> getHolders(const sf::Rect<int>& bounds) const;
+	std::vector<std::weak_ptr<ActorHolder>> getHolders(const sf::Rect<int>& bounds);
+	std::vector<std::weak_ptr<ActorHolder>> getHoldersConst(const sf::Rect<int>& bounds) const;
 
-
-	void update(const float& deltaTime);
+	void update(const float& deltaTime, const sf::Rect<int>& bounds);
 	void draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::RenderStates states) const;
 
 	std::vector<std::weak_ptr<Actor>> getUniqueActors() const;

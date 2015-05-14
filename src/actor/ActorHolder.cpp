@@ -28,8 +28,8 @@ void ActorHolder::addActor(std::shared_ptr<Actor> actor)
 {
 	if (!getActor(actor->getId()))
 		m_actors.push_back(actor);
-	else
-		std::cout << "Actor: " << actor->getId().id << " already in actor holder." << std::endl;
+	//else
+	//	std::cout << "Actor: " << actor->getId().id << " already in actor holder." << std::endl;
 }
 
 std::vector<std::shared_ptr<Actor>>::iterator ActorHolder::removeActor(const ActorId& actorId)
@@ -39,7 +39,9 @@ std::vector<std::shared_ptr<Actor>>::iterator ActorHolder::removeActor(const Act
 	while (it != m_actors.end())
 	{
 		if ((*it)->getId() == actorId)
+		{
 			return m_actors.erase(it);
+		}
 		else
 			++it;
 	}

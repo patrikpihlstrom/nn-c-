@@ -23,13 +23,8 @@ src/map/Map.cpp
 src/map/procedural/RockGenerator.cpp
 src/map/Quadtree.cpp
 src/map/TextureHolder.cpp
-src/object/Decal.cpp
-src/object/GameObject.cpp
-src/object/Light.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp
-src/object/ShadowUpdater.cpp
-src/object/LightObstructor.cpp
 """)
 
 environment = Environment(CC='gcc')

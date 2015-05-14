@@ -20,6 +20,12 @@ public:
 	void zoom(const float& factor);
 	float getZoom() const;
 
+	template <typename T>
+	sf::Rect<T> getBounds() const
+	{
+		return sf::Rect<T>{(T)(getCenter().x - getSize().x/2), (T)(getCenter().y - getSize().y/2), (T)(getSize().x), (T)(getSize().y)};
+	}
+
 private:
 	std::weak_ptr<Actor> m_actor;
 	sf::Vector2f m_velocity;

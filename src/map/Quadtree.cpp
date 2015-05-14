@@ -17,53 +17,21 @@ Quadtree::~Quadtree()
 
 void Quadtree::update()
 {
-	if (canMergeChildren())
-		mergeChildren();
-}
-
-void Quadtree::insert(const GameObject& object)
-{
-	if (object.getBoundingBox().intersects(getBoundingBox()))
+	if (!m_children[0])
 	{
-		if (!m_children[0])
-		{
-			m_objects.push_back(std::shared_ptr<Object>(new GameObject(object)));
-			if (m_level < MAX_LEVEL)
-				split();
-		}
+		if (auto parent = m_parent.lock())
+			parent->update();
 		else
-		{
-			for (int i = 0; i < 4; ++i)
-			{
-				if (m_children[i]->getBoundingBox().intersects(object.getBoundingBox()))
-				{
-					m_children[i]->insert(object);
-				}
-			}
-		}
+			std::cout << m_level << std::endl;
 	}
-}
-
-void Quadtree::insert(const Light& object)
-{
-	if (object.getBoundingBox().intersects(getBoundingBox()))
+	else if (canMergeChildren())
 	{
-		if (!m_children[0])
-		{
-			m_objects.push_back(std::shared_ptr<Object>(new Light(object)));
-			if (m_level < MAX_LEVEL)
-				split();
-		}
+		mergeChildren();
+
+		if (auto parent = m_parent.lock())
+			parent->update();
 		else
-		{
-			for (int i = 0; i < 4; ++i)
-			{
-				if (m_children[i]->getBoundingBox().intersects(object.getBoundingBox()))
-				{
-					m_children[i]->insert(object);
-				}
-			}
-		}
+			std::cout << m_level << std::endl;
 	}
 }
 
@@ -131,6 +99,7 @@ void Quadtree::split()
 
 	for (int i = 0; i < 4; ++i)
 	{
+		m_children[i]->m_parent = shared_from_this();
 		for (int j = 0; j < m_objects.size(); ++j)
 		{
 			m_children[i]->insert(m_objects[j]);
@@ -187,10 +156,15 @@ void Quadtree::getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, con
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			if (m_children[i]->m_children[0])
-				m_children[i]->getQuadtrees(quadtrees, boundingBox);
-			else if (m_children[i]->getBoundingBox().intersects(boundingBox))
-				quadtrees.push_back(m_children[i]);
+			if (m_children[i]->getBoundingBox().intersects(boundingBox))
+			{
+				if (m_children[i]->m_children[0])
+				{
+					m_children[i]->getQuadtrees(quadtrees, boundingBox);
+				}
+				else
+					quadtrees.push_back(m_children[i]);
+			}
 		}
 	}
 }
@@ -232,99 +206,52 @@ std::shared_ptr<Object> Quadtree::getObject(const ObjectId& id) const
 	return nullptr;
 }
 
-void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const sf::Rect<int>& boundingBox) const
-{
-	std::vector<ObjectId> ids;
-	getGameObjects(objects, boundingBox, ids);
-}
-
-void Quadtree::getLights(std::vector<Light*>& objects, const sf::Rect<int>& boundingBox) const
-{
-	std::vector<ObjectId> ids;
-	getLights(objects, boundingBox, ids);
-}
-
-void Quadtree::getGameObjects(std::vector<GameObject*>& objects, const sf::Rect<int>& boundingBox, std::vector<ObjectId>& ids) const
-{
-	if (m_children[0])
-	{
-		for (int i = 0; i < 4; ++i)
-		{
-			if (boundingBox.intersects(m_children[i]->getBoundingBox()))
-				m_children[i]->getGameObjects(objects, boundingBox, ids);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < m_objects.size(); ++i)
-		{
-			if (m_objects[i]->isGameObject())
-			{
-				if (ids.empty() || std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
-				{
-					if (boundingBox.intersects(m_objects[i]->getBoundingBox()))
-					{
-						ids.push_back(m_objects[i]->getId());
-						objects.push_back(static_cast<GameObject*>(m_objects[i].get()));
-					}
-
-				}
-			}
-		}
-	}
-}
-
-void Quadtree::getLights(std::vector<Light*>& objects, const sf::Rect<int>& boundingBox, std::vector<ObjectId>& ids) const
-{
-	if (m_children[0])
-	{
-		for (int i = 0; i < 4; ++i)
-		{
-			if (boundingBox.intersects(m_children[i]->getBoundingBox()))
-				m_children[i]->getLights(objects, boundingBox, ids);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < m_objects.size(); ++i)
-		{
-			if (m_objects[i]->isLight())
-			{
-				if (ids.empty() || std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
-				{
-					if (boundingBox.intersects(m_objects[i]->getBoundingBox()))
-					{
-						ids.push_back(m_objects[i]->getId());
-						objects.push_back(static_cast<Light*>(m_objects[i].get()));
-					}
-				}
-			}
-		}
-	}
-}
-
 sf::Rect<int> Quadtree::getBoundingBox() const
 {
 	return m_boundingBox;
 }
 
-void Quadtree::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void Quadtree::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::RenderStates states) const
 {
+	std::vector<ObjectId> ids;
+	std::vector<std::weak_ptr<Quadtree>> quadtrees;
+	getQuadtrees(quadtrees, bounds);
+
+	for (int i = 0; i < quadtrees.size(); ++i)
+	{
+		if (auto quadtree = quadtrees[i].lock())
+		{
+			quadtree->draw(ids, target, states);
+		}
+	}
+}
+
+void Quadtree::draw(std::vector<ObjectId>& ids, sf::RenderTarget& target, sf::RenderStates states) const
+{
+	/*sf::RectangleShape rect;
+	rect.setPosition(m_boundingBox.left, m_boundingBox.top);
+	rect.setSize(sf::Vector2f(m_boundingBox.width, m_boundingBox.height));
+	rect.setFillColor(sf::Color(255, 0, 0, 25));
+	rect.setOutlineColor(sf::Color(255, 0, 0));
+	rect.setOutlineThickness(1.f);
+	target.draw(rect, states);
+	*/
+
 	if (!m_children[0])
 	{
-		sf::RectangleShape rect(sf::Vector2f(getBoundingBox().width, getBoundingBox().height));
-		rect.setPosition(sf::Vector2f(getBoundingBox().left, getBoundingBox().top));
-		rect.setFillColor(sf::Color(0, 0, 0, 0));
-		rect.setOutlineThickness(1.f);
-		rect.setOutlineColor(sf::Color(255, 0, 0));
-		target.draw(rect);
+		for (int i = 0; i < m_objects.size(); ++i)
+		{
+			if (std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
+			{
+				ids.push_back(m_objects[i]->getId());
+				m_objects[i]->draw(target, states);
+			}
+		}
 	}
 	else
 	{
 		for (int i = 0; i < 4; ++i)
-		{
-			m_children[i]->draw(target, states);
-		}
+			m_children[i]->draw(ids, target, states);
 	}
 }
 

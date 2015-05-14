@@ -33,9 +33,6 @@ public:
 	virtual void update(const float& deltaTime);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	virtual bool isGameObject() const = 0;
-	virtual bool isLight() const = 0;
-
 protected:
 	ObjectId m_id;
 
