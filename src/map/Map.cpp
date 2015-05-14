@@ -37,9 +37,9 @@ Map::Map()
 
 	m_actorManager->addActor(std::shared_ptr<Actor>(new PlayerActor(playerActor)));
 
-	for (int i = 0; i < 200; ++i)
+	for (int i = 0; i < 50; ++i)
 	{
-		uint8_t size = 4 + rand()%64;
+		uint8_t size = 4;// + rand()%64;
 		NPCActor npcActor;
 		npcActor.setBounds({0, 0, size, size});
 		npcActor.setPosition(0, 0);

@@ -15,6 +15,11 @@ NPCActor::NPCActor() :
 	if (int error = luaL_dofile(m_luaState, "src/actor/test.lua") != 0)
 		std::cout << "[LUA]: " << error << std::endl;
 
+	lua_getglobal(m_luaState, "x");
+	lua_getglobal(m_luaState, "y");
+	m_velocity.x = lua_tonumber(m_luaState, 1);
+	m_velocity.y = lua_tonumber(m_luaState, 2);
+
 	lua_close(m_luaState);
 }
 
