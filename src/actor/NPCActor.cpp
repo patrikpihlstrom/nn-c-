@@ -22,15 +22,9 @@ NPCActor::NPCActor() :
 				std::string string = lua_tostring(m_luaState, -2);
 				std::cout << string << std::endl;
 				if (string == "x")
-				{
 					m_velocity.x = lua_tonumber(m_luaState, -1);
-					std::cout << "x: " << getPosition().x << std::endl;
-				}
-				else
-				{
+				else if (string == "y")
 					m_velocity.y = lua_tonumber(m_luaState, -1);
-					std::cout << "y: " << getPosition().y << std::endl;
-				}
 			}
 
 			lua_pop(m_luaState, 1);
@@ -42,7 +36,6 @@ NPCActor::NPCActor() :
 
 NPCActor::~NPCActor()
 {
-	std::cout << "Closing Lua state for actor: " << m_id.id << std::endl;
 	lua_close(m_luaState);
 }
 
