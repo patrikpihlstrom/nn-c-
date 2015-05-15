@@ -20,7 +20,6 @@ NPCActor::NPCActor() :
 			if (lua_isnumber(m_luaState, -1))
 			{
 				std::string string = lua_tostring(m_luaState, -2);
-				std::cout << string << std::endl;
 				if (string == "x")
 					m_velocity.x = lua_tonumber(m_luaState, -1);
 				else if (string == "y")
