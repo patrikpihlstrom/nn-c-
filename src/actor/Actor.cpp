@@ -7,6 +7,7 @@ Actor::Actor() :
 
 Actor::~Actor()
 {
+	std::cout << "Destroying actor: " << m_id.id << std::endl;
 }
 
 void Actor::update(const float& deltaTime)

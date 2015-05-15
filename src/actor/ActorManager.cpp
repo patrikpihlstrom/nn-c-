@@ -262,7 +262,7 @@ void ActorManager::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, s
 			actor->draw(target, states);
 	}
 
-	/*for (auto it = m_actorHolders.begin(); it != m_actorHolders.end(); ++it)
+	for (auto it = m_actorHolders.begin(); it != m_actorHolders.end(); ++it)
 	{
 		sf::RectangleShape rect;
 		rect.setPosition(it->first.x*ACTOR_HOLDER_SIZE, it->first.y*ACTOR_HOLDER_SIZE);
@@ -271,7 +271,7 @@ void ActorManager::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, s
 		rect.setOutlineColor(sf::Color(255, 0, 0, 0));
 		rect.setOutlineThickness(1.f);
 		target.draw(rect, states);
-	}*/
+	}
 }
 
 std::weak_ptr<Actor> ActorManager::getActor(const ActorId& id) const

@@ -1,3 +1,4 @@
-x = math.random(300, 1000);
-y = math.random(-x/5, x/5);
+angle = math.random(360);
+angle = math.rad(angle);
+velocity = {x = math.cos(angle)*300, y = math.sin(angle)*300}
 

@@ -44,6 +44,16 @@ public:
 
 	sf::ConvexShape getShape() const;
 	void setShape(const sf::ConvexShape& shape);
+
+	template <typename T>
+	void setPositionMaster(const sf::Vector2<T>& position)
+	{
+		m_shape.setPosition(position.x, position.y);
+		m_polygon.offset(position.x - getPosition().x, position.y - getPosition().y);
+		move(position.x - getPosition().x, position.y - getPosition().y);
+		m_bounds.left = getPosition().x;
+		m_bounds.top = getPosition().y;
+	}
 	
 protected:
 	virtual void control();

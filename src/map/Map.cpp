@@ -13,37 +13,43 @@ Map::Map()
 	m_camera->setSize(1600, 900);
 	m_textureHolder->loadTextures("assets/Textures.lst");
 
-	math::Polygon polygon;
-	PlayerActor playerActor;
-	playerActor.setBounds({0, 100, 32, 32});
-	playerActor.setPosition(0, 0);
+	std::shared_ptr<PlayerActor> playerActor;
+	playerActor.reset(new PlayerActor());
 
-	polygon.addPoint(sf::Vector2f(0, 100));
-	polygon.addPoint(sf::Vector2f(32, 100));
-	polygon.addPoint(sf::Vector2f(32, 132));
-	polygon.addPoint(sf::Vector2f(0, 132));
+	playerActor->setBounds({0, 0, 32, 32});
+	playerActor->setPosition(0, 0);
+
+	math::Polygon polygon;
+	polygon.addPoint(sf::Vector2f(0, 0));
+	polygon.addPoint(sf::Vector2f(32, 0));
+	polygon.addPoint(sf::Vector2f(32, 32));
+	polygon.addPoint(sf::Vector2f(0, 32));
 	polygon.constructEdges();
 
 	sf::ConvexShape shape;
 	shape.setPointCount(4);
-	shape.setPoint(0, sf::Vector2f(0, 100));
-	shape.setPoint(1, sf::Vector2f(32, 100));
-	shape.setPoint(2, sf::Vector2f(32, 132));
-	shape.setPoint(3, sf::Vector2f(0, 132));
+	shape.setPoint(0, sf::Vector2f(0, 0));
+	shape.setPoint(1, sf::Vector2f(32, 0));
+	shape.setPoint(2, sf::Vector2f(32, 32));
+	shape.setPoint(3, sf::Vector2f(0, 32));
 	shape.setFillColor(sf::Color(255, 0, 0));
-	playerActor.setShape(shape);
-	playerActor.setPolygon(polygon);
-	playerActor.assign(m_actorIdTracker->addActor());
+	playerActor->setShape(shape);
+	playerActor->setPolygon(polygon);
+	playerActor->assign(m_actorIdTracker->addActor());
 
-	m_actorManager->addActor(std::shared_ptr<Actor>(new PlayerActor(playerActor)));
+	m_actorManager->addActor(playerActor);
 
-	for (int i = 0; i < 50; ++i)
+	for (int i = 0; i < 200; ++i)
 	{
 		uint8_t size = 4;// + rand()%64;
-		NPCActor npcActor;
-		npcActor.setBounds({0, 0, size, size});
-		npcActor.setPosition(0, 0);
 
+		std::shared_ptr<NPCActor> npcActor;
+		npcActor.reset(new NPCActor());
+
+		npcActor->setBounds({0, 0, size, size});
+		npcActor->setPosition(0, 0);
+
+		polygon.clear();
 		polygon.addPoint(sf::Vector2f(0, 0));
 		polygon.addPoint(sf::Vector2f(size, 0));
 		polygon.addPoint(sf::Vector2f(size, size));
@@ -55,11 +61,11 @@ Map::Map()
 		shape.setPoint(2, sf::Vector2f(size, size));
 		shape.setPoint(3, sf::Vector2f(0, size));
 		shape.setFillColor(sf::Color(255, 0, 0));
-		npcActor.setShape(shape);
-		npcActor.setPolygon(polygon);
-		npcActor.assign(m_actorIdTracker->addActor());
+		npcActor->setShape(shape);
+		npcActor->setPolygon(polygon);
+		npcActor->assign(m_actorIdTracker->addActor());
 
-		m_actorManager->addActor(std::shared_ptr<Actor>(new NPCActor(npcActor)));
+		m_actorManager->addActor(npcActor);
 	}
 
 	m_camera->trackActor(m_actorManager->getActor({0}));
