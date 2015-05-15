@@ -29,8 +29,6 @@ NPCActor::NPCActor() :
 			lua_pop(m_luaState, 1);
 		}
 	}
-
-	std::cout << std::endl;
 }
 
 NPCActor::~NPCActor()
