@@ -2,17 +2,11 @@
 
 #include <memory>
 
-extern "C"
-{
-#include </usr/include/lua5.2/lua.h>
-#include </usr/include/lua5.2/lualib.h>
-#include </usr/include/lua5.2/lauxlib.h>
-}
-
 #include <SFML/Graphics.hpp>
 
 #include "actor/ActorId.hpp"
 #include "application/Math.hpp"
+#include "application/lua.hpp"
 
 
 class Actor : public sf::Transformable, public sf::Drawable

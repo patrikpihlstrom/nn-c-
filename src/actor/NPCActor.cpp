@@ -4,36 +4,10 @@
 NPCActor::NPCActor() : 
 	Actor()
 {
-	m_luaState = luaL_newstate();
-	luaL_openlibs(m_luaState);
-
-	if (int error = luaL_dofile(m_luaState, "src/actor/test.out") != 0)
-		std::cout << "[LUA]: " << error << std::endl;
-
-	lua_getglobal(m_luaState, "velocity");
-	if (lua_istable(m_luaState, 1))
-	{
-		lua_pushnil(m_luaState);
-
-		while (lua_next(m_luaState, -2) != 0)
-		{
-			if (lua_isnumber(m_luaState, -1))
-			{
-				std::string string = lua_tostring(m_luaState, -2);
-				if (string == "x")
-					m_velocity.x = lua_tonumber(m_luaState, -1);
-				else if (string == "y")
-					m_velocity.y = lua_tonumber(m_luaState, -1);
-			}
-
-			lua_pop(m_luaState, 1);
-		}
-	}
 }
 
 NPCActor::~NPCActor()
 {
-	lua_close(m_luaState);
 }
 
 bool NPCActor::isPlayer() const

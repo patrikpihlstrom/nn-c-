@@ -7,6 +7,7 @@ sfml-system
 GL
 GLEW
 lua5.2
+luabind
 """)
 
 sources = Split("""
