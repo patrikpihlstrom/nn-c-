@@ -24,7 +24,6 @@ end
 State_Wander = {target = {x = 0, y = 0}}
 
 State_Wander["Enter"] = function(actor)
-	distance = math.sqrt(math.pow(State_Wander.target.x - actor:getPositionX(), 2) + math.pow(State_Wander.target.y - actor:getPositionY(), 2));
 	State_Wander.target.x = math.random(-500, 500);
 	State_Wander.target.y = math.random(-500, 500);
 	angle = math.atan2(State_Wander.target.y - actor:getPositionY(), State_Wander.target.x - actor:getPositionX());
