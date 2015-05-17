@@ -170,7 +170,7 @@ std::vector<std::weak_ptr<ActorHolder>> ActorManager::getHoldersConst(const sf::
 
 void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
 {
-	auto actors = getUniqueActors();
+	auto actors = getUniqueActors(bounds);
 
 	for (auto it = actors.begin(); it != actors.end(); ++it)
 	{

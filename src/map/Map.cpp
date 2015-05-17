@@ -39,7 +39,7 @@ Map::Map()
 
 	m_actorManager->addActor(playerActor);
 
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		uint8_t size = 4;// + rand()%64;
 
