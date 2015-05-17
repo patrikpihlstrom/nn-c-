@@ -39,7 +39,7 @@ Map::Map()
 
 	m_actorManager->addActor(playerActor);
 
-	for (int i = 0; i < 200; ++i)
+	for (int i = 0; i < 100; ++i)
 	{
 		uint8_t size = 4;// + rand()%64;
 
@@ -64,6 +64,7 @@ Map::Map()
 		npcActor->setShape(shape);
 		npcActor->setPolygon(polygon);
 		npcActor->assign(m_actorIdTracker->addActor());
+		npcActor->registerLuaStateMachine();
 
 		m_actorManager->addActor(npcActor);
 	}
@@ -84,7 +85,6 @@ Map::Map()
 
 Map::~Map()
 {
-	m_quadtree.reset();
 }
 
 void Map::update(const float& deltaTime, const sf::RenderWindow& window)
@@ -109,8 +109,10 @@ void Map::update(const float& deltaTime, const sf::RenderWindow& window)
 		*/
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 			m_camera->zoom(1.1f);
-		else
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 			m_camera->zoom(.9f);
+		else
+			dt /= 2;
 	}
 	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 

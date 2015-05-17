@@ -39,15 +39,15 @@ public:
 	sf::ConvexShape getShape() const;
 	void setShape(const sf::ConvexShape& shape);
 
-	template <typename T>
-	void setPositionMaster(const sf::Vector2<T>& position)
-	{
-		m_shape.setPosition(position.x, position.y);
-		m_polygon.offset(position.x - getPosition().x, position.y - getPosition().y);
-		move(position.x - getPosition().x, position.y - getPosition().y);
-		m_bounds.left = getPosition().x;
-		m_bounds.top = getPosition().y;
-	}
+	void setPositionMaster(const float x, const float y);
+	void setVelocity(const float x, const float y);
+	void move(const float x, const float y);
+
+	float getPositionX() const;
+	float getPositionY() const;
+	float getVelocityX() const;
+	float getVelocityY() const;
+
 	
 protected:
 	virtual void control();
@@ -61,7 +61,5 @@ protected:
 	sf::ConvexShape m_shape;
 
 	ActorId m_id;
-
-	lua_State* m_luaState;
 };
 

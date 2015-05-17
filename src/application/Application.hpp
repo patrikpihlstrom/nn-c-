@@ -14,6 +14,7 @@
 
 #include "map/Map.hpp"
 #include "application/Camera.hpp"
+#include "ai/StateMachine.hpp"
 
 
 class Application

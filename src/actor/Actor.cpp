@@ -50,9 +50,14 @@ void Actor::control()
 
 void Actor::updatePosition(const float& deltaTime)
 {
-	m_shape.move(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
-	m_polygon.offset(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
 	move(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
+}
+
+void Actor::move(const float x, const float y)
+{
+	m_shape.move(x, y);
+	m_polygon.offset(x, y);
+	this->Transformable::move(x, y);
 	m_bounds.left = getPosition().x;
 	m_bounds.top = getPosition().y;
 }
@@ -95,5 +100,39 @@ sf::ConvexShape Actor::getShape() const
 void Actor::setShape(const sf::ConvexShape& shape)
 {
 	m_shape = shape;
+}
+
+void Actor::setPositionMaster(const float x, const float y)
+{
+	m_shape.setPosition(x, y);
+	m_polygon.offset(x - getPosition().x, y - getPosition().y);
+	move(x - getPosition().x, y - getPosition().y);
+	m_bounds.left = getPosition().x;
+	m_bounds.top = getPosition().y;
+}
+
+void Actor::setVelocity(const float x, const float y)
+{
+	m_velocity = {x, y};
+}
+
+float Actor::getPositionX() const
+{
+	return getPosition().x;
+}
+
+float Actor::getPositionY() const
+{
+	return getPosition().y;
+}
+
+float Actor::getVelocityX() const
+{
+	return m_velocity.x;
+}
+
+float Actor::getVelocityY() const
+{
+	return m_velocity.y;
 }
 
