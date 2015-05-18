@@ -10,7 +10,7 @@ before_install:
         - sudo apt-get update -qq
 
 install:
-        - sudo apt-get install -qq gcc-4.9 g++-4.9 libsfml-dev lua5.2 liblua5.2-dev libluabind-dev
+        - sudo apt-get install -qq gcc-4.9 g++-4.9 libsfml-dev liblua50 lublua50-dev lua5.2 liblua5.2-0 liblua5.2-dev libluabind-dev
         - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
 
 script:
