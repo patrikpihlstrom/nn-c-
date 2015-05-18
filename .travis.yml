@@ -1,3 +1,6 @@
+
+sudo: true
+
 branches:
         only:
                 - dev
