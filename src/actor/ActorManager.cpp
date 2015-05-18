@@ -267,7 +267,7 @@ void ActorManager::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, s
 		sf::RectangleShape rect;
 		rect.setPosition(it->first.x*ACTOR_HOLDER_SIZE, it->first.y*ACTOR_HOLDER_SIZE);
 		rect.setSize(sf::Vector2f(ACTOR_HOLDER_SIZE, ACTOR_HOLDER_SIZE));
-		rect.setFillColor(sf::Color(255, 0, 0, it->second->size()*10 > 255 ? 255:it->second->size()*10));
+		rect.setFillColor(sf::Color(255, 0, 0, 10));//it->second->size()*10 > 255 ? 255:it->second->size()*10));
 		rect.setOutlineColor(sf::Color(255, 0, 0, 0));
 		rect.setOutlineThickness(1.f);
 		target.draw(rect, states);

@@ -1,0 +1,14 @@
+branches:
+        only:
+                - dev
+
+before_install:
+        - sudo apt-get update -qq
+        - sudo apt-get install lbisfml-dev liblua5.2-dev libluabind-dev
+
+script:
+        - scons
+
+compiler:
+        - gcc
+
