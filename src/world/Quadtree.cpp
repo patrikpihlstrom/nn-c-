@@ -169,7 +169,7 @@ void Quadtree::getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, con
 	}
 }
 
-void Quadtree::getObjects(std::vector<std::shared_ptr<Object>>& objects, std::vector<ObjectId>& objectIds) const
+void Quadtree::getObjects(std::vector<std::weak_ptr<Object>>& objects, std::vector<ObjectId>& objectIds) const
 {
 	for (int i = 0; i < m_objects.size(); ++i)
 	{
@@ -179,6 +179,23 @@ void Quadtree::getObjects(std::vector<std::shared_ptr<Object>>& objects, std::ve
 			objects.push_back(m_objects[i]);
 		}
 	}
+}
+
+std::vector<std::weak_ptr<Object>> Quadtree::getObjects(const sf::Rect<int>& boundingBox) const
+{
+	std::vector<std::weak_ptr<Quadtree>> quadtrees;
+	getQuadtrees(quadtrees, boundingBox);
+
+	std::vector<ObjectId> objectIds;
+	std::vector<std::weak_ptr<Object>> objects;
+
+	for (int i = 0; i < quadtrees.size(); ++i)
+	{
+		if (auto quadtree = quadtrees[i].lock())
+			quadtree->getObjects(objects, objectIds);
+	}
+
+	return objects;
 }
 
 std::shared_ptr<Object> Quadtree::getObject(const ObjectId& id) const
