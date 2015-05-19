@@ -7,19 +7,19 @@
 
 #include "actor/ActorManager.hpp"
 #include "actor/ActorIdTracker.hpp"
-#include "map/Quadtree.hpp"
-#include "map/procedural/RockGenerator.hpp"
-#include "map/TextureHolder.hpp"
+#include "world/Quadtree.hpp"
+#include "world/procedural/RockGenerator.hpp"
+#include "application/TextureHolder.hpp"
 #include "application/Camera.hpp"
 #include "object/ObjectIdTracker.hpp"
 #include "object/Object.hpp"
 
 
-class Map : public sf::Drawable
+class World : public sf::Drawable
 {
 public:
-	Map();
-	~Map();
+	World();
+	~World();
 
 	void update(const float& deltaTime, const sf::RenderWindow& window);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;

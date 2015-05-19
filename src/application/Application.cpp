@@ -73,15 +73,15 @@ void Application::handleEvents()
 
 void Application::update(sf::Time deltaTime)
 {
-	m_map.update(deltaTime.asSeconds(), m_window);
+	m_world.update(deltaTime.asSeconds(), m_window);
 }
 
 void Application::render()
 {
 	m_window.clear(sf::Color(245, 241, 226));
-	m_window.setView(m_map.getCamera());
+	m_window.setView(m_world.getCamera());
 
-	m_window.draw(m_map);
+	m_window.draw(m_world);
 
 	m_window.display();
 }

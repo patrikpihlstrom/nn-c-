@@ -19,10 +19,10 @@ src/application/main.cpp
 src/application/Application.cpp
 src/application/Camera.cpp
 src/application/Math.cpp
-src/map/Map.cpp
-src/map/procedural/RockGenerator.cpp
-src/map/Quadtree.cpp
-src/map/TextureHolder.cpp
+src/application/TextureHolder.cpp
+src/world/World.cpp
+src/world/procedural/RockGenerator.cpp
+src/world/Quadtree.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp
 """)
