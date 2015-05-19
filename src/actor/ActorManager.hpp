@@ -7,7 +7,7 @@
 #include "actor/NPCActor.hpp"
 #include "actor/ActorHolder.hpp"
 
-const uint16_t ACTOR_HOLDER_SIZE = 64;
+const uint16_t ACTOR_HOLDER_SIZE = 256;
 
 class ActorManager
 {
@@ -56,5 +56,8 @@ private:
 	};
 
 	std::unordered_map<Key, std::shared_ptr<ActorHolder>, Hasher> m_actorHolders;
+
+	std::unordered_map<Key, std::shared_ptr<ActorHolder>, Hasher> getUniqueHolders(const sf::Rect<int>& bounds) const;
+	void deleteOutsiders(const sf::Rect<int>& bounds);
 };
 
