@@ -12,7 +12,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
-#include "map/Map.hpp"
+#include "world/World.hpp"
 #include "application/Camera.hpp"
 #include "ai/StateMachine.hpp"
 
@@ -32,7 +32,7 @@ private:
 
 	bool m_running, m_active;
 
-	Map m_map;
+	World m_world;
 
 	sf::RenderWindow m_window;
 };

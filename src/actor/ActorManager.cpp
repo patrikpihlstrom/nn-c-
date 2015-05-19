@@ -170,6 +170,7 @@ std::vector<std::weak_ptr<ActorHolder>> ActorManager::getHoldersConst(const sf::
 
 void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
 {
+	deleteOutsiders(bounds);
 	auto actors = getUniqueActors(bounds);
 
 	for (auto it = actors.begin(); it != actors.end(); ++it)
@@ -302,5 +303,68 @@ std::weak_ptr<Actor> ActorManager::getActor(const ActorId& id, const sf::Rect<in
 	}
 
 	return {};
+}
+
+std::unordered_map<ActorManager::Key, std::shared_ptr<ActorHolder>, ActorManager::Hasher> ActorManager::getUniqueHolders(const sf::Rect<int>& bounds) const
+{
+	std::unordered_map<Key, std::shared_ptr<ActorHolder>, Hasher> holders;
+
+	int x = (int)(bounds.left/ACTOR_HOLDER_SIZE);
+	int _x = (int)((bounds.left + bounds.width)/ACTOR_HOLDER_SIZE);
+	int y = (int)(bounds.top/ACTOR_HOLDER_SIZE);
+	int _y = (int)((bounds.top + bounds.height)/ACTOR_HOLDER_SIZE);
+
+	if (bounds.left < 0)
+		x--;
+
+	if (bounds.top < 0)
+		y--;
+
+	if (bounds.left + bounds.width < 0)
+		_x--;
+
+	if (bounds.top + bounds.height < 0)
+		_y--;
+
+	if (bounds.width >= ACTOR_HOLDER_SIZE || bounds.height >= ACTOR_HOLDER_SIZE)
+	{
+		int width = (int)(bounds.width/(ACTOR_HOLDER_SIZE)) + 1;
+		int height = (int)(bounds.height/(ACTOR_HOLDER_SIZE)) + 1;
+
+		for (int i = x, j = y; i <= x + width; ++i)
+		{
+			for (j = y; j <= y + height; ++j)
+			{
+				auto holder = m_actorHolders.find({i, j});
+				if (holder != m_actorHolders.end())
+					holders[holder->first] = holder->second;
+			}
+		}
+	}
+	else
+	{
+		auto holder = m_actorHolders.find({x, y});
+		if (holder != m_actorHolders.end())
+			holders[holder->first] = holder->second;
+
+		holder = m_actorHolders.find({_x, y});
+		if (holder != m_actorHolders.end())
+			holders[holder->first] = holder->second;
+
+		holder = m_actorHolders.find({x, _y});
+		if (holder != m_actorHolders.end())
+			holders[holder->first] = holder->second;
+
+		holder = m_actorHolders.find({_x, _y});
+		if (holder != m_actorHolders.end())
+			holders[holder->first] = holder->second;
+	}
+
+	return holders;
+}
+
+void ActorManager::deleteOutsiders(const sf::Rect<int>& bounds)
+{
+	m_actorHolders = getUniqueHolders(bounds);
 }
 

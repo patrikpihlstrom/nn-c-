@@ -1,7 +1,7 @@
-#include "Map.hpp"
+#include "World.hpp"
 
 
-Map::Map()
+World::World()
 {
 	m_quadtree.reset(new Quadtree(sf::Rect<int>(-2048*5, -2048*5, 2048*10, 2048*10), 0));
 	m_textureHolder.reset(new TextureHolder());
@@ -83,11 +83,11 @@ Map::Map()
 	}
 }
 
-Map::~Map()
+World::~World()
 {
 }
 
-void Map::update(const float& deltaTime, const sf::RenderWindow& window)
+void World::update(const float& deltaTime, const sf::RenderWindow& window)
 {
 	/*if (auto light = m_light.lock())
 	{
@@ -120,28 +120,28 @@ void Map::update(const float& deltaTime, const sf::RenderWindow& window)
 	m_actorManager->update(dt, m_camera->getBounds<int>());
 }
 
-void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(m_camera->getBounds<int>(), target, states);
 }
 
-std::weak_ptr<Quadtree> Map::getQuadtree() const
+std::weak_ptr<Quadtree> World::getQuadtree() const
 {
 	return m_quadtree;
 }
 
-std::weak_ptr<ActorManager> Map::getActorManager() const
+std::weak_ptr<ActorManager> World::getActorManager() const
 {
 	return m_actorManager;
 }
 
-Camera Map::getCamera() const
+Camera World::getCamera() const
 {
 	return *m_camera;
 }
 
-void Map::addObject(const Object& object)
+void World::addObject(const Object& object)
 {
 	std::shared_ptr<Object >newObject(new Object(object));
 	newObject->assign(m_objectIdTracker->addObject());
