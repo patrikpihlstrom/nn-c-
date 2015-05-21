@@ -36,12 +36,13 @@ World::World()
 	playerActor->setShape(shape);
 	playerActor->setPolygon(polygon);
 	playerActor->assign(m_actorIdTracker->addActor());
+	m_camera->trackActor(playerActor);
 
 	m_actorManager->addActor(playerActor);
 
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 25; ++i)
 	{
-		uint8_t size = 4;// + rand()%64;
+		uint8_t size = 4 + rand()%64;
 
 		std::shared_ptr<NPCActor> npcActor;
 		npcActor.reset(new NPCActor());
@@ -69,14 +70,12 @@ World::World()
 		m_actorManager->addActor(npcActor);
 	}
 
-	m_camera->trackActor(m_actorManager->getActor({0}));
-
 	Object object;
-	int rocks = 500;
+	int rocks = 50;
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);
-		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%2500), std::sin(angle)*(rand()%2500)});
+		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%250), std::sin(angle)*(rand()%250)});
 
 		object.setPolygon(polygon);
 		addObject(object);
@@ -123,7 +122,7 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
-	m_actorManager->draw(m_camera->getBounds<int>(), target, states);
+	m_actorManager->draw(target, states);
 }
 
 std::weak_ptr<Quadtree> World::getQuadtree() const

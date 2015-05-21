@@ -72,6 +72,6 @@ private:
 
 	sf::Rect<int> m_boundingBox;
 
-	void draw(std::vector<ObjectId>& ids, sf::RenderTarget& target, sf::RenderStates states) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 

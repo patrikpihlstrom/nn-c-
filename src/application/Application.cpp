@@ -16,7 +16,12 @@ void Application::initialize()
 	settings.antialiasingLevel = 8;
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
-	m_window.setVerticalSyncEnabled(true);
+
+	m_font.loadFromFile("SourceCodePro-Regular.ttf");
+	m_fpsText = sf::Text("NULL", m_font);
+	m_fpsText.setCharacterSize(11);
+	m_fpsText.setStyle(sf::Text::Regular);
+	m_fpsText.setPosition(1500, 0);
 
 	m_running = true;
 	m_active = true;
@@ -46,6 +51,11 @@ void Application::run()
 			update(updateTime);
 			deltaTime -= updateTime;
 		}
+
+		float fps = 1/dt.getElapsedTime().asSeconds();
+		m_fpsText.setString("FPS: " + std::to_string(fps));
+		m_fpsText.setPosition(m_world.getCamera().getCenter().x + m_world.getCamera().getSize().x/2 - 100, m_world.getCamera().getCenter().y - m_world.getCamera().getSize().y/2);
+		m_fpsText.setColor(fps < 60 ? sf::Color(200, 50, 50):sf::Color(10, 10, 10));
 	}
 }
 
@@ -82,6 +92,7 @@ void Application::render()
 	m_window.setView(m_world.getCamera());
 
 	m_window.draw(m_world);
+	m_window.draw(m_fpsText);
 
 	m_window.display();
 }

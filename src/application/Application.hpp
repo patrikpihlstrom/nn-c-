@@ -32,6 +32,9 @@ private:
 
 	bool m_running, m_active;
 
+	sf::Font m_font;
+	sf::Text m_fpsText;
+
 	World m_world;
 
 	sf::RenderWindow m_window;

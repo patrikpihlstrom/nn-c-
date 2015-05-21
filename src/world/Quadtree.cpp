@@ -230,7 +230,6 @@ sf::Rect<int> Quadtree::getBoundingBox() const
 
 void Quadtree::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::RenderStates states) const
 {
-	std::vector<ObjectId> ids;
 	std::vector<std::weak_ptr<Quadtree>> quadtrees;
 	getQuadtrees(quadtrees, bounds);
 
@@ -238,12 +237,12 @@ void Quadtree::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::R
 	{
 		if (auto quadtree = quadtrees[i].lock())
 		{
-			quadtree->draw(ids, target, states);
+			quadtree->draw(target, states);
 		}
 	}
 }
 
-void Quadtree::draw(std::vector<ObjectId>& ids, sf::RenderTarget& target, sf::RenderStates states) const
+void Quadtree::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	/*sf::RectangleShape rect;
 	rect.setPosition(m_boundingBox.left, m_boundingBox.top);
@@ -258,17 +257,13 @@ void Quadtree::draw(std::vector<ObjectId>& ids, sf::RenderTarget& target, sf::Re
 	{
 		for (int i = 0; i < m_objects.size(); ++i)
 		{
-			if (std::find(ids.begin(), ids.end(), m_objects[i]->getId()) == ids.end())
-			{
-				ids.push_back(m_objects[i]->getId());
-				m_objects[i]->draw(target, states);
-			}
+			m_objects[i]->draw(target, states);
 		}
 	}
 	else
 	{
 		for (int i = 0; i < 4; ++i)
-			m_children[i]->draw(ids, target, states);
+			m_children[i]->draw(target, states);
 	}
 }
 
