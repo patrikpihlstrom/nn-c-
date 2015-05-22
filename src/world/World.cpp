@@ -45,7 +45,7 @@ World::World()
 		uint8_t size = 4 + rand()%64;
 
 		std::shared_ptr<NPCActor> npcActor;
-		npcActor.reset(new NPCActor());
+		npcActor.reset(new NPCActor("test", sf::Vector2f(0, 0)));
 
 		npcActor->setBounds({0, 0, size, size});
 		npcActor->setPosition(0, 0);

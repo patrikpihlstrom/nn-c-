@@ -8,6 +8,7 @@ class NPCActor : public Actor, public std::enable_shared_from_this<NPCActor>
 {
 public:
 	NPCActor();
+	NPCActor(const std::string& npcType, const sf::Vector2f& position);
 	~NPCActor();
 
 	uint8_t getHealth() const;
@@ -26,5 +27,7 @@ private:
 
 	std::shared_ptr<StateMachine<NPCActor>> m_stateMachine;
 	lua_State* m_luaState;
+
+	std::string m_npcType;
 };
 

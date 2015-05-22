@@ -6,6 +6,13 @@ NPCActor::NPCActor() :
 {
 }
 
+NPCActor::NPCActor(const std::string& npcType, const sf::Vector2f& position) :
+	Actor(),
+	m_npcType(npcType)
+{
+	setPositionMaster(position.x, position.y);
+}
+
 NPCActor::~NPCActor()
 {
 }
@@ -73,13 +80,13 @@ void NPCActor::registerLuaStateMachine()
 		.def("setCurrentState", &StateMachine<NPCActor>::setCurrentState)
 	];
 
-	if (int error = luaL_dofile(m_luaState, "src/ai/States.lua") != 0)
-		std::cout << "ERROR(" << error << "): Problem with lua script file " << "src/ai/States.lua" << std::endl;
+	if (int error = luaL_dofile(m_luaState, std::string("assets/npc/" + m_npcType + "/behavior.lua").c_str()) != 0)
+		std::cout << "ERROR[" << error << "] Problem with lua script file: " << "assets/npc/" << m_npcType << "/behavior.lua" << std::endl;
 
 	luabind::object states = luabind::globals(m_luaState);
 
 	if (luabind::type(states) == LUA_TTABLE)
-		m_stateMachine->setCurrentState(states["State_Wander"]);
+		m_stateMachine->setCurrentState(states["State_Init"]);
 }
 
 void NPCActor::control()
