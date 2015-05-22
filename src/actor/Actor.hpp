@@ -33,21 +33,18 @@ public:
 	sf::Rect<int> getBounds() const;
 	void setBounds(const sf::Rect<int>& bounds);
 
-	math::Polygon getPolygon() const;
-	void setPolygon(const math::Polygon& polygon);
-
 	sf::ConvexShape getShape() const;
 	void setShape(const sf::ConvexShape& shape);
 
 	void setPositionMaster(const float x, const float y);
 	void setVelocity(const float x, const float y);
 	void move(const float x, const float y);
+	void setSize(const uint8_t size);
 
 	float getPositionX() const;
 	float getPositionY() const;
 	float getVelocityX() const;
 	float getVelocityY() const;
-
 	
 protected:
 	virtual void control();
@@ -55,9 +52,10 @@ protected:
 
 	sf::Vector2f m_velocity;
 	sf::Rect<int> m_bounds;
+	
 	uint8_t m_health;
+	uint8_t m_size;
 
-	math::Polygon m_polygon;
 	sf::ConvexShape m_shape;
 
 	ActorId m_id;

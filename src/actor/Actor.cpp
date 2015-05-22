@@ -56,10 +56,27 @@ void Actor::updatePosition(const float& deltaTime)
 void Actor::move(const float x, const float y)
 {
 	m_shape.move(x, y);
-	m_polygon.offset(x, y);
 	this->Transformable::move(x, y);
 	m_bounds.left = getPosition().x;
 	m_bounds.top = getPosition().y;
+}
+
+void Actor::setSize(const uint8_t size)
+{
+	m_size = size;
+
+	m_shape.setPointCount(4);
+	m_shape.setPoint(0, getPosition());
+	m_shape.setPoint(1, sf::Vector2f(getPosition().x + m_size, getPosition().y));
+	m_shape.setPoint(2, sf::Vector2f(getPosition().x + m_size, getPosition().y + m_size));
+	m_shape.setPoint(3, sf::Vector2f(getPosition().x, getPosition().y + m_size));
+
+	m_shape.setFillColor(sf::Color(255, 0, 0));
+
+	m_bounds.left = getPosition().x;
+	m_bounds.top = getPosition().y;
+	m_bounds.width = size;
+	m_bounds.height = size;
 }
 
 ActorId Actor::getId() const
@@ -82,16 +99,6 @@ void Actor::setBounds(const sf::Rect<int>& bounds)
 	m_bounds = bounds;
 }
 
-math::Polygon Actor::getPolygon() const
-{
-	return m_polygon;
-}
-
-void Actor::setPolygon(const math::Polygon& polygon)
-{
-	m_polygon = polygon;
-}
-
 sf::ConvexShape Actor::getShape() const
 {
 	return m_shape;
@@ -105,8 +112,7 @@ void Actor::setShape(const sf::ConvexShape& shape)
 void Actor::setPositionMaster(const float x, const float y)
 {
 	m_shape.setPosition(x, y);
-	m_polygon.offset(x - getPosition().x, y - getPosition().y);
-	move(x - getPosition().x, y - getPosition().y);
+	this->Transformable::setPosition(x, y);
 	m_bounds.left = getPosition().x;
 	m_bounds.top = getPosition().y;
 }
