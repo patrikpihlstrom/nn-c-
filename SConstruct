@@ -15,6 +15,7 @@ src/actor/ActorHolder.cpp
 src/actor/ActorManager.cpp
 src/actor/NPCActor.cpp
 src/actor/PlayerActor.cpp
+src/actor/NPCSpawner.cpp
 src/application/main.cpp
 src/application/Application.cpp
 src/application/Camera.cpp

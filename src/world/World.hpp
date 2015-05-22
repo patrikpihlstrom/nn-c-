@@ -7,6 +7,7 @@
 
 #include "actor/ActorManager.hpp"
 #include "actor/ActorIdTracker.hpp"
+#include "actor/NPCSpawner.hpp"
 #include "world/Quadtree.hpp"
 #include "world/procedural/RockGenerator.hpp"
 #include "application/TextureHolder.hpp"
@@ -36,6 +37,7 @@ private:
 
 	std::shared_ptr<Quadtree> m_quadtree;
 	std::shared_ptr<ActorManager> m_actorManager;
+	std::shared_ptr<NPCSpawner> m_npcSpawner;
 	std::unique_ptr<RockGenerator> m_rockGenerator;
 	std::unique_ptr<TextureHolder> m_textureHolder;
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;

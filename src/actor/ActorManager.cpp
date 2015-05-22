@@ -44,10 +44,18 @@ void ActorManager::deleteOutsiders(const sf::Rect<int>& bounds)
 {
 	for (auto it = m_actors.begin(); it != m_actors.end();)
 	{
+		if ((*it)->isPlayer())
+			continue;
+
 		if (!(*it)->getBounds().intersects(bounds))
 			it = m_actors.erase(it);
 		else
 			++it;
 	}
+}
+
+size_t ActorManager::actorsSize() const
+{
+	return m_actors.size();
 }
 

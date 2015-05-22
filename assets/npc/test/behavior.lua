@@ -5,8 +5,8 @@ State_Init = {}
 
 State_Init["Enter"] = function(actor)
 	actor:setHealth(100);
-	actor:setSize(32);
-	actor:setPosition(math.random(0, 100)*10, 0);
+	actor:setSize(math.random(4, 64));
+	actor:setPosition(math.random(0, 200)*10, 0);
 	actor:changeState(State_Wander);
 end
 

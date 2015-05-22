@@ -2,7 +2,8 @@
 
 #include <string>
 
-#include "actor/NPCActor.hpp"
+#include "actor/ActorManager.hpp"
+#include "actor/ActorIdTracker.hpp"
 
 
 class NPCSpawner
@@ -11,7 +12,6 @@ public:
 	NPCSpawner();
 	~NPCSpawner();
 
-private:
-	void spawn(const std::string& npcType, const sf::Vector2f& position);
+	void spawn(const std::string& npcType, const sf::Vector2f& position, ActorManager& actorManager, ActorIdTracker& actorIdTracker);
 };
 

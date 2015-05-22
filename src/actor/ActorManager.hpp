@@ -19,6 +19,8 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	std::weak_ptr<Actor> getActor(const ActorId& id) const;
 
+	size_t actorsSize() const;
+
 private:
 	void deleteOutsiders(const sf::Rect<int>& bounds);
 	std::vector<std::shared_ptr<Actor>> m_actors;

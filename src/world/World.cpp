@@ -9,6 +9,7 @@ World::World()
 	m_actorIdTracker.reset(new ActorIdTracker());
 	m_rockGenerator.reset(new RockGenerator());
 	m_actorManager.reset(new ActorManager());
+	m_npcSpawner.reset(new NPCSpawner());
 	m_camera.reset(new Camera());
 	m_camera->setSize(1600, 900);
 	m_textureHolder->loadTextures("assets/Textures.lst");
@@ -25,7 +26,8 @@ World::World()
 
 	for (int i = 0; i < 25; ++i)
 	{
-		std::shared_ptr<NPCActor> npcActor;
+		m_npcSpawner->spawn("test", {0, 0}, *m_actorManager, *m_actorIdTracker);
+		/*std::shared_ptr<NPCActor> npcActor;
 		npcActor.reset(new NPCActor("test", sf::Vector2f(0, 0)));
 
 		npcActor->setPosition(0, 0);
@@ -33,6 +35,7 @@ World::World()
 		npcActor->registerLuaStateMachine();
 
 		m_actorManager->addActor(npcActor);
+		*/
 	}
 
 	Object object;
