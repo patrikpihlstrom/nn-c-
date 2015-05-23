@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Scons option: "
+printf "Scons option: "
 read option
 
 # Send src and compile.
