@@ -1,7 +1,6 @@
 #include "Actor.hpp"
 
-Actor::Actor() : 
-	m_health(100)
+Actor::Actor() 
 {
 }
 
@@ -112,7 +111,7 @@ void Actor::setShape(const sf::ConvexShape& shape)
 void Actor::setPositionMaster(const float x, const float y)
 {
 	m_shape.setPosition(x, y);
-	this->Transformable::setPosition(x, y);
+	setPosition(x, y);
 	m_bounds.left = getPosition().x;
 	m_bounds.top = getPosition().y;
 }

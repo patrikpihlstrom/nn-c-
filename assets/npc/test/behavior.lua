@@ -6,7 +6,6 @@ State_Init = {}
 State_Init["Enter"] = function(actor)
 	actor:setHealth(100);
 	actor:setSize(math.random(4, 64));
-	actor:setPosition(math.random(0, 200)*10, 0);
 	actor:changeState(State_Wander);
 end
 
@@ -41,8 +40,8 @@ end
 State_Wander = {target = {x = 0, y = 0}}
 
 State_Wander["Enter"] = function(actor)
-	State_Wander.target.x = math.random(-500, 500);
-	State_Wander.target.y = math.random(-500, 500);
+	State_Wander.target.x = math.random(-100, 100) + actor:getPositionX();
+	State_Wander.target.y = math.random(-100, 100) + actor:getPositionY();
 	angle = math.atan2(State_Wander.target.y - actor:getPositionY(), State_Wander.target.x - actor:getPositionX());
 end
 

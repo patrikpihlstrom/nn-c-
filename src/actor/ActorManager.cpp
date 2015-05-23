@@ -9,6 +9,17 @@ ActorManager::~ActorManager()
 {
 }
 
+std::weak_ptr<Actor> ActorManager::getActor(const ActorId& id) const
+{
+	for (int i = 0; i < m_actors.size(); ++i)
+	{
+		if (m_actors[i]->getId() == id)
+			return m_actors[i];
+	}
+
+	return {};
+}
+
 void ActorManager::addActor(std::shared_ptr<Actor> actor)
 {
 	m_actors.push_back(actor);
@@ -50,7 +61,7 @@ void ActorManager::deleteOutsiders(const sf::Rect<int>& bounds)
 			continue;
 		}
 
-		if (!(*it)->getBounds().intersects(bounds))
+		if (!(*it)->getBounds().intersects(bounds) && !bounds.intersects((*it)->getBounds()))
 			it = m_actors.erase(it);
 		else
 			++it;

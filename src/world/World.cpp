@@ -25,18 +25,7 @@ World::World()
 	m_actorManager->addActor(playerActor);
 
 	for (int i = 0; i < 25; ++i)
-	{
 		m_npcSpawner->spawn("test", {0, 0}, *m_actorManager, *m_actorIdTracker);
-		/*std::shared_ptr<NPCActor> npcActor;
-		npcActor.reset(new NPCActor("test", sf::Vector2f(0, 0)));
-
-		npcActor->setPosition(0, 0);
-		npcActor->assign(m_actorIdTracker->addActor());
-		npcActor->registerLuaStateMachine();
-
-		m_actorManager->addActor(npcActor);
-		*/
-	}
 
 	Object object;
 	int rocks = 50;
@@ -62,6 +51,8 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 	{
 		if (!space)
 		{
+			m_npcSpawner->spawn("test", {32, 32}, *m_actorManager, *m_actorIdTracker);
+
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 				m_camera->zoom(1.1f);
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
@@ -80,6 +71,15 @@ void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(target, states);
+
+	sf::RectangleShape rect;
+	rect.setSize(sf::Vector2f(32, 32));
+	rect.setPosition(m_actorManager->getActor({0}).lock()->getPosition().x, m_actorManager->getActor({0}).lock()->getPosition().y);
+	rect.setOutlineThickness(2);
+	rect.setOutlineColor(sf::Color(255, 0, 255));
+	rect.setFillColor(sf::Color(255, 0, 255, 100));
+
+	target.draw(rect, states);
 }
 
 std::weak_ptr<Quadtree> World::getQuadtree() const

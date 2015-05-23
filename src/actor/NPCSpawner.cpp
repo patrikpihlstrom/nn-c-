@@ -14,7 +14,7 @@ void NPCSpawner::spawn(const std::string& npcType, const sf::Vector2f& position,
 	std::shared_ptr<NPCActor> npcActor;
 	npcActor.reset(new NPCActor(npcType, position));
 
-	npcActor->setPosition(0, 0);
+	npcActor->setPosition(position);
 	npcActor->assign(actorIdTracker.addActor());
 	npcActor->registerLuaStateMachine();
 
