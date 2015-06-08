@@ -17,7 +17,7 @@ World::World()
 	std::shared_ptr<PlayerActor> playerActor;
 	playerActor.reset(new PlayerActor());
 
-	playerActor->setPosition(0, 0);
+	playerActor->setPosition(100, 100);
 	playerActor->setSize(32);
 	playerActor->assign(m_actorIdTracker->addActor());
 	m_camera->trackActor(playerActor);
@@ -25,14 +25,14 @@ World::World()
 	m_actorManager->addActor(playerActor);
 
 	for (int i = 0; i < 25; ++i)
-		m_npcSpawner->spawn("test", {0, 0}, *m_actorManager, *m_actorIdTracker);
+		m_npcSpawner->spawn("test", {(float)(rand()%100), (float)(rand()%100)}, *m_actorManager, *m_actorIdTracker);
 
 	Object object;
-	int rocks = 50;
+	int rocks = 1000;
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);
-		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%250), std::sin(angle)*(rand()%250)});
+		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%1250), std::sin(angle)*(rand()%1250)});
 
 		object.setPolygon(polygon);
 		addObject(object);
@@ -49,9 +49,9 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
-		if (!space)
+		//if (!space)
 		{
-			m_npcSpawner->spawn("test", {32, 32}, *m_actorManager, *m_actorIdTracker);
+			m_npcSpawner->spawn("test", m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 				m_camera->zoom(1.1f);
@@ -59,27 +59,18 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 				m_camera->zoom(.9f);
 		}
 
-		dt /= 2;
+		//dt /= 2;
 	}
 	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 
 	m_camera->update();
-	m_actorManager->update(dt, m_camera->getBounds<int>());
+	m_actorManager->update(dt, sf::Rect<int>(m_camera->getCenter().x - m_camera->getSize().x, m_camera->getCenter().y - m_camera->getSize().y, m_camera->getSize().x*2, m_camera->getSize().y*2));
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(target, states);
-
-	sf::RectangleShape rect;
-	rect.setSize(sf::Vector2f(32, 32));
-	rect.setPosition(m_actorManager->getActor({0}).lock()->getPosition().x, m_actorManager->getActor({0}).lock()->getPosition().y);
-	rect.setOutlineThickness(2);
-	rect.setOutlineColor(sf::Color(255, 0, 255));
-	rect.setFillColor(sf::Color(255, 0, 255, 100));
-
-	target.draw(rect, states);
 }
 
 std::weak_ptr<Quadtree> World::getQuadtree() const

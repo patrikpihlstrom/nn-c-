@@ -6,6 +6,12 @@ NPCActor::NPCActor() :
 {
 }
 
+NPCActor::NPCActor(const std::string& npcType) :
+	Actor(),
+	m_npcType(npcType)
+{
+}
+
 NPCActor::NPCActor(const std::string& npcType, const sf::Vector2f& position) :
 	Actor(),
 	m_npcType(npcType)

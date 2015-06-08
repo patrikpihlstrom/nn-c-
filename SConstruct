@@ -4,7 +4,7 @@ libs = Split("""
 sfml-graphics
 sfml-window
 sfml-system
-lua5.2
+lua
 luabind
 """)
 

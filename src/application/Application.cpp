@@ -53,7 +53,7 @@ void Application::run()
 		}
 
 		float fps = 1/dt.getElapsedTime().asSeconds();
-		m_fpsText.setString("FPS: " + std::to_string(fps));
+		m_fpsText.setString("FPS: " + std::to_string(fps) + '\n' + "Actors: " + std::to_string(m_world.getActorManager().lock()->actorsSize()));
 		m_fpsText.setPosition(m_world.getCamera().getCenter().x + m_world.getCamera().getSize().x/2 - 100, m_world.getCamera().getCenter().y - m_world.getCamera().getSize().y/2);
 		m_fpsText.setColor(fps < 60 ? sf::Color(200, 50, 50):sf::Color(10, 10, 10));
 	}

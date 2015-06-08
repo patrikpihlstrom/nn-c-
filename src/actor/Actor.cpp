@@ -24,7 +24,7 @@ uint8_t Actor::getHealth() const
 	return m_health;
 }
 
-void Actor::setHealth(const uint8_t& health)
+void Actor::setHealth(const uint8_t health)
 {
 	m_health = health;
 }

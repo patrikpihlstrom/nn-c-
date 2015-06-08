@@ -37,12 +37,12 @@ end
 
 -- WANDER 
 
-State_Wander = {target = {x = 0, y = 0}}
+State_Wander = {target = {x = 0, y = 0}, angle = 0}
 
 State_Wander["Enter"] = function(actor)
 	State_Wander.target.x = math.random(-100, 100) + actor:getPositionX();
 	State_Wander.target.y = math.random(-100, 100) + actor:getPositionY();
-	angle = math.atan2(State_Wander.target.y - actor:getPositionY(), State_Wander.target.x - actor:getPositionX());
+	State_Wander.angle = math.atan2(State_Wander.target.y - actor:getPositionY(), State_Wander.target.x - actor:getPositionX());
 end
 
 State_Wander["Execute"] = function(actor)
@@ -52,8 +52,8 @@ State_Wander["Execute"] = function(actor)
 		actor:setVelocity(0, 0);
 		actor:changeState(State_Idle);
 	else
-		x = math.cos(angle)*distance;
-		y = math.sin(angle)*distance;
+		x = math.cos(State_Wander.angle)*distance;
+		y = math.sin(State_Wander.angle)*distance;
 		actor:setVelocity(x, y);
 	end
 end
