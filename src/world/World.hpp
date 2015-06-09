@@ -31,7 +31,7 @@ public:
 	Camera getCamera() const;
 	
 private:
-	bool space;
+	bool m_zooming;
 
 	void addObject(const Object& object);
 
@@ -43,5 +43,7 @@ private:
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ActorIdTracker> m_actorIdTracker;
 	std::unique_ptr<Camera> m_camera;
+
+	sf::Sprite m_sprite;
 };
 

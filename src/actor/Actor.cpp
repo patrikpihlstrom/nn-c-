@@ -60,22 +60,18 @@ void Actor::move(const float x, const float y)
 	m_bounds.top = getPosition().y;
 }
 
-void Actor::setSize(const uint8_t size)
+void Actor::setSize(const uint8_t width, const uint8_t height)
 {
-	m_size = size;
-
 	m_shape.setPointCount(4);
 	m_shape.setPoint(0, getPosition());
-	m_shape.setPoint(1, sf::Vector2f(getPosition().x + m_size, getPosition().y));
-	m_shape.setPoint(2, sf::Vector2f(getPosition().x + m_size, getPosition().y + m_size));
-	m_shape.setPoint(3, sf::Vector2f(getPosition().x, getPosition().y + m_size));
-
-	m_shape.setFillColor(sf::Color(255, 0, 0));
+	m_shape.setPoint(1, sf::Vector2f(getPosition().x + width, getPosition().y));
+	m_shape.setPoint(2, sf::Vector2f(getPosition().x + width, getPosition().y + height));
+	m_shape.setPoint(3, sf::Vector2f(getPosition().x, getPosition().y + height));
 
 	m_bounds.left = getPosition().x;
 	m_bounds.top = getPosition().y;
-	m_bounds.width = size;
-	m_bounds.height = size;
+	m_bounds.width = width;
+	m_bounds.height = height;
 }
 
 ActorId Actor::getId() const

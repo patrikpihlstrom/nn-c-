@@ -13,26 +13,28 @@ World::World()
 	m_camera.reset(new Camera());
 	m_camera->setSize(1600, 900);
 	m_textureHolder->loadTextures("assets/Textures.lst");
+	m_sprite.setTexture(*m_textureHolder->getTexture("test").lock());
 
 	std::shared_ptr<PlayerActor> playerActor;
 	playerActor.reset(new PlayerActor());
 
 	playerActor->setPosition(100, 100);
-	playerActor->setSize(32);
+	playerActor->setSize(16, 72);
+	playerActor->setTexture(m_textureHolder->getTexture("char"));
 	playerActor->assign(m_actorIdTracker->addActor());
 	m_camera->trackActor(playerActor);
 
 	m_actorManager->addActor(playerActor);
 
-	for (int i = 0; i < 25; ++i)
+	for (int i = 0; i < 0; ++i)
 		m_npcSpawner->spawn("test", {(float)(rand()%100), (float)(rand()%100)}, *m_actorManager, *m_actorIdTracker);
 
 	Object object;
-	int rocks = 1000;
+	int rocks = 0;
 	for (int j = 0; j < rocks; ++j)
 	{
 		float angle = j*((2*M_PI)/rocks);
-		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%1250), std::sin(angle)*(rand()%1250)});
+		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%2000), std::sin(angle)*(rand()%2000)});
 
 		object.setPolygon(polygon);
 		addObject(object);
@@ -48,20 +50,16 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 	float dt = deltaTime;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		m_npcSpawner->spawn("test", m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);
+
+	if (!m_zooming)
 	{
-		//if (!space)
-		{
-			m_npcSpawner->spawn("test", m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);
-
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-				m_camera->zoom(1.1f);
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-				m_camera->zoom(.9f);
-		}
-
-		//dt /= 2;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+			m_camera->zoom(1.1f);
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+			m_camera->zoom(.9f);
 	}
-	space = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
+	m_zooming = (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::LShift));
 
 	m_camera->update();
 	m_actorManager->update(dt, sf::Rect<int>(m_camera->getCenter().x - m_camera->getSize().x, m_camera->getCenter().y - m_camera->getSize().y, m_camera->getSize().x*2, m_camera->getSize().y*2));
@@ -69,6 +67,7 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	target.draw(m_sprite, states);
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(target, states);
 }

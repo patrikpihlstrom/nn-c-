@@ -39,12 +39,14 @@ public:
 	void setPositionMaster(const float x, const float y);
 	void setVelocity(const float x, const float y);
 	void move(const float x, const float y);
-	void setSize(const uint8_t size);
+	void setSize(const uint8_t width, const uint8_t height);
 
 	float getPositionX() const;
 	float getPositionY() const;
 	float getVelocityX() const;
 	float getVelocityY() const;
+
+	void setTexture(const sf::Texture& texture);
 	
 protected:
 	virtual void control();

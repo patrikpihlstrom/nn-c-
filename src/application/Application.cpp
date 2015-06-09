@@ -88,7 +88,8 @@ void Application::update(sf::Time deltaTime)
 
 void Application::render()
 {
-	m_window.clear(sf::Color(245, 241, 226));
+//	m_window.clear(sf::Color(245, 241, 226));
+	m_window.clear(sf::Color(188, 149, 108));
 	m_window.setView(m_world.getCamera());
 
 	m_window.draw(m_world);
