@@ -8,6 +8,7 @@ World::World()
 	m_objectIdTracker.reset(new ObjectIdTracker());
 	m_actorIdTracker.reset(new ActorIdTracker());
 	m_rockGenerator.reset(new RockGenerator());
+	m_pathGenerator.reset(new PathGenerator());
 	m_actorManager.reset(new ActorManager());
 	m_npcSpawner.reset(new NPCSpawner());
 	m_camera.reset(new Camera());
@@ -39,6 +40,12 @@ World::World()
 		object.setPolygon(polygon);
 		addObject(object);
 	}
+
+	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, 8, {1, 0}, 64, M_PI/16));
+	m_paths.push_back(m_pathGenerator->generatePath({0, 100}, 8, {1, 0}, 64, M_PI/16));
+	m_paths.push_back(m_pathGenerator->generatePath({0, 200}, 8, {1, 0}, 64, M_PI/16));
+	m_paths.push_back(m_pathGenerator->generatePath({0, 300}, 8, {1, 0}, 64, M_PI/16));
+	m_paths.push_back(m_pathGenerator->generatePath({0, 400}, 8, {1, 0}, 64, M_PI/16));
 }
 
 World::~World()
@@ -68,6 +75,10 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_sprite, states);
+
+	for (int i = 0; i < m_paths.size(); ++i)
+		target.draw(m_paths[i], states);
+
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(target, states);
 }

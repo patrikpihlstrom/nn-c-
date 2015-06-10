@@ -10,6 +10,7 @@
 #include "actor/NPCSpawner.hpp"
 #include "world/Quadtree.hpp"
 #include "world/procedural/RockGenerator.hpp"
+#include "world/procedural/PathGenerator.hpp"
 #include "application/TextureHolder.hpp"
 #include "application/Camera.hpp"
 #include "object/ObjectIdTracker.hpp"
@@ -39,10 +40,13 @@ private:
 	std::shared_ptr<ActorManager> m_actorManager;
 	std::shared_ptr<NPCSpawner> m_npcSpawner;
 	std::unique_ptr<RockGenerator> m_rockGenerator;
+	std::unique_ptr<PathGenerator> m_pathGenerator;
 	std::unique_ptr<TextureHolder> m_textureHolder;
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ActorIdTracker> m_actorIdTracker;
 	std::unique_ptr<Camera> m_camera;
+
+	std::vector<Path> m_paths;
 
 	sf::Sprite m_sprite;
 };

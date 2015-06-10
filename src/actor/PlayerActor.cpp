@@ -14,14 +14,14 @@ void PlayerActor::control()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		if (m_velocity.y > -TERMINAL_Y_WALK)
-			m_velocity.y -= 20;
+			m_velocity.y -= 10;
 		else
 			m_velocity.y = -TERMINAL_Y_WALK;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		if (m_velocity.y < TERMINAL_Y_WALK)
-			m_velocity.y += 20;
+			m_velocity.y += 10;
 		else
 			m_velocity.y = TERMINAL_Y_WALK;
 	}
@@ -36,14 +36,14 @@ void PlayerActor::control()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		if (m_velocity.x > -TERMINAL_X_WALK)
-			m_velocity.x -= 20;
+			m_velocity.x -= 10;
 		else
 			m_velocity.x = -TERMINAL_X_WALK;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		if (m_velocity.x < TERMINAL_X_WALK)
-			m_velocity.x += 20;
+			m_velocity.x += 10;
 		else
 			m_velocity.x = TERMINAL_X_WALK;
 	}
@@ -61,8 +61,6 @@ void PlayerActor::control()
 		m_velocity.x *= TERMINAL_X_WALK;
 		m_velocity.y *= TERMINAL_X_WALK;
 	}
-
-	std::cout << math::magnitude<float>(m_velocity) << std::endl;
 }
 
 bool PlayerActor::isPlayer() const
