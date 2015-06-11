@@ -45,8 +45,11 @@ public:
 	float getPositionY() const;
 	float getVelocityX() const;
 	float getVelocityY() const;
+	sf::Vector2<uint8_t> getSize() const;
 
 	void setTexture(const sf::Texture& texture);
+
+	bool operator<(const Actor& actor) const;
 	
 protected:
 	virtual void control();
@@ -56,7 +59,7 @@ protected:
 	sf::Rect<int> m_bounds;
 	
 	uint8_t m_health;
-	uint8_t m_size;
+	sf::Vector2<uint8_t> m_size;
 
 	sf::ConvexShape m_shape;
 

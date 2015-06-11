@@ -47,8 +47,19 @@ sf::Vector2f Path::getLast() const
 		return {0, 0};
 }
 
+void Path::build(const std::weak_ptr<sf::Texture> texture)
+{
+	m_sprites.resize(m_vertexArray.getVertexCount());
+	for (int i = 0; i < m_sprites.size(); ++i)
+	{
+		m_sprites[i].setTexture(*texture.lock());
+		m_sprites[i].setPosition(m_vertexArray[i].position);
+	}
+}
+
 void Path::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_vertexArray, states);
+	for (int i = 0; i < m_sprites.size(); ++i)
+		target.draw(m_sprites[i], states);
 }
 

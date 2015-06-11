@@ -24,5 +24,13 @@ public:
 private:
 	void deleteOutsiders(const sf::Rect<int>& bounds);
 	std::vector<std::shared_ptr<Actor>> m_actors;
+
+	struct ActorCompare
+	{
+		bool operator()(const std::shared_ptr<Actor> l, const std::shared_ptr<Actor> r)
+		{
+			return *l < *r;
+		}
+	};
 };
 

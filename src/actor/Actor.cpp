@@ -62,6 +62,8 @@ void Actor::move(const float x, const float y)
 
 void Actor::setSize(const uint8_t width, const uint8_t height)
 {
+	m_size = {width, height};
+
 	m_shape.setPointCount(4);
 	m_shape.setPoint(0, getPosition());
 	m_shape.setPoint(1, sf::Vector2f(getPosition().x + width, getPosition().y));
@@ -135,5 +137,15 @@ float Actor::getVelocityX() const
 float Actor::getVelocityY() const
 {
 	return m_velocity.y;
+}
+
+bool Actor::operator<(const Actor& actor) const
+{
+	return getPosition().y + m_size.y < actor.getPosition().y + actor.getSize().y;
+}
+
+sf::Vector2<uint8_t> Actor::getSize() const
+{
+	return m_size;
 }
 

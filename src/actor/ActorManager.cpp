@@ -43,6 +43,8 @@ void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 		(*it)->update(deltaTime);
+
+	std::sort(m_actors.begin(), m_actors.end(), ActorCompare());
 }
 
 void ActorManager::draw(sf::RenderTarget& target, sf::RenderStates states) const

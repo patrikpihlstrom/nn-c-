@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics.hpp>
@@ -22,9 +23,12 @@ public:
 	sf::Vector2f getFirst() const;
 	sf::Vector2f getLast() const;
 
+	void build(const std::weak_ptr<sf::Texture> texture);
+
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
 	sf::VertexArray m_vertexArray;
+	std::vector<sf::Sprite> m_sprites;
 };
 

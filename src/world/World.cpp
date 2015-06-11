@@ -19,7 +19,7 @@ World::World()
 	std::shared_ptr<PlayerActor> playerActor;
 	playerActor.reset(new PlayerActor());
 
-	playerActor->setPosition(100, 100);
+	playerActor->setPosition(0, 0);
 	playerActor->setSize(16, 72);
 	playerActor->setTexture(m_textureHolder->getTexture("char"));
 	playerActor->assign(m_actorIdTracker->addActor());
@@ -41,11 +41,11 @@ World::World()
 		addObject(object);
 	}
 
-	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, 8, {1, 0}, 64, M_PI/16));
-	m_paths.push_back(m_pathGenerator->generatePath({0, 100}, 8, {1, 0}, 64, M_PI/16));
-	m_paths.push_back(m_pathGenerator->generatePath({0, 200}, 8, {1, 0}, 64, M_PI/16));
-	m_paths.push_back(m_pathGenerator->generatePath({0, 300}, 8, {1, 0}, 64, M_PI/16));
-	m_paths.push_back(m_pathGenerator->generatePath({0, 400}, 8, {1, 0}, 64, M_PI/16));
+	m_pathGenerator->setTexture(m_textureHolder->getTexture("thing"));
+	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, 16, {0, -1}, 32, M_PI/8));
+
+//	for (int i = 0; i < 1; ++i)
+//		m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 8, {-1, 0}, 32, M_PI/16));
 }
 
 World::~World()
@@ -74,7 +74,7 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_sprite, states);
+	//target.draw(m_sprite, states);
 
 	for (int i = 0; i < m_paths.size(); ++i)
 		target.draw(m_paths[i], states);
