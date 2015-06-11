@@ -5,8 +5,8 @@ State_Init = {}
 
 State_Init["Enter"] = function(actor)
 	actor:setHealth(100);
-	width = math.random(4, 32);
-	height = width*(math.random(20, 45)/10);
+	width = 16;--math.random(4, 32);
+	height = 72;--width*(math.random(20, 45)/10);
 	actor:setSize(width, height);
 	actor:changeState(State_Wander);
 end
@@ -54,8 +54,8 @@ State_Wander["Execute"] = function(actor)
 		actor:setVelocity(0, 0);
 		actor:changeState(State_Idle);
 	else
-		x = math.cos(State_Wander.angle)*distance;
-		y = math.sin(State_Wander.angle)*distance;
+		x = math.cos(State_Wander.angle)*100;
+		y = math.sin(State_Wander.angle)*100;
 		actor:setVelocity(x, y);
 	end
 end

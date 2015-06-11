@@ -12,6 +12,6 @@ public:
 	NPCSpawner();
 	~NPCSpawner();
 
-	void spawn(const std::string& npcType, const sf::Vector2f& position, ActorManager& actorManager, ActorIdTracker& actorIdTracker);
+	void spawn(const std::string& npcType, const std::weak_ptr<sf::Texture> texture, const sf::Vector2f& position, ActorManager& actorManager, ActorIdTracker& actorIdTracker);
 };
 

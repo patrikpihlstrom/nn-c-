@@ -28,7 +28,7 @@ World::World()
 	m_actorManager->addActor(playerActor);
 
 	for (int i = 0; i < 0; ++i)
-		m_npcSpawner->spawn("test", {(float)(rand()%100), (float)(rand()%100)}, *m_actorManager, *m_actorIdTracker);
+		m_npcSpawner->spawn("test", m_textureHolder->getTexture("char"), {(float)(rand()%100), (float)(rand()%100)}, *m_actorManager, *m_actorIdTracker);
 
 	Object object;
 	int rocks = 0;
@@ -41,8 +41,16 @@ World::World()
 		addObject(object);
 	}
 
+	float deviation = M_PI/4;
 	m_pathGenerator->setTexture(m_textureHolder->getTexture("thing"));
-	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, 16, {0, -1}, 32, M_PI/8));
+	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, 4, {0, -1}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.125, -.875}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.25, -.75}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.5, -.625}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.625, -.5}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.75, -.25}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.875, -.125}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {1, 0}, 32, deviation));
 
 //	for (int i = 0; i < 1; ++i)
 //		m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 8, {-1, 0}, 32, M_PI/16));
@@ -57,7 +65,7 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 	float dt = deltaTime;
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		m_npcSpawner->spawn("test", m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);
+		m_npcSpawner->spawn("test", m_textureHolder->getTexture("char"), m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);
 
 	if (!m_zooming)
 	{
