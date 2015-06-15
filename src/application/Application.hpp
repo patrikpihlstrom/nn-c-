@@ -35,7 +35,7 @@ private:
 	sf::Font m_font;
 	sf::Text m_fpsText;
 
-	World m_world;
+	std::unique_ptr<World> m_world;
 
 	sf::RenderWindow m_window;
 };

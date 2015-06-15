@@ -1,7 +1,8 @@
 #include "World.hpp"
 
 
-World::World()
+World::World(const uint8_t& seed) :
+	m_seed(seed)
 {
 	m_quadtree.reset(new Quadtree(sf::Rect<int>(-2048*5, -2048*5, 2048*10, 2048*10), 0));
 	m_textureHolder.reset(new TextureHolder());
@@ -16,16 +17,14 @@ World::World()
 	m_textureHolder->loadTextures("assets/Textures.lst");
 	m_sprite.setTexture(*m_textureHolder->getTexture("test").lock());
 
-	std::shared_ptr<PlayerActor> playerActor;
-	playerActor.reset(new PlayerActor());
+	m_playerActor.reset(new PlayerActor());
+	m_playerActor->setPosition(16000, 16000);
+	m_playerActor->setSize(16, 72);
+	m_playerActor->setTexture(m_textureHolder->getTexture("char"));
+	m_playerActor->assign(m_actorIdTracker->addActor());
+	m_camera->trackActor(m_playerActor);
 
-	playerActor->setPosition(0, 0);
-	playerActor->setSize(16, 72);
-	playerActor->setTexture(m_textureHolder->getTexture("char"));
-	playerActor->assign(m_actorIdTracker->addActor());
-	m_camera->trackActor(playerActor);
-
-	m_actorManager->addActor(playerActor);
+	m_actorManager->addActor(m_playerActor);
 
 	for (int i = 0; i < 0; ++i)
 		m_npcSpawner->spawn("test", m_textureHolder->getTexture("char"), {(float)(rand()%100), (float)(rand()%100)}, *m_actorManager, *m_actorIdTracker);
@@ -41,19 +40,14 @@ World::World()
 		addObject(object);
 	}
 
-	float deviation = M_PI/4;
 	m_pathGenerator->setTexture(m_textureHolder->getTexture("thing"));
-	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, 4, {0, -1}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.125, -.875}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.25, -.75}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.5, -.625}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.625, -.5}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.75, -.25}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {.875, -.125}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 4, {1, 0}, 32, deviation));
-
-//	for (int i = 0; i < 1; ++i)
-//		m_paths.push_back(m_pathGenerator->generatePath(m_paths.back().getLast(), 8, {-1, 0}, 32, M_PI/16));
+	/*float deviation = M_PI/8;
+	m_paths.push_back(m_pathGenerator->generatePath({-128, 0}, {256, 1024}, 32, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, {128, 128}, 4, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath({128, 128}, {192, 256}, 4, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath({192, 256}, {256, 512}, 8, deviation));
+	m_paths.push_back(m_pathGenerator->generatePath({256, 512}, {256, 1024}, 16, deviation));
+	*/
 }
 
 World::~World()
@@ -78,14 +72,17 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 
 	m_camera->update();
 	m_actorManager->update(dt, sf::Rect<int>(m_camera->getCenter().x - m_camera->getSize().x, m_camera->getCenter().y - m_camera->getSize().y, m_camera->getSize().x*2, m_camera->getSize().y*2));
+
+	addChunks(m_playerActor->getPosition());
+	removeChunks(m_playerActor->getPosition());
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	//target.draw(m_sprite, states);
 
-	for (int i = 0; i < m_paths.size(); ++i)
-		target.draw(m_paths[i], states);
+	for (auto it = m_chunks.begin(); it != m_chunks.end(); ++it)
+		it->second->draw(target, states);
 
 	m_quadtree->draw(m_camera->getBounds<int>(), target, states);
 	m_actorManager->draw(target, states);
@@ -111,5 +108,48 @@ void World::addObject(const Object& object)
 	std::shared_ptr<Object >newObject(new Object(object));
 	newObject->assign(m_objectIdTracker->addObject());
 	m_quadtree->insert(newObject);
+}
+
+void World::addChunks(const sf::Vector2f& position)
+{
+	for (int x = position.x/CHUNK_SIZE - m_camera->getSize().x/2/CHUNK_SIZE - 1, y = position.y/CHUNK_SIZE - m_camera->getSize().y/2/CHUNK_SIZE - 1; x < position.x/CHUNK_SIZE + m_camera->getSize().x/2/CHUNK_SIZE + 1; ++x)
+	{
+		for (y = position.y/CHUNK_SIZE - m_camera->getSize().y/2/CHUNK_SIZE - 1; y < position.y/CHUNK_SIZE + m_camera->getSize().y/2/CHUNK_SIZE + 1; ++y)
+		{
+			auto chunk = m_chunks.find({x, y});
+
+			if (chunk == m_chunks.end())
+			{
+				addChunk({x*CHUNK_SIZE, y*CHUNK_SIZE});
+			}
+		}
+	}
+}
+
+void World::addChunk(const sf::Vector2i& position)
+{
+	int seed = 51;
+	seed = ((seed + position.x + m_seed) << 5) - (seed + position.x + m_seed);
+	seed = ((seed + position.y + m_seed) << 5) - (seed + position.y + m_seed);
+	srand(seed);
+
+	Chunk chunk;
+	chunk.setPosition((sf::Vector2f)position);
+
+	chunk.setColor(sf::Color(rand()%255, rand()%255, rand()%255));
+
+	m_chunks.insert(std::pair<sf::Vector2i, std::shared_ptr<Chunk>>(position, std::shared_ptr<Chunk>(new Chunk(chunk))));
+}
+
+void World::removeChunks(const sf::Vector2f& position)
+{
+	auto it = m_chunks.begin();
+	while (it != m_chunks.end())
+	{
+		if (it->second->getPosition().x + CHUNK_SIZE < m_camera->getCenter().x - m_camera->getSize().x/2 || it->second->getPosition().x > m_camera->getCenter().x + m_camera->getSize().x/2 || it->second->getPosition().y + CHUNK_SIZE < m_camera->getCenter().y - m_camera->getSize().y/2 || it->second->getPosition().y > m_camera->getCenter().y + m_camera->getSize().y/2)
+			it = m_chunks.erase(it);
+		else
+			++it;
+	}
 }
 

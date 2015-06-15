@@ -11,6 +11,7 @@
 #include "world/Quadtree.hpp"
 #include "world/procedural/RockGenerator.hpp"
 #include "world/procedural/PathGenerator.hpp"
+#include "world/Chunk.hpp"
 #include "application/TextureHolder.hpp"
 #include "application/Camera.hpp"
 #include "object/ObjectIdTracker.hpp"
@@ -20,7 +21,7 @@
 class World : public sf::Drawable
 {
 public:
-	World();
+	World(const uint8_t& seed);
 	~World();
 
 	void update(const float& deltaTime, const sf::RenderWindow& window);
@@ -45,9 +46,31 @@ private:
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ActorIdTracker> m_actorIdTracker;
 	std::unique_ptr<Camera> m_camera;
+	
+	std::shared_ptr<PlayerActor> m_playerActor;
 
 	std::vector<Path> m_paths;
 
 	sf::Sprite m_sprite;
+
+	void addChunks(const sf::Vector2f& position); // Add chunks close to the player's position.
+	void addChunk(const sf::Vector2i& position); // Called by World::addChunks(position).
+
+	void removeChunks(const sf::Vector2f& position); // Remove chunks far from the player's position.
+
+	struct Hash
+	{
+		std::size_t operator()(const sf::Vector2i& key) const
+		{
+			int hash = 51;
+			hash = ((hash + key.x) << 5) - (hash + key.x);
+			hash = ((hash + key.y) << 5) - (hash + key.y);
+			return hash;
+		}
+	};
+
+	uint8_t m_seed;
+
+	std::unordered_map<sf::Vector2i, std::shared_ptr<Chunk>, Hash> m_chunks;
 };
 

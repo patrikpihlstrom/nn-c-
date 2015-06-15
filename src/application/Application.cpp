@@ -23,6 +23,8 @@ void Application::initialize()
 	m_fpsText.setStyle(sf::Text::Regular);
 	m_fpsText.setPosition(1500, 0);
 
+	m_world.reset(new World(time(NULL)));
+
 	m_running = true;
 	m_active = true;
 }
@@ -53,8 +55,8 @@ void Application::run()
 		}
 
 		float fps = 1/dt.getElapsedTime().asSeconds();
-		m_fpsText.setString("FPS: " + std::to_string(fps) + '\n' + "Actors: " + std::to_string(m_world.getActorManager().lock()->actorsSize()));
-		m_fpsText.setPosition(m_world.getCamera().getCenter().x + m_world.getCamera().getSize().x/2 - 100, m_world.getCamera().getCenter().y - m_world.getCamera().getSize().y/2);
+		m_fpsText.setString("FPS: " + std::to_string(fps) + '\n' + "Actors: " + std::to_string(m_world->getActorManager().lock()->actorsSize()));
+		m_fpsText.setPosition(m_world->getCamera().getCenter().x + m_world->getCamera().getSize().x/2 - 100, m_world->getCamera().getCenter().y - m_world->getCamera().getSize().y/2);
 		m_fpsText.setColor(fps < 60 ? sf::Color(200, 50, 50):sf::Color(10, 10, 10));
 	}
 }
@@ -83,16 +85,16 @@ void Application::handleEvents()
 
 void Application::update(sf::Time deltaTime)
 {
-	m_world.update(deltaTime.asSeconds(), m_window);
+	m_world->update(deltaTime.asSeconds(), m_window);
 }
 
 void Application::render()
 {
 //	m_window.clear(sf::Color(245, 241, 226));
 	m_window.clear(sf::Color(188, 149, 108));
-	m_window.setView(m_world.getCamera());
+	m_window.setView(m_world->getCamera());
 
-	m_window.draw(m_world);
+	m_window.draw(*m_world);
 	m_window.draw(m_fpsText);
 
 	m_window.display();
