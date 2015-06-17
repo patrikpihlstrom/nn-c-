@@ -19,6 +19,11 @@ void Chunk::setColor(const sf::Color color)
 	m_color = color;
 }
 
+void Chunk::build()
+{
+
+}
+
 void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	sf::RectangleShape rectShape;

@@ -21,7 +21,7 @@
 class World : public sf::Drawable
 {
 public:
-	World(const uint8_t& seed);
+	World(const long& seed);
 	~World();
 
 	void update(const float& deltaTime, const sf::RenderWindow& window);
@@ -69,7 +69,7 @@ private:
 		}
 	};
 
-	uint8_t m_seed;
+	long m_seed;
 
 	std::unordered_map<sf::Vector2i, std::shared_ptr<Chunk>, Hash> m_chunks;
 };

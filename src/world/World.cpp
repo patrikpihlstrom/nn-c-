@@ -1,9 +1,14 @@
 #include "World.hpp"
 
 
-World::World(const uint8_t& seed) :
+World::World(const long& seed) :
 	m_seed(seed)
 {
+	std::string _seed = std::to_string(m_seed);
+	_seed = _seed.substr(_seed.size() - 3, _seed.size());
+	m_seed = std::atoi(_seed.c_str());
+
+	std::cout << "SEED: " << m_seed << std::endl;
 	m_quadtree.reset(new Quadtree(sf::Rect<int>(-2048*5, -2048*5, 2048*10, 2048*10), 0));
 	m_textureHolder.reset(new TextureHolder());
 	m_objectIdTracker.reset(new ObjectIdTracker());
@@ -128,16 +133,9 @@ void World::addChunks(const sf::Vector2f& position)
 
 void World::addChunk(const sf::Vector2i& position)
 {
-	int seed = 51;
-	seed = ((seed + position.x + m_seed) << 5) - (seed + position.x + m_seed);
-	seed = ((seed + position.y + m_seed) << 5) - (seed + position.y + m_seed);
-	srand(seed);
-
 	Chunk chunk;
 	chunk.setPosition((sf::Vector2f)position);
-
-	chunk.setColor(sf::Color(rand()%255, rand()%255, rand()%255));
-
+	chunk.build();
 	m_chunks.insert(std::pair<sf::Vector2i, std::shared_ptr<Chunk>>(position, std::shared_ptr<Chunk>(new Chunk(chunk))));
 }
 

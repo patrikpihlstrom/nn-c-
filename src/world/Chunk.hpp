@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-const static uint16_t CHUNK_SIZE = 64;
+const static uint16_t CHUNK_SIZE = 256;
 
 class Chunk : public sf::Drawable, public sf::Transformable
 {
@@ -12,6 +12,8 @@ public:
 
 	sf::Color getColor() const;
 	void setColor(const sf::Color color);
+
+	void build();
 	
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
