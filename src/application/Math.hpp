@@ -3,6 +3,10 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
 
+#ifdef _WIN32 || _WIN64
+#define _USE_MATH_DEFINES
+#endif
+
 #include <math.h>
 #include <cmath>
 #include <limits>

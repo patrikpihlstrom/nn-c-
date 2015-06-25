@@ -2,6 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 
+#ifdef _WIN32 || _WIN64
+#include <sys\types.h>
+#endif
+
 const static uint16_t CHUNK_SIZE = 256;
 
 class Chunk : public sf::Drawable, public sf::Transformable
