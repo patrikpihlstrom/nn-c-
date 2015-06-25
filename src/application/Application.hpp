@@ -5,7 +5,12 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
+
+#ifdef __linux__
 #include <unistd.h>
+#elif _WIN32 ||_WIN64
+#include <sys/types.h>
+#endif
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
