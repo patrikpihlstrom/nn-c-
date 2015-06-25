@@ -78,8 +78,8 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 	m_camera->update();
 	m_actorManager->update(dt, sf::Rect<int>(m_camera->getCenter().x - m_camera->getSize().x, m_camera->getCenter().y - m_camera->getSize().y, m_camera->getSize().x*2, m_camera->getSize().y*2));
 
-	addChunks(m_playerActor->getPosition());
-	removeChunks(m_playerActor->getPosition());
+	//addChunks(m_playerActor->getPosition());
+	//removeChunks(m_playerActor->getPosition());
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const

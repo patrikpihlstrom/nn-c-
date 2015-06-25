@@ -9,6 +9,16 @@ Chunk::~Chunk()
 {
 }
 
+void Chunk::build()
+{
+
+}
+
+std::weak_ptr<Quadtree> Chunk::getQuadtree() const
+{
+	return m_quadtree;
+}
+
 sf::Color Chunk::getColor() const
 {
 	return m_color;
@@ -17,11 +27,6 @@ sf::Color Chunk::getColor() const
 void Chunk::setColor(const sf::Color color)
 {
 	m_color = color;
-}
-
-void Chunk::build()
-{
-
 }
 
 void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const
