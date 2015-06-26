@@ -2,6 +2,9 @@
 *.swp
 *.swo
 *.out
+Debug/
+Release/
+Tribal*
 No-Motivation
 .sconsign.dblite
 

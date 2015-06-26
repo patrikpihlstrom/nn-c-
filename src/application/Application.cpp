@@ -16,8 +16,13 @@ void Application::initialize()
 	settings.antialiasingLevel = 8;
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
+	m_window.setFramerateLimit(120);
 
-	m_font.loadFromFile("SourceCodePro-Regular.ttf");
+	if (!m_font.loadFromFile("SourceCodePro-Regular.ttf"))
+	{
+		std::cout << "Error loading font." << std::endl;
+	}
+
 	m_fpsText = sf::Text("NULL", m_font);
 	m_fpsText.setCharacterSize(11);
 	m_fpsText.setStyle(sf::Text::Regular);
