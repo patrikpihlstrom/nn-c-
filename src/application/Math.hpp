@@ -3,7 +3,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
 
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
 #define _USE_MATH_DEFINES
 #endif
 
