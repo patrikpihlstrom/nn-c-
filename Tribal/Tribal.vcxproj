@@ -92,6 +92,7 @@
     <ClCompile Include="..\src\object\ObjectIdTracker.cpp" />
     <ClCompile Include="..\src\world\Chunk.cpp" />
     <ClCompile Include="..\src\world\Path.cpp" />
+    <ClCompile Include="..\src\world\procedural\Noise.cpp" />
     <ClCompile Include="..\src\world\procedural\PathGenerator.cpp" />
     <ClCompile Include="..\src\world\procedural\RockGenerator.cpp" />
     <ClCompile Include="..\src\world\Quadtree.cpp" />
@@ -116,6 +117,7 @@
     <ClInclude Include="..\src\object\ObjectIdTracker.hpp" />
     <ClInclude Include="..\src\world\Chunk.hpp" />
     <ClInclude Include="..\src\world\Path.hpp" />
+    <ClInclude Include="..\src\world\procedural\Noise.hpp" />
     <ClInclude Include="..\src\world\procedural\PathGenerator.hpp" />
     <ClInclude Include="..\src\world\procedural\RockGenerator.hpp" />
     <ClInclude Include="..\src\world\Quadtree.hpp" />
