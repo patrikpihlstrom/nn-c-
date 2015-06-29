@@ -105,6 +105,9 @@
     <ClCompile Include="..\src\world\Quadtree.cpp">
       <Filter>Source Files\world</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\world\procedural\Noise.cpp">
+      <Filter>Source Files\world\procedural</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\world\procedural\RockGenerator.cpp">
       <Filter>Source Files\world\procedural</Filter>
     </ClCompile>
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="..\src\world\Quadtree.hpp">
       <Filter>Header Files\world</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\world\procedural\Noise.hpp">
+      <Filter>Header Files\world\procedural</Filter>
     </ClInclude>
     <ClInclude Include="..\src\world\procedural\RockGenerator.hpp">
       <Filter>Header Files\world\procedural</Filter>
