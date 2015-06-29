@@ -9,6 +9,7 @@
 #include "actor/ActorIdTracker.hpp"
 #include "actor/NPCSpawner.hpp"
 #include "world/Quadtree.hpp"
+#include "world/procedural/Noise.hpp"
 #include "world/procedural/RockGenerator.hpp"
 #include "world/procedural/PathGenerator.hpp"
 #include "world/Chunk.hpp"
@@ -46,12 +47,9 @@ private:
 	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
 	std::unique_ptr<ActorIdTracker> m_actorIdTracker;
 	std::unique_ptr<Camera> m_camera;
+	std::unique_ptr<Noise> m_noise;
 	
 	std::shared_ptr<PlayerActor> m_playerActor;
-
-	std::vector<Path> m_paths;
-
-	sf::Sprite m_sprite;
 
 	void addChunks(const sf::Vector2f& position); // Add chunks close to the player's position.
 	void addChunk(const sf::Vector2i& position); // Called by World::addChunks(position).

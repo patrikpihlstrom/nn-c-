@@ -17,10 +17,18 @@ World::World(const long& seed) :
 	m_pathGenerator.reset(new PathGenerator());
 	m_actorManager.reset(new ActorManager());
 	m_npcSpawner.reset(new NPCSpawner());
+	m_noise.reset(new Noise());
 	m_camera.reset(new Camera());
+
+	m_noise->setSeed(m_seed);
+	m_noise->setPersistence(1);
+	m_noise->setFrequency(.01);
+	m_noise->setAmplitude(1);
+	m_noise->setOctaves(1);
+
 	m_camera->setSize(1600, 900);
+
 	m_textureHolder->loadTextures("assets/Textures.lst");
-	m_sprite.setTexture(*m_textureHolder->getTexture("test").lock());
 
 	m_playerActor.reset(new PlayerActor());
 	m_playerActor->setPosition(16000, 16000);
@@ -30,29 +38,6 @@ World::World(const long& seed) :
 	m_camera->trackActor(m_playerActor);
 
 	m_actorManager->addActor(m_playerActor);
-
-	for (int i = 0; i < 0; ++i)
-		m_npcSpawner->spawn("test", m_textureHolder->getTexture("char"), {(float)(rand()%100), (float)(rand()%100)}, *m_actorManager, *m_actorIdTracker);
-
-	Object object;
-	int rocks = 0;
-	for (int j = 0; j < rocks; ++j)
-	{
-		float angle = j*((2*M_PI)/rocks);
-		auto polygon = m_rockGenerator->getRock(3 + rand()%5, {2, 1}, {std::cos(angle)*(rand()%2000), std::sin(angle)*(rand()%2000)});
-
-		object.setPolygon(polygon);
-		addObject(object);
-	}
-
-	m_pathGenerator->setTexture(m_textureHolder->getTexture("thing"));
-	/*float deviation = M_PI/8;
-	m_paths.push_back(m_pathGenerator->generatePath({-128, 0}, {256, 1024}, 32, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath({0, 0}, {128, 128}, 4, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath({128, 128}, {192, 256}, 4, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath({192, 256}, {256, 512}, 8, deviation));
-	m_paths.push_back(m_pathGenerator->generatePath({256, 512}, {256, 1024}, 16, deviation));
-	*/
 }
 
 World::~World()
@@ -78,8 +63,8 @@ void World::update(const float& deltaTime, const sf::RenderWindow& window)
 	m_camera->update();
 	m_actorManager->update(dt, sf::Rect<int>(m_camera->getCenter().x - m_camera->getSize().x, m_camera->getCenter().y - m_camera->getSize().y, m_camera->getSize().x*2, m_camera->getSize().y*2));
 
-	//addChunks(m_playerActor->getPosition());
-	//removeChunks(m_playerActor->getPosition());
+	addChunks(m_playerActor->getPosition());
+	removeChunks(m_playerActor->getPosition());
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -135,7 +120,8 @@ void World::addChunk(const sf::Vector2i& position)
 {
 	Chunk chunk;
 	chunk.setPosition((sf::Vector2f)position);
-	chunk.build();
+	auto noise = m_noise->getHeight(position.x/CHUNK_SIZE, position.y/CHUNK_SIZE);
+	chunk.build(std::abs(noise));
 	m_chunks.insert(std::pair<sf::Vector2i, std::shared_ptr<Chunk>>(position, std::shared_ptr<Chunk>(new Chunk(chunk))));
 }
 

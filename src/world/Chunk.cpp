@@ -9,9 +9,9 @@ Chunk::~Chunk()
 {
 }
 
-void Chunk::build()
+void Chunk::build(const double noise)
 {
-
+	setColor(sf::Color(255*noise, 255*noise, 255*noise));
 }
 
 std::weak_ptr<Quadtree> Chunk::getQuadtree() const

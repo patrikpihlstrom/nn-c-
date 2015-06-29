@@ -16,7 +16,7 @@ public:
 	Chunk();
 	~Chunk();
 	
-	void build();
+	void build(const double noise);
 
 	std::weak_ptr<Quadtree> getQuadtree() const;
 
