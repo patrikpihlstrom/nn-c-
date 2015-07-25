@@ -28,7 +28,7 @@ void Application::initialize()
 	m_fpsText.setStyle(sf::Text::Regular);
 	m_fpsText.setPosition(1500, 0);
 
-	m_world.reset(new World(time(NULL)));
+	m_currentState.reset(new GameState());
 
 	m_running = true;
 	m_active = true;
@@ -55,14 +55,18 @@ void Application::run()
 		render();
 		while (deltaTime > updateTime)
 		{
-			update(updateTime);
+			update(updateTime.asSeconds());
 			deltaTime -= updateTime;
 		}
 
-		float fps = 1/dt.getElapsedTime().asSeconds();
-		m_fpsText.setString("FPS: " + std::to_string(fps) + '\n' + "Actors: " + std::to_string(m_world->getActorManager().lock()->actorsSize()));
-		m_fpsText.setPosition(m_world->getCamera().getCenter().x + m_world->getCamera().getSize().x/2 - 100, m_world->getCamera().getCenter().y - m_world->getCamera().getSize().y/2);
-		m_fpsText.setColor(fps < 60 ? sf::Color(200, 50, 50):sf::Color(10, 10, 10));
+	/*	if (auto camera = m_world->getCamera().lock())
+		{
+			float fps = 1/dt.getElapsedTime().asSeconds();
+			m_fpsText.setString("FPS: " + std::to_string(fps) + '\n' + "Actors: " + std::to_string(m_world->getActorManager().lock()->actorsSize()));
+			m_fpsText.setPosition(camera->getCenter().x + camera->getSize().x/2 - 100, camera->getCenter().y - camera->getSize().y/2);
+			m_fpsText.setColor(fps < 60 ? sf::Color(200, 50, 50):sf::Color(10, 10, 10));
+		}
+		*/
 	}
 }
 
@@ -77,31 +81,86 @@ void Application::handleEvents()
 			m_window.close();
 			m_running = false;
 		}
-		else if (event.type == sf::Event::KeyPressed)
+		/*else if (event.type == sf::Event::KeyPressed)
 		{
 			if (event.key.code == sf::Keyboard::Escape)
 			{
 				m_window.close();
 				m_running = false;
 			}
-		}
+		}*/
 	}
 }
 
-void Application::update(sf::Time deltaTime)
+void Application::update(const float& deltaTime)
 {
-	m_world->update(deltaTime.asSeconds(), m_window);
+	if (m_currentState)
+	{
+		auto signals = m_currentState->getSignals();
+
+		for (int i = 0; i < signals.size(); ++i)
+		{
+			switch (signals[i])
+			{
+				case Signal::Exit:
+					m_running = false;
+					return;
+				break;
+
+				case Signal::Switch:
+					switchStates();
+				break;
+			}
+		}
+
+		m_currentState->clearSignals();
+		m_currentState->update(deltaTime);
+	}
 }
 
 void Application::render()
 {
 //	m_window.clear(sf::Color(245, 241, 226));
 	m_window.clear(sf::Color(188, 149, 108));
-	m_window.setView(m_world->getCamera());
 
-	m_window.draw(*m_world);
+	/*if (auto camera = m_world->getCamera().lock())
+		m_window.setView(*camera);
+
 	m_window.draw(m_fpsText);
+	*/
+
+	if (m_currentState)
+		m_window.draw(*m_currentState);
 
 	m_window.display();
+}
+
+void Application::switchStates()
+{
+	std::cout << "Switching states" << std::endl;
+
+	if (!m_previousState)
+	{
+		switch (m_currentState->getStateType())
+		{
+			case StateType::Menu:
+				m_previousState.swap(m_currentState);
+				m_currentState.reset(new GameState());
+			break;
+
+			case StateType::Game:
+				m_previousState.swap(m_currentState);
+				m_currentState.reset(new MenuState());
+			break;
+
+			default:
+				std::cout << "Unrecognized state type: " << (int)(m_currentState->getStateType()) << std::endl;
+			break;
+		}
+	}
+	else
+		m_previousState.swap(m_currentState);
+
+	m_currentState->enter();
 }
 

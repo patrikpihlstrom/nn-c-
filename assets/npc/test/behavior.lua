@@ -63,3 +63,16 @@ end
 State_Wander["Exit"] = function(actor)
 end
 
+-- FOLLOW
+
+State_Follow = {targetID = -1}
+
+State_Follow["Enter"] = function(actor)
+end
+
+State_Follow["Execute"] = function(actor)
+end
+
+State_Follow["Exit"] = function(actor)
+end
+

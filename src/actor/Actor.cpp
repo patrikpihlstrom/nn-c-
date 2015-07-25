@@ -56,8 +56,6 @@ void Actor::move(const float x, const float y)
 {
 	m_shape.move(x, y);
 	this->Transformable::move(x, y);
-	m_bounds.left = getPosition().x;
-	m_bounds.top = getPosition().y;
 }
 
 void Actor::setSize(const uint8_t width, const uint8_t height)
@@ -69,11 +67,6 @@ void Actor::setSize(const uint8_t width, const uint8_t height)
 	m_shape.setPoint(1, sf::Vector2f(getPosition().x + width, getPosition().y));
 	m_shape.setPoint(2, sf::Vector2f(getPosition().x + width, getPosition().y + height));
 	m_shape.setPoint(3, sf::Vector2f(getPosition().x, getPosition().y + height));
-
-	m_bounds.left = getPosition().x;
-	m_bounds.top = getPosition().y;
-	m_bounds.width = width;
-	m_bounds.height = height;
 }
 
 ActorId Actor::getId() const
@@ -84,16 +77,6 @@ ActorId Actor::getId() const
 void Actor::assign(const ActorId& id)
 {
 	m_id = id;
-}
-
-sf::Rect<int> Actor::getBounds() const
-{
-	return m_bounds;
-}
-
-void Actor::setBounds(const sf::Rect<int>& bounds)
-{
-	m_bounds = bounds;
 }
 
 sf::ConvexShape Actor::getShape() const
@@ -110,8 +93,6 @@ void Actor::setPositionMaster(const float x, const float y)
 {
 	m_shape.setPosition(x, y);
 	setPosition(x, y);
-	m_bounds.left = getPosition().x;
-	m_bounds.top = getPosition().y;
 }
 
 void Actor::setVelocity(const float x, const float y)
@@ -147,5 +128,10 @@ bool Actor::operator<(const Actor& actor) const
 sf::Vector2<uint8_t> Actor::getSize() const
 {
 	return m_size;
+}
+
+sf::Rect<int> Actor::getBounds() const
+{
+	return {(int)(getPosition().x - m_size.x/2), (int)(getPosition().y - m_size.y/2), m_size.x, m_size.y};
 }
 

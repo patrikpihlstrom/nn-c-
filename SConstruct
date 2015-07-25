@@ -20,6 +20,9 @@ src/application/Application.cpp
 src/application/Camera.cpp
 src/application/Math.cpp
 src/application/TextureHolder.cpp
+src/application/state/State.cpp
+src/application/state/MenuState.cpp
+src/application/state/GameState.cpp
 src/navigation/NavGraph.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp

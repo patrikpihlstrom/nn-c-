@@ -12,14 +12,13 @@
 #include <sys/types.h>
 #endif
 
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
-#include "world/World.hpp"
-#include "application/Camera.hpp"
-#include "ai/StateMachine.hpp"
+#include "application/state/State.hpp"
+#include "application/state/MenuState.hpp"
+#include "application/state/GameState.hpp"
 
 
 class Application
@@ -32,15 +31,17 @@ private:
 	void run();
 	void initialize();
 	void handleEvents();
-	void update(sf::Time deltaTime);
+	void update(const float& deltaTime);
 	void render();
+	void switchStates();
 
 	bool m_running, m_active;
 
+	std::unique_ptr<State> m_currentState;
+	std::unique_ptr<State> m_previousState;
+
 	sf::Font m_font;
 	sf::Text m_fpsText;
-
-	std::unique_ptr<World> m_world;
 
 	sf::RenderWindow m_window;
 };

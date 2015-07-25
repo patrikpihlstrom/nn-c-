@@ -3,10 +3,12 @@
 #include <memory>
 #include <unordered_map>
 
+#include <SFML/Graphics.hpp>
+
 #include "actor/PlayerActor.hpp"
 #include "actor/NPCActor.hpp"
 
-class ActorManager
+class ActorManager : public sf::Drawable
 {
 public:
 	ActorManager();

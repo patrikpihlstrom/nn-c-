@@ -30,9 +30,6 @@ public:
 	ActorId getId() const;
 	void assign(const ActorId& id);
 
-	sf::Rect<int> getBounds() const;
-	void setBounds(const sf::Rect<int>& bounds);
-
 	sf::ConvexShape getShape() const;
 	void setShape(const sf::ConvexShape& shape);
 
@@ -50,19 +47,20 @@ public:
 	void setTexture(const sf::Texture& texture);
 
 	bool operator<(const Actor& actor) const;
+
+	sf::Rect<int> getBounds() const;
 	
 protected:
 	virtual void control();
 	virtual void updatePosition(const float& deltaTime);
 
 	sf::Vector2f m_velocity;
-	sf::Rect<int> m_bounds;
-	
-	uint8_t m_health;
 	sf::Vector2<uint8_t> m_size;
 
 	sf::ConvexShape m_shape;
 
 	ActorId m_id;
+
+	uint8_t m_health;
 };
 

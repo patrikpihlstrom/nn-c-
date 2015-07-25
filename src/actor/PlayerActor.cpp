@@ -3,6 +3,7 @@
 PlayerActor::PlayerActor() :
 	Actor()
 {
+	m_camera.reset(new Camera({0, 0}, {1600, 900}));
 }
 
 PlayerActor::~PlayerActor()
@@ -63,6 +64,19 @@ void PlayerActor::control()
 	}
 }
 
+void PlayerActor::update(const float& deltaTime)
+{
+	control();
+	m_camera->update(getPosition(), getSize());
+
+	Actor::update(deltaTime);
+}
+
+void PlayerActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	Actor::draw(target, states);
+}
+
 bool PlayerActor::isPlayer() const
 {
 	return true;
@@ -71,5 +85,10 @@ bool PlayerActor::isPlayer() const
 bool PlayerActor::isNPC() const
 {
 	return false;
+}
+
+std::weak_ptr<Camera> PlayerActor::getCamera() const
+{
+	return m_camera;
 }
 
