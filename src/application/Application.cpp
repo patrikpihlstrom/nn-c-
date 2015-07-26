@@ -174,6 +174,5 @@ void Application::createBlur()
 	m_gameStateTexture.loadFromImage(image);
 	m_gameStateSprite.setTexture(m_gameStateTexture);
 	m_gameStateSprite.setRotation(180);
-
 }
 
