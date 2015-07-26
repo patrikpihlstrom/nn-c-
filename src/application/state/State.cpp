@@ -27,6 +27,10 @@ void State::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 }
 
+void State::exit()
+{
+}
+
 StateType State::getStateType() const
 {
 	return m_stateType;

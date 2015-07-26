@@ -20,6 +20,7 @@ public:
 	void enter();
 	void update(const float& deltaTime);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void exit();
 
 private:
 	World m_world;

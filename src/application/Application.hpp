@@ -44,5 +44,9 @@ private:
 	sf::Text m_fpsText;
 
 	sf::RenderWindow m_window;
+
+	sf::Texture m_gameStateTexture;
+	sf::Sprite m_gameStateSprite;
+	sf::Shader m_blurShader;
 };
 

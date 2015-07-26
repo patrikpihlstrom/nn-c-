@@ -17,6 +17,7 @@ void Application::initialize()
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
 	m_window.setFramerateLimit(120);
+	m_window.setPosition({1600 + (1920 - 1600)/2, (1080 - 900)/2});
 
 	if (!m_font.loadFromFile("SourceCodePro-Regular.ttf"))
 	{
@@ -27,6 +28,8 @@ void Application::initialize()
 	m_fpsText.setCharacterSize(11);
 	m_fpsText.setStyle(sf::Text::Regular);
 	m_fpsText.setPosition(1500, 0);
+
+	m_blurShader.loadFromFile("assets/shader/linear.fs", sf::Shader::Fragment);
 
 	m_currentState.reset(new GameState());
 
@@ -130,7 +133,16 @@ void Application::render()
 	*/
 
 	if (m_currentState)
-		m_window.draw(*m_currentState);
+	{
+		if (m_previousState)
+		{
+			if (m_previousState->getStateType() == StateType::Game)
+				m_window.draw(m_gameStateSprite);
+		}
+
+		if (m_currentState->getStateType() == StateType::Game)
+			m_window.draw(*m_currentState);
+	}
 
 	m_window.display();
 }
@@ -138,6 +150,26 @@ void Application::render()
 void Application::switchStates()
 {
 	std::cout << "Switching states" << std::endl;
+
+	if (m_currentState)
+	{
+		if (m_currentState->getStateType() == StateType::Game)
+		{
+			auto image = m_window.capture();
+			image.flipHorizontally();
+			m_gameStateTexture.loadFromImage(image);
+			m_gameStateSprite.setTexture(m_gameStateTexture);
+			m_gameStateSprite.setOrigin(1600/2, 900/2);
+			m_blurShader.setParameter("texture", m_gameStateTexture);
+			m_window.draw(m_gameStateSprite, &m_blurShader);
+			image = m_window.capture();
+			m_gameStateTexture.loadFromImage(image);
+			m_gameStateSprite.setTexture(m_gameStateTexture);
+			m_gameStateSprite.setRotation(180);
+		}
+
+		m_currentState->exit();
+	}
 
 	if (!m_previousState)
 	{

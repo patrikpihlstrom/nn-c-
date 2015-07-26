@@ -54,3 +54,8 @@ void GameState::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(*m_actorManager, states);
 }
 
+void GameState::exit()
+{
+	State::exit();
+}
+

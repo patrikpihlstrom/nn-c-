@@ -26,12 +26,10 @@ void MenuState::update(const float& deltaTime)
 
 void MenuState::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.setView(sf::View({(float)target.getSize().x/2, (float)target.getSize().y/2}, {(float)target.getSize().x, (float)target.getSize().y}));
-	sf::RectangleShape rectShape;
-	rectShape.setSize({1600, 900});
-	rectShape.setFillColor({0, 255, 0});
-	rectShape.setPosition(0, 0);
+}
 
-	target.draw(rectShape, states);
+void MenuState::exit()
+{
+	State::exit();
 }
 
