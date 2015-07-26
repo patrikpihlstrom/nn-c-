@@ -22,6 +22,8 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void exit();
 
+	sf::Vector2f getView() const;
+
 private:
 	World m_world;
 

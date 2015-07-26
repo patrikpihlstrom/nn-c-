@@ -156,10 +156,12 @@ void Application::switchStates()
 		if (m_currentState->getStateType() == StateType::Game)
 		{
 			auto image = m_window.capture();
+			auto view = m_currentState->getView();
 			image.flipHorizontally();
 			m_gameStateTexture.loadFromImage(image);
 			m_gameStateSprite.setTexture(m_gameStateTexture);
 			m_gameStateSprite.setOrigin(1600/2, 900/2);
+			m_gameStateSprite.setPosition(view.x, view.y);
 			m_blurShader.setParameter("texture", m_gameStateTexture);
 			m_window.draw(m_gameStateSprite, &m_blurShader);
 			image = m_window.capture();

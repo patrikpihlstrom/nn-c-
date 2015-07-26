@@ -46,3 +46,8 @@ void State::clearSignals()
 	m_signalStack.clear();
 }
 
+sf::Vector2f State::getView() const
+{
+	return {0, 0};
+}
+

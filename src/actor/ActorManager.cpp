@@ -39,7 +39,7 @@ void ActorManager::removeActor(const ActorId& id)
 
 void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
 {
-	deleteOutsiders(bounds);
+	deleteOutsiders({bounds.left - bounds.width/2, bounds.top - bounds.height/2, bounds.width*2, bounds.height*2});
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 		(*it)->update(deltaTime);

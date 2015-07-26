@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <SFML/Graphics.hpp>
 
 
@@ -30,10 +32,13 @@ public:
 	std::vector<Signal> getSignals() const;
 	void clearSignals();
 
+	virtual sf::Vector2f getView() const;
+
 protected:
 	StateType m_stateType;
 	bool m_escape;
 
 	std::vector<Signal> m_signalStack;
+	std::weak_ptr<sf::RenderWindow> m_window;
 };
 

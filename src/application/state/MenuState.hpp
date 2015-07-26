@@ -16,5 +16,8 @@ public:
 	void update(const float& deltaTime);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void exit();
+
+private:
+
 };
 

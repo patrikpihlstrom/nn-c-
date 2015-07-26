@@ -59,3 +59,8 @@ void GameState::exit()
 	State::exit();
 }
 
+sf::Vector2f GameState::getView() const
+{
+	return m_playerActor->getCamera().lock()->getCenter();
+}
+
