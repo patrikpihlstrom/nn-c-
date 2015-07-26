@@ -34,6 +34,7 @@ private:
 	void update(const float& deltaTime);
 	void render();
 	void switchStates();
+	void createBlur();
 
 	bool m_running, m_active;
 

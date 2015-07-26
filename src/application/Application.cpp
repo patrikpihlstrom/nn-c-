@@ -61,15 +61,6 @@ void Application::run()
 			update(updateTime.asSeconds());
 			deltaTime -= updateTime;
 		}
-
-	/*	if (auto camera = m_world->getCamera().lock())
-		{
-			float fps = 1/dt.getElapsedTime().asSeconds();
-			m_fpsText.setString("FPS: " + std::to_string(fps) + '\n' + "Actors: " + std::to_string(m_world->getActorManager().lock()->actorsSize()));
-			m_fpsText.setPosition(camera->getCenter().x + camera->getSize().x/2 - 100, camera->getCenter().y - camera->getSize().y/2);
-			m_fpsText.setColor(fps < 60 ? sf::Color(200, 50, 50):sf::Color(10, 10, 10));
-		}
-		*/
 	}
 }
 
@@ -84,14 +75,6 @@ void Application::handleEvents()
 			m_window.close();
 			m_running = false;
 		}
-		/*else if (event.type == sf::Event::KeyPressed)
-		{
-			if (event.key.code == sf::Keyboard::Escape)
-			{
-				m_window.close();
-				m_running = false;
-			}
-		}*/
 	}
 }
 
@@ -126,12 +109,6 @@ void Application::render()
 //	m_window.clear(sf::Color(245, 241, 226));
 	m_window.clear(sf::Color(188, 149, 108));
 
-	/*if (auto camera = m_world->getCamera().lock())
-		m_window.setView(*camera);
-
-	m_window.draw(m_fpsText);
-	*/
-
 	if (m_currentState)
 	{
 		if (m_previousState)
@@ -149,26 +126,10 @@ void Application::render()
 
 void Application::switchStates()
 {
-	std::cout << "Switching states" << std::endl;
-
 	if (m_currentState)
 	{
 		if (m_currentState->getStateType() == StateType::Game)
-		{
-			auto image = m_window.capture();
-			auto view = m_currentState->getView();
-			image.flipHorizontally();
-			m_gameStateTexture.loadFromImage(image);
-			m_gameStateSprite.setTexture(m_gameStateTexture);
-			m_gameStateSprite.setOrigin(1600/2, 900/2);
-			m_gameStateSprite.setPosition(view.x, view.y);
-			m_blurShader.setParameter("texture", m_gameStateTexture);
-			m_window.draw(m_gameStateSprite, &m_blurShader);
-			image = m_window.capture();
-			m_gameStateTexture.loadFromImage(image);
-			m_gameStateSprite.setTexture(m_gameStateTexture);
-			m_gameStateSprite.setRotation(180);
-		}
+			createBlur();
 
 		m_currentState->exit();
 	}
@@ -196,5 +157,23 @@ void Application::switchStates()
 		m_previousState.swap(m_currentState);
 
 	m_currentState->enter();
+}
+
+void Application::createBlur()
+{
+	auto image = m_window.capture();
+	auto view = m_currentState->getView();
+	image.flipHorizontally();
+	m_gameStateTexture.loadFromImage(image);
+	m_gameStateSprite.setTexture(m_gameStateTexture);
+	m_gameStateSprite.setOrigin(1600/2, 900/2);
+	m_gameStateSprite.setPosition(view.x, view.y);
+	m_blurShader.setParameter("texture", m_gameStateTexture);
+	m_window.draw(m_gameStateSprite, &m_blurShader);
+	image = m_window.capture();
+	m_gameStateTexture.loadFromImage(image);
+	m_gameStateSprite.setTexture(m_gameStateTexture);
+	m_gameStateSprite.setRotation(180);
+
 }
 
