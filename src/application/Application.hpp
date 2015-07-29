@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <vector>
-#include <fstream>
 #include <chrono>
+#include <cstdlib>
 
 #ifdef __linux__
 #include <unistd.h>
@@ -48,5 +49,7 @@ private:
 	sf::Texture m_gameStateTexture;
 	sf::Sprite m_gameStateSprite;
 	sf::Shader m_blurShader;
+
+	void loadSettingsFile(const std::string& path);
 };
 

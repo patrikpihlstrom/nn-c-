@@ -12,11 +12,8 @@ Application::~Application()
 
 void Application::initialize()
 {
-	sf::ContextSettings settings;
-	settings.antialiasingLevel = 8;
-
-	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
-	m_window.setFramerateLimit(120);
+	loadSettingsFile("settings.conf");
+	
 	//m_window.setPosition({1600 + (1920 - 1600)/2, (1080 - 900)/2});
 
 	if (!m_font.loadFromFile("SourceCodePro-Regular.ttf"))
@@ -140,5 +137,68 @@ void Application::switchStates()
 		m_previousState.swap(m_currentState);
 
 	m_currentState->enter(m_window);
+}
+
+void Application::loadSettingsFile(const std::string& path)
+{
+	sf::Vector2<unsigned int> res;
+	bool fullscreen = false;
+	uint8_t aa;
+
+	std::ifstream file;
+	file.open(path);
+
+	if (file.is_open())
+	{
+		std::string line;
+
+		while (!file.eof())
+		{
+			std::getline(file, line);
+
+			if (!line.empty())
+			{
+				char setting = line[0];
+				auto val = line.substr(2, line.size());
+
+				switch (setting)
+				{
+					case 'r':
+						res.x = std::atoi(val.substr(0, val.find('x')).c_str());
+						res.y = std::atoi(val.substr(val.find('x') + 1).c_str());
+					break;
+
+					case 'w':
+						switch (val[0])
+						{
+							case 'w':
+								fullscreen = false;
+							break;
+
+							case 'f':
+								fullscreen = true;
+							break;
+
+							default:
+								fullscreen = false;
+							break;
+						}
+					break;
+
+					case 'a':
+						aa = std::atoi(val.c_str());
+					break;
+				}
+			}
+		}
+	}
+	else
+		std::cout << "Unable to open file: " << path << std::endl;
+
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = aa;
+
+	m_window.create(sf::VideoMode(res.x, res.y), "Tribal", (fullscreen ? sf::Style::Fullscreen:sf::Style::Close) | sf::Style::Close, settings);
+	m_window.setFramerateLimit(120);
 }
 

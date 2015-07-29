@@ -14,7 +14,7 @@ MenuState::MenuState() :
 
 	sf::Sprite sprite;
 
-	sprite.setPosition(100, 400);
+	sprite.setPosition(100, 900/3 - 100);
 	sprite.setTexture(*m_textureHolder->getTexture("resume").lock());
 	m_resume->setSprite(sprite);
 
