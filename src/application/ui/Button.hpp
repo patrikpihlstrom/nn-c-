@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
@@ -10,12 +12,15 @@ public:
 	Button();
 	~Button();
 
-	void update();
+	void update(const sf::RenderWindow& window);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-private:
-	bool pressed;
-	sf::Sprite m_sprite;
+	bool pressed() const;
 
+	void setSprite(const sf::Sprite& sprite);
+
+private:
+	bool m_pressed;
+	sf::Sprite m_sprite;
 };
 

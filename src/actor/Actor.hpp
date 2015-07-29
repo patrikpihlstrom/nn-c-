@@ -30,8 +30,8 @@ public:
 	ActorId getId() const;
 	void assign(const ActorId& id);
 
-	sf::ConvexShape getShape() const;
-	void setShape(const sf::ConvexShape& shape);
+	sf::Sprite getSprite() const;
+	void setSprite(const sf::Sprite& shape);
 
 	void setPositionMaster(const float x, const float y);
 	void setVelocity(const float x, const float y);
@@ -44,8 +44,6 @@ public:
 	float getVelocityY() const;
 	sf::Vector2<uint8_t> getSize() const;
 
-	void setTexture(const sf::Texture& texture);
-
 	bool operator<(const Actor& actor) const;
 
 	sf::Rect<int> getBounds() const;
@@ -57,10 +55,13 @@ protected:
 	sf::Vector2f m_velocity;
 	sf::Vector2<uint8_t> m_size;
 
-	sf::ConvexShape m_shape;
+	sf::Sprite m_sprite;
 
 	ActorId m_id;
 
 	uint8_t m_health;
+
+private:
+	bool m_facingRight;
 };
 

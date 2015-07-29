@@ -2,6 +2,7 @@
 
 Actor::Actor() 
 {
+	m_facingRight = true;
 }
 
 Actor::~Actor()
@@ -16,7 +17,7 @@ void Actor::update(const float& deltaTime)
 
 void Actor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_shape, states);
+	target.draw(m_sprite, states);
 }
 
 uint8_t Actor::getHealth() const
@@ -40,11 +41,18 @@ void Actor::damage(const int8_t& factor)
 void Actor::setTexture(const std::weak_ptr<sf::Texture> texture)
 {
 	if (auto _texture = texture.lock())
-		m_shape.setTexture(_texture.get());
+		m_sprite.setTexture(*_texture.get(), true);
+
+	m_size = {(uint8_t)m_sprite.getTextureRect().width, (uint8_t)m_sprite.getTextureRect().height};
 }
 
 void Actor::control()
 {
+	if ((m_facingRight && m_velocity.x < 0) || (!m_facingRight && m_velocity.x > 0))
+	{
+		m_facingRight = !m_facingRight;
+		m_sprite.scale(-1.f, 1.f);
+	}
 }
 
 void Actor::updatePosition(const float& deltaTime)
@@ -54,19 +62,15 @@ void Actor::updatePosition(const float& deltaTime)
 
 void Actor::move(const float x, const float y)
 {
-	m_shape.move(x, y);
-	this->Transformable::move(x, y);
+	Transformable::move(x, y);
+	m_sprite.setPosition(getPosition());
 }
 
 void Actor::setSize(const uint8_t width, const uint8_t height)
 {
+	m_sprite.scale((float)width/m_size.x, (float)height/m_size.y);
 	m_size = {width, height};
-
-	m_shape.setPointCount(4);
-	m_shape.setPoint(0, getPosition());
-	m_shape.setPoint(1, sf::Vector2f(getPosition().x + width, getPosition().y));
-	m_shape.setPoint(2, sf::Vector2f(getPosition().x + width, getPosition().y + height));
-	m_shape.setPoint(3, sf::Vector2f(getPosition().x, getPosition().y + height));
+	m_sprite.setOrigin(width/2, height/2);
 }
 
 ActorId Actor::getId() const
@@ -79,20 +83,20 @@ void Actor::assign(const ActorId& id)
 	m_id = id;
 }
 
-sf::ConvexShape Actor::getShape() const
+sf::Sprite Actor::getSprite() const
 {
-	return m_shape;
+	return m_sprite;
 }
 
-void Actor::setShape(const sf::ConvexShape& shape)
+void Actor::setSprite(const sf::Sprite& sprite)
 {
-	m_shape = shape;
+	m_sprite = sprite;
 }
 
 void Actor::setPositionMaster(const float x, const float y)
 {
-	m_shape.setPosition(x, y);
-	setPosition(x, y);
+	m_sprite.setPosition(x, y);
+	Transformable::setPosition(x, y);
 }
 
 void Actor::setVelocity(const float x, const float y)

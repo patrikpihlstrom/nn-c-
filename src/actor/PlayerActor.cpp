@@ -62,12 +62,14 @@ void PlayerActor::control()
 		m_velocity.x *= TERMINAL_X_WALK;
 		m_velocity.y *= TERMINAL_X_WALK;
 	}
+
+	Actor::control();
 }
 
 void PlayerActor::update(const float& deltaTime)
 {
 	control();
-	m_camera->update(getPosition(), getSize());
+	m_camera->update(getPosition(), {0, 0});
 
 	Actor::update(deltaTime);
 }

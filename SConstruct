@@ -23,6 +23,7 @@ src/application/TextureHolder.cpp
 src/application/state/State.cpp
 src/application/state/MenuState.cpp
 src/application/state/GameState.cpp
+src/application/ui/Button.cpp
 src/navigation/NavGraph.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp

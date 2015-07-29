@@ -10,12 +10,12 @@ State::~State()
 {
 }
 
-void State::enter()
+void State::enter(sf::RenderWindow& window)
 {
 	m_escape = true;
 }
 
-void State::update(const float& deltaTime)
+void State::update(const float& deltaTime, const sf::RenderWindow& window)
 {
 	if (!m_escape && sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		m_signalStack.push_back(Signal::Switch);

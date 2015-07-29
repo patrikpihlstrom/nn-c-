@@ -59,8 +59,8 @@ void NPCActor::registerLuaStateMachine()
 		.def("isPlayer", &Actor::isPlayer)
 		.def("getId", &Actor::getId)
 		.def("getBounds", &Actor::getBounds)
-		.def("getShape", &Actor::getShape)
-		.def("setShape", &Actor::setShape)
+		.def("getSprite", &Actor::getSprite)
+		.def("setSprite", &Actor::setSprite)
 		.def("setVelocity", &Actor::setVelocity)
 		.def("setPosition", &Actor::setPositionMaster)
 		.def("getPositionX", &Actor::getPositionX)
@@ -103,6 +103,8 @@ void NPCActor::control()
 		m_velocity.x = std::cos(angle)*600;
 		m_velocity.y = std::sin(angle)*600;
 	}*/
+
+	Actor::control();
 }
 
 void NPCActor::changeState(const luabind::object& state)

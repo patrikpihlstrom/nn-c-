@@ -17,21 +17,18 @@ void Application::initialize()
 
 	m_window.create(sf::VideoMode(1600, 900), "Editor", sf::Style::Close, settings);
 	m_window.setFramerateLimit(120);
-	m_window.setPosition({1600 + (1920 - 1600)/2, (1080 - 900)/2});
+	//m_window.setPosition({1600 + (1920 - 1600)/2, (1080 - 900)/2});
 
 	if (!m_font.loadFromFile("SourceCodePro-Regular.ttf"))
-	{
 		std::cout << "Error loading font." << std::endl;
-	}
 
 	m_fpsText = sf::Text("NULL", m_font);
 	m_fpsText.setCharacterSize(11);
 	m_fpsText.setStyle(sf::Text::Regular);
 	m_fpsText.setPosition(1500, 0);
 
-	m_blurShader.loadFromFile("assets/shader/linear.fs", sf::Shader::Fragment);
-
 	m_currentState.reset(new GameState());
+	m_currentState->enter(m_window);
 
 	m_running = true;
 	m_active = true;
@@ -100,7 +97,7 @@ void Application::update(const float& deltaTime)
 		}
 
 		m_currentState->clearSignals();
-		m_currentState->update(deltaTime);
+		m_currentState->update(deltaTime, m_window);
 	}
 }
 
@@ -110,16 +107,7 @@ void Application::render()
 	m_window.clear(sf::Color(188, 149, 108));
 
 	if (m_currentState)
-	{
-		if (m_previousState)
-		{
-			if (m_previousState->getStateType() == StateType::Game)
-				m_window.draw(m_gameStateSprite);
-		}
-
-		if (m_currentState->getStateType() == StateType::Game)
-			m_window.draw(*m_currentState);
-	}
+		m_window.draw(*m_currentState);
 
 	m_window.display();
 }
@@ -127,12 +115,7 @@ void Application::render()
 void Application::switchStates()
 {
 	if (m_currentState)
-	{
-		if (m_currentState->getStateType() == StateType::Game)
-			createBlur();
-
 		m_currentState->exit();
-	}
 
 	if (!m_previousState)
 	{
@@ -156,23 +139,6 @@ void Application::switchStates()
 	else
 		m_previousState.swap(m_currentState);
 
-	m_currentState->enter();
-}
-
-void Application::createBlur()
-{
-	auto image = m_window.capture();
-	auto view = m_currentState->getView();
-	image.flipHorizontally();
-	m_gameStateTexture.loadFromImage(image);
-	m_gameStateSprite.setTexture(m_gameStateTexture);
-	m_gameStateSprite.setOrigin(1600/2, 900/2);
-	m_gameStateSprite.setPosition(view.x, view.y);
-	m_blurShader.setParameter("texture", m_gameStateTexture);
-	m_window.draw(m_gameStateSprite, &m_blurShader);
-	image = m_window.capture();
-	m_gameStateTexture.loadFromImage(image);
-	m_gameStateSprite.setTexture(m_gameStateTexture);
-	m_gameStateSprite.setRotation(180);
+	m_currentState->enter(m_window);
 }
 

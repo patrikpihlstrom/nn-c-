@@ -16,23 +16,28 @@ GameState::GameState() :
 
 	m_playerActor.reset(new PlayerActor());
 	m_playerActor->setPosition(0, 0);
-	m_playerActor->setSize(16, 72);
 	m_playerActor->setTexture(m_textureHolder->getTexture("char"));
+	m_playerActor->setSize(16, 72);
 	m_playerActor->assign(m_actorIdTracker->addActor());
 
 	m_actorManager->addActor(m_playerActor);
+
+	m_world = World(time(NULL));
 }
 
 GameState::~GameState()
 {
 }
 
-void GameState::enter()
+void GameState::enter(sf::RenderWindow& window)
 {
-	State::enter();
+	if (auto camera = m_playerActor->getCamera().lock())
+		window.setView(*camera);
+
+	State::enter(window);
 }
 
-void GameState::update(const float& deltaTime)
+void GameState::update(const float& deltaTime, const sf::RenderWindow& window)
 {
 	m_world.update(deltaTime);
 
@@ -42,7 +47,7 @@ void GameState::update(const float& deltaTime)
 	if (auto camera = m_playerActor->getCamera().lock())
 		m_actorManager->update(deltaTime, camera->getBounds<int>());
 
-	State::update(deltaTime);
+	State::update(deltaTime, window);
 }
 
 void GameState::draw(sf::RenderTarget& target, sf::RenderStates states) const

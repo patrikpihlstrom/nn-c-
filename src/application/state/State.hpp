@@ -23,8 +23,8 @@ public:
 	State();
 	~State();
 
-	virtual void enter();
-	virtual void update(const float& deltaTime);
+	virtual void enter(sf::RenderWindow& window);
+	virtual void update(const float& deltaTime, const sf::RenderWindow& window);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	virtual void exit();
 
@@ -39,6 +39,5 @@ protected:
 	bool m_escape;
 
 	std::vector<Signal> m_signalStack;
-	std::weak_ptr<sf::RenderWindow> m_window;
 };
 
