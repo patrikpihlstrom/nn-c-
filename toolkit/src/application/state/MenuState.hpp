@@ -25,8 +25,8 @@ private:
 
 	std::unique_ptr<TextureHolder> m_textureHolder;
 
-	std::vector<std::unique_ptr<Button>> m_buttons;
-	unsigned short m_selectedIndex;
+	std::unique_ptr<Button> m_resume;
+	std::unique_ptr<Button> m_exit;
 
 	sf::View m_view;
 

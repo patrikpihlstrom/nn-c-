@@ -4,7 +4,6 @@
 State::State()
 {
 	m_escape = false;
-	m_options = false;
 }
 
 State::~State()
@@ -14,7 +13,6 @@ State::~State()
 void State::enter(sf::RenderWindow& window)
 {
 	m_escape = true;
-	m_options = true;
 }
 
 void State::update(const float& deltaTime, const sf::RenderWindow& window)
@@ -23,14 +21,6 @@ void State::update(const float& deltaTime, const sf::RenderWindow& window)
 		m_signalStack.push_back(Signal::Switch);
 
 	m_escape = sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
-
-	if (sf::Joystick::isConnected(0))
-	{
-		if (!m_options && sf::Joystick::isButtonPressed(0, 9))
-			m_signalStack.push_back(Signal::Switch);
-
-		m_options = sf::Joystick::isButtonPressed(0, 9);
-	}
 }
 
 void State::draw(sf::RenderTarget& target, sf::RenderStates states) const

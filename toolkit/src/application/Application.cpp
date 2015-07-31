@@ -68,21 +68,11 @@ void Application::handleEvents()
 			m_window.close();
 			m_running = false;
 		}
-		else if (event.type == sf::Event::EventType::LostFocus)
-		{
-			switchStates();
-			m_active = false;
-		}
-		else if (event.type == sf::Event::EventType::GainedFocus)
-			m_active = true;
 	}
 }
 
 void Application::update(const float& deltaTime)
 {
-	if (!m_active)
-		return;
-
 	if (m_currentState)
 	{
 		auto signals = m_currentState->getSignals();

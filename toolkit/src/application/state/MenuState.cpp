@@ -9,8 +9,8 @@ MenuState::MenuState() :
 	m_textureHolder.reset(new TextureHolder());
 	m_textureHolder->loadTextures("assets/UI.lst");
 
-	m_buttons.push_back(std::unique_ptr<Button>(new Button()));
-	m_buttons.push_back(std::unique_ptr<Button>(new Button()));
+	m_resume.reset(new Button());
+	m_exit.reset(new Button());
 
 	m_blurShader.loadFromFile("assets/shader/linear.fs", sf::Shader::Fragment);
 }
@@ -24,14 +24,14 @@ void MenuState::enter(sf::RenderWindow& window)
 	m_view = sf::View({(float)window.getSize().x/2, (float)window.getSize().y/2}, (sf::Vector2f)window.getSize());
 
 	sf::Sprite sprite;
+
 	sprite.setPosition(m_view.getSize().x/16, m_view.getSize().y/2*0.5);
 	sprite.setTexture(*m_textureHolder->getTexture("resume").lock());
-
-	m_buttons[0]->setSprite(sprite);
+	m_resume->setSprite(sprite);
 
 	sprite.setPosition(m_view.getSize().x/16, m_view.getSize().y/2*1.5 - 100);
 	sprite.setTexture(*m_textureHolder->getTexture("exit").lock());
-	m_buttons[1]->setSprite(sprite);
+	m_exit->setSprite(sprite);
 
 	auto image = window.capture();
 	image.flipVertically();
@@ -41,68 +41,29 @@ void MenuState::enter(sf::RenderWindow& window)
 
 	m_gameStateTexture.loadFromImage(image);
 	m_gameStateSprite.setTexture(m_gameStateTexture);
+	m_gameStateSprite.setPosition(0, 0);
 
 	m_blurShader.setParameter("texture", m_gameStateTexture);
-	m_blurShader.setParameter("width", window.getSize().x);
-	m_blurShader.setParameter("height", window.getSize().y);
-
-	m_selectedIndex = 0;
 
 	State::enter(window);
 }
 
 void MenuState::update(const float& deltaTime, const sf::RenderWindow& window)
 {
-	if (m_buttons[0])
+	if (m_resume)
 	{
-		m_buttons[0]->update(window);
+		m_resume->update(window);
 
-		if (m_buttons[0]->pressed())
+		if (m_resume->pressed())
 			sendSwitchSignal();
 	}
 
-	if (m_buttons[1])
+	if (m_exit)
 	{
-		m_buttons[1]->update(window);
+		m_exit->update(window);
 
-		if (m_buttons[1]->pressed())
+		if (m_exit->pressed())
 			sendExitSignal();
-	}
-
-	if (sf::Joystick::isConnected(0))
-	{
-		if (sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::PovY) < 0)
-		{
-			if (m_selectedIndex > 0)
-				m_selectedIndex--;
-			else
-				m_selectedIndex = 0;
-		}
-		else if (sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::PovY) > 0)
-		{
-			if (m_selectedIndex < m_buttons.size() - 1)
-				m_selectedIndex++;
-			else
-				m_selectedIndex = m_buttons.size() - 1;
-		}
-
-		if (sf::Joystick::isButtonPressed(0, 1))
-		{
-			switch (m_selectedIndex)
-			{
-				case 0:
-					sendSwitchSignal();
-				break;
-
-				case 1:
-					sendExitSignal();
-				break;
-
-				default:
-					std::cout << "Unrecognized button index: " << m_selectedIndex << std::endl;
-				break;
-			}
-		}
 	}
 
 	State::update(deltaTime, window);
@@ -112,18 +73,11 @@ void MenuState::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_gameStateSprite, &m_blurShader);
 
-	for (int i = 0; i < m_buttons.size(); ++i)
-	{
-		if (sf::Joystick::isConnected(0))
-		{
-			if (i == m_selectedIndex)
-				m_buttons[i]->setColor({255, 255, 255, 255});
-			else
-				m_buttons[i]->setColor({155, 155, 155, 255});
-		}
+	if (m_resume)
+		target.draw(*m_resume, states);
 
-		target.draw(*m_buttons[i], states);
-	}
+	if (m_exit)
+		target.draw(*m_exit, states);
 }
 
 void MenuState::exit()

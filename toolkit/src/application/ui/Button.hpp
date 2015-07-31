@@ -18,7 +18,6 @@ public:
 	bool pressed() const;
 
 	void setSprite(const sf::Sprite& sprite);
-	void setColor(const sf::Color& color);
 
 private:
 	bool m_pressed;

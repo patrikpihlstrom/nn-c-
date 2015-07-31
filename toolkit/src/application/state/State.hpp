@@ -36,7 +36,7 @@ public:
 
 protected:
 	StateType m_stateType;
-	bool m_escape, m_options;
+	bool m_escape;
 
 	std::vector<Signal> m_signalStack;
 };

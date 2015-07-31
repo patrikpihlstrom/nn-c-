@@ -39,8 +39,3 @@ void Button::setSprite(const sf::Sprite& sprite)
 	m_sprite = sprite;
 }
 
-void Button::setColor(const sf::Color& color)
-{
-	m_sprite.setColor(color);
-}
-

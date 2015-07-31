@@ -43,6 +43,15 @@ void GameState::update(const float& deltaTime, const sf::RenderWindow& window)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		m_npcSpawner->spawn("test", m_textureHolder->getTexture("char"), m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);
+	else if (sf::Joystick::isConnected(0))
+	{
+		if (sf::Joystick::isButtonPressed(0, 1))
+			m_npcSpawner->spawn("test", m_textureHolder->getTexture("char"), m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);
+
+		for (int i = 0; i < sf::Joystick::getButtonCount(0); ++i)
+			if (sf::Joystick::isButtonPressed(0, i))
+				std::cout << i << std::endl;
+	}
 
 	if (auto camera = m_playerActor->getCamera().lock())
 		m_actorManager->update(deltaTime, camera->getBounds<int>());
