@@ -26,6 +26,10 @@ void PlayerActor::control()
 		if (sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::PovY) != 0)
 			m_velocity.y = TERMINAL_Y_WALK*(float)(sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::PovY)/100);
 
+		if (sf::Joystick::isButtonPressed(0, 6))
+			m_camera->zoom(.9f);
+		else if (sf::Joystick::isButtonPressed(0, 7))
+			m_camera->zoom(1.1f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
@@ -72,7 +76,7 @@ void PlayerActor::control()
 			m_velocity.x = 0;
 	}
 
-	if (math::magnitude<float>(m_velocity) > TERMINAL_X_WALK)
+	if (math::magnitude<float>(m_velocity) > TERMINAL_X_WALK && !(sf::Joystick::isConnected(0) && sf::Joystick::isButtonPressed(0, 0)))
 	{
 		math::normalize(m_velocity);
 		m_velocity.x *= TERMINAL_X_WALK;
