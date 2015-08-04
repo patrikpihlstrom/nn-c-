@@ -3,8 +3,8 @@
 #include "actor/Actor.hpp"
 #include "application/Camera.hpp"
 
-const static unsigned char TERMINAL_X_WALK = 200;
-const static unsigned char TERMINAL_Y_WALK = 180;
+const static int TERMINAL_X_WALK = 200*50;
+const static int TERMINAL_Y_WALK = 180*50;
 
 class PlayerActor : public Actor
 {

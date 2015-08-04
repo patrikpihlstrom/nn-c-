@@ -6,7 +6,6 @@
 
 #include "actor/ActorId.hpp"
 #include "application/Math.hpp"
-#include "application/lua.hpp"
 
 
 class Actor : public sf::Transformable, public sf::Drawable

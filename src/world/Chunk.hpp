@@ -9,7 +9,7 @@
 #endif
 
 
-const static int CHUNK_SIZE = 512;
+const static int CHUNK_SIZE = 1024;
 
 class Chunk : public sf::Drawable
 {
@@ -26,8 +26,12 @@ public:
 	int getWeight() const;
 	void setWeight(const int& weight);
 
+	sf::Color getColor() const;
+	void setColor(const sf::Color& color);
+
 private:
 	sf::Vector2i m_position;
 	int m_weight;
+	sf::Color m_color;
 };
 

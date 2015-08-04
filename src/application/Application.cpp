@@ -208,7 +208,7 @@ void Application::loadSettingsFile(const std::string& path)
 	settings.antialiasingLevel = aa;
 
 	m_window.create(sf::VideoMode(res.x, res.y), "Tribal", (fullscreen ? sf::Style::Fullscreen:sf::Style::Close) | sf::Style::Close, settings);
-	//m_window.setPosition({1600 + (1920 - res.x)/2, (1080 - res.y)/2});
+	m_window.setPosition({1600 + (1920 - res.x)/2, (1080 - res.y)/2});
 	m_window.setFramerateLimit(120);
 }
 

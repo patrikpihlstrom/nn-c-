@@ -20,9 +20,9 @@ void World::update(const float& deltaTime, const sf::Vector2i& playerPosition)
 {
 	removeRegions(playerPosition);
 
-	for (int i = 0, j = 0; i < 3; ++i)
+	for (int i = -2, j = -2; i <= 4; ++i)
 	{
-		for (j = 0; j < 3; ++j)
+		for (j = -2; j <= 4; ++j)
 		{
 			sf::Vector2i pos = {playerPosition.x/REGION_SIZE + i - 1, playerPosition.y/REGION_SIZE + j - 1};
 			if (m_regions.find(pos) == m_regions.end())
@@ -47,7 +47,7 @@ void World::removeRegions(const sf::Vector2i& position)
 	auto it = m_regions.begin();
 	while (it != m_regions.end())
 	{
-		if (it->second.getPosition().x + REGION_SIZE < position.x - 860 || it->second.getPosition().x > position.x + 860 || it->second.getPosition().y + REGION_SIZE < position.y - 860 || it->second.getPosition().y > position.y + 860)
+		if (it->second.getPosition().x + REGION_SIZE < position.x - 860*6 || it->second.getPosition().x > position.x + 860*6 || it->second.getPosition().y + REGION_SIZE < position.y - 860*6 || it->second.getPosition().y > position.y + 860*6)
 			it = m_regions.erase(it);
 		else
 			++it;
