@@ -8,6 +8,7 @@
 #include "actor/ActorManager.hpp"
 #include "actor/ActorIdTracker.hpp"
 #include "actor/NPCSpawner.hpp"
+#include "actor/NPCSpawnEvent.hpp"
 #include "application/TextureHolder.hpp"
 #include "application/Camera.hpp"
 #include "object/ObjectIdTracker.hpp"
@@ -24,6 +25,9 @@ public:
 
 	void update(const float& deltaTime, const sf::Vector2i& playerPosition);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
+	std::vector<NPCSpawnEvent> getSpawnEvents() const;
+	void clearSpawnEvents();
 
 private:
 	long m_seed;
@@ -42,5 +46,6 @@ private:
 	};
 
 	std::unordered_map<sf::Vector2i, Region, Hash> m_regions;
+	std::vector<NPCSpawnEvent> m_spawnEvents;
 };
 

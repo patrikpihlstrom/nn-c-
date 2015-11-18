@@ -70,7 +70,6 @@ void Application::handleEvents()
 		}
 		else if (event.type == sf::Event::EventType::LostFocus)
 		{
-			switchStates();
 			m_active = false;
 		}
 		else if (event.type == sf::Event::EventType::GainedFocus)
@@ -81,7 +80,12 @@ void Application::handleEvents()
 void Application::update(const float& deltaTime)
 {
 	if (!m_active)
+	{
+		if (m_currentState && m_currentState->getStateType() != StateType::Menu)
+			switchStates();
+
 		return;
+	}
 
 	if (m_currentState)
 	{
@@ -109,7 +113,7 @@ void Application::update(const float& deltaTime)
 
 void Application::render()
 {
-//	m_window.clear(sf::Color(245, 241, 226));
+	//m_window.clear(sf::Color(245, 241, 226));
 	m_window.clear(sf::Color(188, 149, 108));
 
 	if (m_currentState)
@@ -208,7 +212,7 @@ void Application::loadSettingsFile(const std::string& path)
 	settings.antialiasingLevel = aa;
 
 	m_window.create(sf::VideoMode(res.x, res.y), "Tribal", (fullscreen ? sf::Style::Fullscreen:sf::Style::Close) | sf::Style::Close, settings);
-	m_window.setPosition({1600 + (1920 - res.x)/2, (1080 - res.y)/2});
+	//m_window.setPosition({1600 + (1920 - res.x)/2, (1080 - res.y)/2});
 	m_window.setFramerateLimit(120);
 }
 

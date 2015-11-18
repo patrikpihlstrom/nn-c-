@@ -40,6 +40,11 @@ void GameState::enter(sf::RenderWindow& window)
 void GameState::update(const float& deltaTime, const sf::RenderWindow& window)
 {
 	m_world.update(deltaTime, (sf::Vector2i)m_playerActor->getPosition());
+	auto spawnEvents = m_world.getSpawnEvents();
+	m_world.clearSpawnEvents();
+
+	for (int i = 0; i < spawnEvents.size(); ++i)
+		m_npcSpawner->spawn(spawnEvents[i].type, m_textureHolder->getTexture("char"), (sf::Vector2f)spawnEvents[i].position, *m_actorManager, *m_actorIdTracker);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		m_npcSpawner->spawn("test", m_textureHolder->getTexture("char"), m_actorManager->getActor({0}).lock()->getPosition(), *m_actorManager, *m_actorIdTracker);

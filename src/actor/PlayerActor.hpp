@@ -3,8 +3,10 @@
 #include "actor/Actor.hpp"
 #include "application/Camera.hpp"
 
-const static int TERMINAL_X_WALK = 200*50;
-const static int TERMINAL_Y_WALK = 180*50;
+const static int TERMINAL_X_WALK = 200;
+const static int TERMINAL_X_RUN = 500;
+const static int TERMINAL_Y_WALK = 180;
+const static int TERMINAL_Y_RUN = 450;
 
 class PlayerActor : public Actor
 {

@@ -20,14 +20,18 @@ void World::update(const float& deltaTime, const sf::Vector2i& playerPosition)
 {
 	removeRegions(playerPosition);
 
-	for (int i = -2, j = -2; i <= 4; ++i)
+	for (int i = -8, j = -8; i <= 8; ++i)
 	{
-		for (j = -2; j <= 4; ++j)
+		for (j = -8; j <= 8; ++j)
 		{
-			sf::Vector2i pos = {playerPosition.x/REGION_SIZE + i - 1, playerPosition.y/REGION_SIZE + j - 1};
+			sf::Vector2i pos = {playerPosition.x/REGION_SIZE + i, playerPosition.y/REGION_SIZE + j};
 			if (m_regions.find(pos) == m_regions.end())
 			{
 				Region region = Region(pos, m_seed);
+				
+				if (region.isSpawner())
+					m_spawnEvents.insert(m_spawnEvents.end(), rand()%5 + 3, {"test", {region.getPosition().x*REGION_SIZE, region.getPosition().y*REGION_SIZE}});
+
 				m_regions.insert(std::pair<sf::Vector2i, Region>(pos, region));
 			}
 		}
@@ -37,9 +41,7 @@ void World::update(const float& deltaTime, const sf::Vector2i& playerPosition)
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (auto it = m_regions.begin(); it != m_regions.end(); ++it)
-	{
 		target.draw(it->second, states);
-	}
 }
 
 void World::removeRegions(const sf::Vector2i& position)
@@ -47,11 +49,21 @@ void World::removeRegions(const sf::Vector2i& position)
 	auto it = m_regions.begin();
 	while (it != m_regions.end())
 	{
-		if (it->second.getPosition().x + REGION_SIZE < position.x - 860*6 || it->second.getPosition().x > position.x + 860*6 || it->second.getPosition().y + REGION_SIZE < position.y - 860*6 || it->second.getPosition().y > position.y + 860*6)
+		if (it->second.getPosition().x + REGION_SIZE < position.x - 860*8 || it->second.getPosition().x > position.x + 860*8 || it->second.getPosition().y + REGION_SIZE < position.y - 860*8 || it->second.getPosition().y > position.y + 860*8)
 			it = m_regions.erase(it);
 		else
 			++it;
 	}
+}
+
+std::vector<NPCSpawnEvent> World::getSpawnEvents() const
+{
+	return m_spawnEvents;
+}
+
+void World::clearSpawnEvents()
+{
+	m_spawnEvents.clear();
 }
 
 /*std::weak_ptr<ActorManager> World::getActorManager() const

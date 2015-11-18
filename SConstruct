@@ -28,13 +28,10 @@ src/navigation/NavGraph.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp
 src/world/Chunk.cpp
-src/world/Path.cpp
 src/world/Quadtree.cpp
 src/world/Region.cpp
 src/world/World.cpp
 src/world/procedural/Noise.cpp
-src/world/procedural/RockGenerator.cpp
-src/world/procedural/PathGenerator.cpp
 """)
 
 environment = Environment(CC='gcc')

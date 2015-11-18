@@ -1,7 +1,7 @@
 
 -- INIT
 
-State_Init = {}
+State_Init = {origin = {x = 0, y = 0}}
 
 State_Init["Enter"] = function(actor)
 	actor:setHealth(100);
@@ -9,6 +9,8 @@ State_Init["Enter"] = function(actor)
 	height = 72;--width*(math.random(20, 45)/10);
 	actor:setSize(width, height);
 	actor:changeState(State_Wander);
+	State_Init.origin.x = actor:getPositionX();
+	State_Init.origin.y = actor:getPositionY();
 end
 
 State_Init["Execute"] = function(actor)
@@ -19,7 +21,7 @@ end
 
 -- IDLE
 
-State_Idle = {timer = 0, limit = math.random(120, 480)}
+State_Idle = {timer = 0, limit = math.random(20, 50)}
 
 State_Idle["Enter"] = function(actor)
 	State_Idle.timer = 0;
@@ -50,12 +52,18 @@ end
 State_Wander["Execute"] = function(actor)
 	distance = math.sqrt(math.pow(State_Wander.target.x - actor:getPositionX(), 2) + math.pow(State_Wander.target.y - actor:getPositionY(), 2));
 
+	while math.sqrt(math.pow(State_Init.origin.x - State_Wander.target.x, 2) + math.pow(State_Init.origin.y - State_Wander.target.y, 2)) > 150 do
+		State_Wander.target.x = math.random(-100, 100) + actor:getPositionX();
+		State_Wander.target.y = math.random(-100, 100) + actor:getPositionY();
+		State_Wander.angle = math.atan2(State_Wander.target.y - actor:getPositionY(), State_Wander.target.x - actor:getPositionX());
+	end
+
 	if distance <= 2 then
 		actor:setVelocity(0, 0);
 		actor:changeState(State_Idle);
 	else
-		x = math.cos(State_Wander.angle)*100;
-		y = math.sin(State_Wander.angle)*100;
+		x = math.cos(State_Wander.angle)*200;
+		y = math.sin(State_Wander.angle)*200;
 		actor:setVelocity(x, y);
 	end
 end

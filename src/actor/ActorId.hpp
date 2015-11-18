@@ -14,7 +14,7 @@ struct ActorId
 
 	bool operator< (const ActorId& compare) const
 	{
-		return id == compare.id;
+		return id < compare.id;
 	}
 };
 
