@@ -50,7 +50,22 @@ void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
 	deleteOutsiders({bounds.left - bounds.width*2, bounds.top - bounds.height*2, bounds.width*4, bounds.height*4});
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
 		(*it)->update(deltaTime);
+		/*if ((*it)->isPlayer())
+			continue;
+
+		auto itBounds = (*it)->getBounds();
+		for (auto iter = m_actors.begin(); iter != m_actors.end(); ++iter)
+		{
+			if ((*iter)->isPlayer() || (*iter)->getId().id == (*it)->getId().id)
+				continue;
+
+			auto iterBounds = (*iter)->getBounds();
+			if (itBounds.intersects(iterBounds))
+				(*it)->move((*it)->getPosition().x - (*iter)->getPosition().x, (*it)->getPosition().y - (*iter)->getPosition().y);
+		}*/
+	}
 
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompare());
 }

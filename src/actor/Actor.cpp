@@ -98,6 +98,11 @@ void Actor::setSprite(const sf::Sprite& sprite)
 	m_sprite = sprite;
 }
 
+void Actor::setOrigin(const int x, const int y)
+{
+	m_origin = {x, y};
+}
+
 void Actor::setPositionMaster(const float x, const float y)
 {
 	m_sprite.setPosition(x, y);
@@ -107,6 +112,16 @@ void Actor::setPositionMaster(const float x, const float y)
 void Actor::setVelocity(const float x, const float y)
 {
 	m_velocity = {x, y};
+}
+
+float Actor::getOriginX() const
+{
+	return m_origin.x;
+}
+
+float Actor::getOriginY() const
+{
+	return m_origin.y;
 }
 
 float Actor::getPositionX() const
