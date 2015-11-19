@@ -59,7 +59,7 @@ end
 State_Wander["Execute"] = function(actor)
 	distance = math.sqrt(math.pow(State_Wander.target.x - actor:getPositionX(), 2) + math.pow(State_Wander.target.y - actor:getPositionY(), 2));
 
-	if distance <= 2 then
+	if distance <= 5 then
 		actor:setVelocity(0, 0);
 		actor:changeState(State_Idle);
 	else
@@ -91,11 +91,17 @@ State_Follow_Player["Execute"] = function(actor)
 		playerX = actor:getPlayerPositionX();
 		playerY = actor:getPlayerPositionY();
 
-		if math.sqrt(math.pow(playerX - actor:getPositionX(), 2) + math.pow(playerY - actor:getPositionY(), 2)) >= 1000 then
-			actor:changeState(State_Idle);
+		distance = math.sqrt(math.pow(playerX - actor:getPositionX(), 2) + math.pow(playerY - actor:getPositionY(), 2));
+
+		if distance <= 50 then
+			actor:setVelocity(0, 0);
 		else
-			angle = math.atan2(playerY - actor:getPositionY(), playerX - actor:getPositionX());
-			actor:setVelocity(math.cos(angle)*200, math.sin(angle)*200);
+			if distance >= 1000 then
+				actor:changeState(State_Idle);
+			else
+				angle = math.atan2(playerY - actor:getPositionY(), playerX - actor:getPositionX());
+				actor:setVelocity(math.cos(angle)*200, math.sin(angle)*200);
+			end
 		end
 	else
 		actor:changeState(State_Idle);
