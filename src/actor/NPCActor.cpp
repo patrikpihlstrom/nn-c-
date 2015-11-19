@@ -57,7 +57,8 @@ void NPCActor::registerLuaStateMachine()
 		.def("damage", &Actor::damage)
 		.def("isNPC", &Actor::isNPC)
 		.def("isPlayer", &Actor::isPlayer)
-		.def("getId", &Actor::getId)
+		.def("hasPlayer", &NPCActor::hasPlayer)
+		.def("getId", &Actor::getIdAsInt)
 		.def("getBounds", &Actor::getBounds)
 		.def("getSprite", &Actor::getSprite)
 		.def("setSprite", &Actor::setSprite)
@@ -65,6 +66,8 @@ void NPCActor::registerLuaStateMachine()
 		.def("setPosition", &Actor::setPositionMaster)
 		.def("getPositionX", &Actor::getPositionX)
 		.def("getPositionY", &Actor::getPositionY)
+		.def("getPlayerPositionX", &NPCActor::getPlayerPositionX)
+		.def("getPlayerPositionY", &NPCActor::getPlayerPositionY)
 		.def("getVelocityX", &Actor::getVelocityX)
 		.def("getVelocityY", &Actor::getVelocityY)
 		.def("move", &Actor::move)
@@ -111,5 +114,34 @@ void NPCActor::changeState(const luabind::object& state)
 {
 	if (m_stateMachine)
 		m_stateMachine->changeState(state);
+}
+
+void NPCActor::setPlayerActor(const std::weak_ptr<Actor> playerActor)
+{
+	m_playerActor = playerActor;
+}
+
+float NPCActor::getPlayerPositionX() const
+{
+	if (auto player = m_playerActor.lock())
+		return player->getPosition().x;
+	else
+		return 0;
+}
+
+float NPCActor::getPlayerPositionY() const
+{
+	if (auto player = m_playerActor.lock())
+		return player->getPosition().y;
+	else
+		return 0;
+}
+
+bool NPCActor::hasPlayer() const
+{
+	if (auto player = m_playerActor.lock())
+		return true;
+	else
+		return false;
 }
 

@@ -28,6 +28,7 @@ public:
 
 	ActorId getId() const;
 	void assign(const ActorId& id);
+	uint64_t getIdAsInt() const;
 
 	sf::Sprite getSprite() const;
 	void setSprite(const sf::Sprite& shape);
@@ -41,6 +42,12 @@ public:
 	float getPositionY() const;
 	float getVelocityX() const;
 	float getVelocityY() const;
+
+	virtual float getPlayerPositionX() const; // Returns getPosition().x if is player
+	virtual float getPlayerPositionY() const; // Returns getPosition().y if is player
+
+	virtual bool hasPlayer() const; // Only defined in NPCActor.
+
 	sf::Vector2<uint8_t> getSize() const;
 
 	bool operator<(const Actor& actor) const;

@@ -26,6 +26,7 @@ public:
 private:
 	void deleteOutsiders(const sf::Rect<int>& bounds);
 	std::vector<std::shared_ptr<Actor>> m_actors;
+	std::weak_ptr<Actor> m_playerActor;
 
 	struct ActorCompare
 	{

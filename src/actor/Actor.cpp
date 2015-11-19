@@ -83,6 +83,11 @@ void Actor::assign(const ActorId& id)
 	m_id = id;
 }
 
+uint64_t Actor::getIdAsInt() const
+{
+	return m_id.id;
+}
+
 sf::Sprite Actor::getSprite() const
 {
 	return m_sprite;
@@ -124,6 +129,16 @@ float Actor::getVelocityY() const
 	return m_velocity.y;
 }
 
+float Actor::getPlayerPositionX() const
+{
+	return getPosition().x;
+}
+
+float Actor::getPlayerPositionY() const
+{
+	return getPosition().y;
+}
+
 bool Actor::operator<(const Actor& actor) const
 {
 	return getPosition().y + m_size.y < actor.getPosition().y + actor.getSize().y;
@@ -137,5 +152,10 @@ sf::Vector2<uint8_t> Actor::getSize() const
 sf::Rect<int> Actor::getBounds() const
 {
 	return {(int)(getPosition().x - m_size.x/2), (int)(getPosition().y - m_size.y/2), m_size.x, m_size.y};
+}
+
+bool Actor::hasPlayer() const
+{
+	return false;
 }
 
