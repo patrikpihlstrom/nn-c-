@@ -33,10 +33,6 @@ void Region::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	shape.setSize({REGION_SIZE, REGION_SIZE});
 	shape.setFillColor(m_color);
 	target.draw(shape, states);
-	/*for (int i = 0, j = 0; i < 8; ++i)
-		for (j = 0; j < 8; ++j)
-			m_chunks[i][j].draw(target, states);
-			*/
 }
 
 void Region::initializeChunks()

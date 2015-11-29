@@ -57,9 +57,9 @@ public:
 
 	sf::Rect<int> getBounds() const;
 	
-protected:
 	virtual void control();
 	virtual void updatePosition(const float& deltaTime);
+protected:
 
 	sf::Vector2f m_velocity;
 	sf::Vector2<uint8_t> m_size;

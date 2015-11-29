@@ -52,19 +52,36 @@ void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
 		(*it)->update(deltaTime);
-		/*if ((*it)->isPlayer())
+		if ((*it)->isPlayer())
 			continue;
 
-		auto itBounds = (*it)->getBounds();
 		for (auto iter = m_actors.begin(); iter != m_actors.end(); ++iter)
 		{
-			if ((*iter)->isPlayer() || (*iter)->getId().id == (*it)->getId().id)
+			if ((*iter)->isPlayer() || (*iter)->getId().id == (*it)->getId().id || math::distance<float>((*it)->getPosition(), (*iter)->getPosition()) >= 16)
 				continue;
 
-			auto iterBounds = (*iter)->getBounds();
-			if (itBounds.intersects(iterBounds))
-				(*it)->move((*it)->getPosition().x - (*iter)->getPosition().x, (*it)->getPosition().y - (*iter)->getPosition().y);
-		}*/
+			if ((*it)->getPosition().x < (*iter)->getPosition().x)
+			{
+				(*it)->move(-1, 0);
+				(*iter)->move(1, 0);
+			}
+			else if ((*it)->getPosition().x < (*iter)->getPosition().x)
+			{
+				(*it)->move(1, 0);
+				(*iter)->move(-1, 0);
+			}
+
+			if ((*it)->getPosition().y < (*iter)->getPosition().y)
+			{
+				(*it)->move(0, -1);
+				(*iter)->move(0, 1);
+			}
+			else if ((*it)->getPosition().x < (*iter)->getPosition().x)
+			{
+				(*it)->move(0, 1);
+				(*iter)->move(0, -1);
+			}
+		}
 	}
 
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompare());

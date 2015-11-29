@@ -18,6 +18,12 @@ void Actor::update(const float& deltaTime)
 void Actor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_sprite, states);
+	sf::RectangleShape bounds({(float)getBounds().width, (float)getBounds().height});
+	bounds.setPosition(getPosition());
+	bounds.setOutlineThickness(2.f);
+	bounds.setOutlineColor({255, 0, 0, 100});
+	bounds.setFillColor({0, 0, 0, 0});
+	target.draw(bounds, states);
 }
 
 uint8_t Actor::getHealth() const
@@ -64,13 +70,15 @@ void Actor::move(const float x, const float y)
 {
 	Transformable::move(x, y);
 	m_sprite.setPosition(getPosition());
+
+	if (!m_facingRight)
+		m_sprite.move(m_size.x, 0);
 }
 
 void Actor::setSize(const uint8_t width, const uint8_t height)
 {
 	m_sprite.scale((float)width/m_size.x, (float)height/m_size.y);
 	m_size = {width, height};
-	m_sprite.setOrigin(width/2, height/2);
 }
 
 ActorId Actor::getId() const
