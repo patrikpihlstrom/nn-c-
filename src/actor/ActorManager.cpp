@@ -24,11 +24,11 @@ void ActorManager::addActor(std::shared_ptr<Actor> actor)
 {
 	if (actor->isPlayer())
 		m_playerActor = actor;
-	else if (auto playerActor = m_playerActor.lock())
+	/*else if (auto playerActor = m_playerActor.lock())
 	{
 		NPCActor* npcActor = dynamic_cast<NPCActor*>(actor.get());
 		npcActor->setPlayerActor(m_playerActor);
-	}
+	}*/
 
 	m_actors.push_back(actor);
 }

@@ -9,5 +9,5 @@ rsync -arvzSH --include="*.cpp" --include="*.hpp" --include="SConstruct" --inclu
 
 printf "Retrieving the executable from Luke and running.\n"
 rsync -arvzSH --include="No-Motivation" --exclude="*" cognizance@$host:~/Projects/tribal/ ~/Projects/tribal/
-__GL_SYNC_TO_VBLANK=0 optirun ./No-Motivation
+__GL_SYNC_TO_VBLANK=0 ./No-Motivation
 

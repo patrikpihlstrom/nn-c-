@@ -16,7 +16,6 @@ void NPCSpawner::spawn(const std::string& npcType, const std::weak_ptr<sf::Textu
 	npcActor->setTexture(texture);
 	npcActor->setPosition(position);
 	npcActor->setOrigin(position.x, position.y);
-	npcActor->registerLuaStateMachine();
 	npcActor->assign(actorIdTracker.addActor());
 	actorManager.addActor(npcActor);
 }

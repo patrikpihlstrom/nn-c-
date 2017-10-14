@@ -5,23 +5,8 @@ Object::Object()
 {
 }
 
-Object::Object(const ObjectId& id) :
-	m_id(id)
-{
-}
-
 Object::~Object()
 {
-}
-
-void Object::assign(const ObjectId& id)
-{
-	m_id = id;
-}
-
-ObjectId Object::getId() const
-{
-	return m_id;
 }
 
 math::Polygon Object::getPolygon() const

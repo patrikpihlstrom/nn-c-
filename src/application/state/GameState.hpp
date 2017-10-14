@@ -22,19 +22,9 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void exit();
 
-	sf::Vector2f getView() const;
-
 private:
 	World m_world;
 
-	std::unique_ptr<ActorManager> m_actorManager;
-	std::unique_ptr<NPCSpawner> m_npcSpawner;
 	std::unique_ptr<TextureHolder> m_textureHolder;
-	std::unique_ptr<ObjectIdTracker> m_objectIdTracker;
-	std::unique_ptr<ActorIdTracker> m_actorIdTracker;
-
-	std::shared_ptr<PlayerActor> m_playerActor;
-
-	void addObject(const Object& object);
 };
 

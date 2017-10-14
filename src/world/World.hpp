@@ -13,7 +13,7 @@
 #include "application/Camera.hpp"
 #include "object/ObjectIdTracker.hpp"
 #include "object/Object.hpp"
-#include "world/Region.hpp"
+#include "world/Quadtree.hpp"
 
 
 class World : public sf::Drawable
@@ -23,16 +23,11 @@ public:
 	World(const long& seed);
 	~World();
 
-	void update(const float& deltaTime, const sf::Vector2i& playerPosition);
+	void update(const float& deltaTime);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-	std::vector<NPCSpawnEvent> getSpawnEvents() const;
-	void clearSpawnEvents();
 
 private:
 	long m_seed;
-
-	void removeRegions(const sf::Vector2i& position);
 
 	struct Hash
 	{
@@ -45,7 +40,7 @@ private:
 		}
 	};
 
-	std::unordered_map<sf::Vector2i, Region, Hash> m_regions;
-	std::vector<NPCSpawnEvent> m_spawnEvents;
+	std::shared_ptr<Quadtree> m_quadtree;
+	std::vector<Object> m_objects;
 };
 

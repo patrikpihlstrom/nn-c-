@@ -5,7 +5,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "object/ObjectIdTracker.hpp"
 #include "application/Math.hpp"
 
 
@@ -13,11 +12,7 @@ class Object : public sf::Drawable, public sf::Transformable
 {
 public:
 	Object();
-	Object(const ObjectId& id);
 	virtual ~Object();
-
-	void assign(const ObjectId& id);
-	ObjectId getId() const;
 
 	sf::Rect<int> getBoundingBox() const;
 
@@ -34,8 +29,6 @@ public:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 protected:
-	ObjectId m_id;
-
 	math::Polygon m_polygon;
 	sf::Rect<int> m_boundingBox;
 

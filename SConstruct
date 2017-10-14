@@ -4,8 +4,6 @@ libs = Split("""
 sfml-graphics
 sfml-window
 sfml-system
-lua5.2
-luabind
 """)
 
 sources = Split("""
@@ -24,7 +22,6 @@ src/application/state/State.cpp
 src/application/state/MenuState.cpp
 src/application/state/GameState.cpp
 src/application/ui/Button.cpp
-src/navigation/NavGraph.cpp
 src/object/Object.cpp
 src/object/ObjectIdTracker.cpp
 src/world/Chunk.cpp
