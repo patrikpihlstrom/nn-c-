@@ -1,7 +1,7 @@
 #pragma once
 
-#include "actor/Actor.hpp"
-#include "application/Camera.hpp"
+#include "Actor.hpp"
+#include "../application/Camera.hpp"
 
 const static int TERMINAL_X_WALK = 200;
 const static int TERMINAL_X_RUN = 500;

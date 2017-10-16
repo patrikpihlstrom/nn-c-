@@ -2,8 +2,8 @@
 
 #include <SFML/System/Vector2.hpp>
 
-#include "application/Math.hpp"
-#include "world/Chunk.hpp"
+#include "../application/Math.hpp"
+#include "Chunk.hpp"
 
 
 const float DISTANCE = /*2.8284271247461903;//11.313708498984761;*/5.656854249492381;

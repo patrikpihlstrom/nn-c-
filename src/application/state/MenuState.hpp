@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <memory>
 
-#include "application/state/State.hpp"
-#include "application/ui/Button.hpp"
-#include "application/TextureHolder.hpp"
+#include "State.hpp"
+#include "../ui/Button.hpp"
+#include "../TextureHolder.hpp"
 
 
 class MenuState : public State

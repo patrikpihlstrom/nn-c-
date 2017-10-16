@@ -1,4 +1,4 @@
-#include "world/Region.hpp"
+#include "Region.hpp"
 
 
 Region::Region(const sf::Vector2i& position, const int seed) :

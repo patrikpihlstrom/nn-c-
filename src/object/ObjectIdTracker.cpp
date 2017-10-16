@@ -1,5 +1,4 @@
 #include "ObjectIdTracker.hpp"
-#include <iostream>
 
 
 ObjectIdTracker::ObjectIdTracker()
@@ -32,7 +31,7 @@ ObjectId ObjectIdTracker::getFirstAvailableId() const
 		return ObjectId{0};
 
 	ObjectId id = *m_ids.begin();
-	for (int i = 0; i < m_ids.size(); ++i)
+	for (unsigned long i = 0; i < m_ids.size(); ++i)
 	{
 		if (m_ids[i].id - id.id > 1)
 		{

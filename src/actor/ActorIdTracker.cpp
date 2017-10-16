@@ -1,4 +1,4 @@
-#include "actor/ActorIdTracker.hpp"
+#include "ActorIdTracker.hpp"
 
 
 ActorIdTracker::ActorIdTracker()
@@ -31,7 +31,7 @@ ActorId ActorIdTracker::getFirstAvailableId() const
 		return ActorId{0};
 
 	ActorId id = *m_ids.begin();
-	for (int i = 0; i < m_ids.size(); ++i)
+	for (unsigned long i = 0; i < m_ids.size(); ++i)
 	{
 		if (m_ids[i].id - id.id > 1)
 		{

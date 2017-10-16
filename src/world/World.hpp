@@ -5,15 +5,14 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "actor/ActorManager.hpp"
-#include "actor/ActorIdTracker.hpp"
-#include "actor/NPCSpawner.hpp"
-#include "actor/NPCSpawnEvent.hpp"
-#include "application/TextureHolder.hpp"
-#include "application/Camera.hpp"
-#include "object/ObjectIdTracker.hpp"
-#include "object/Object.hpp"
-#include "world/Quadtree.hpp"
+#include "../actor/NNActor.hpp"
+#include "../actor/ActorManager.hpp"
+#include "../actor/ActorIdTracker.hpp"
+#include "../application/TextureHolder.hpp"
+#include "../application/Camera.hpp"
+#include "../object/ObjectIdTracker.hpp"
+#include "../object/Object.hpp"
+#include "Quadtree.hpp"
 
 
 class World : public sf::Drawable
@@ -41,6 +40,8 @@ private:
 	};
 
 	std::shared_ptr<Quadtree> m_quadtree;
-	std::vector<Object> m_objects;
+	std::vector<std::shared_ptr<Object>> m_objects;
+	ObjectIdTracker m_objectIdTracker;
+	ActorManager m_actorManager;
 };
 

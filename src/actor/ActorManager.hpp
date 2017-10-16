@@ -5,8 +5,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "actor/PlayerActor.hpp"
-#include "actor/NPCActor.hpp"
+#include "PlayerActor.hpp"
+#include "ActorIdTracker.hpp"
+#include "NNActor.hpp"
+#include "Actor.hpp"
+#include "../world/Quadtree.hpp"
 
 class ActorManager : public sf::Drawable
 {
@@ -14,10 +17,10 @@ public:
 	ActorManager();
 	~ActorManager();
 
-	void addActor(std::shared_ptr<Actor> actor);
+	ActorId addActor(std::shared_ptr<Actor> actor);
 	void removeActor(const ActorId& id);
 
-	void update(const float& deltaTime, const sf::Rect<int>& bounds);
+	void update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	std::weak_ptr<Actor> getActor(const ActorId& id) const;
 
@@ -25,6 +28,7 @@ public:
 
 private:
 	void deleteOutsiders(const sf::Rect<int>& bounds);
+	ActorIdTracker m_actorIdTracker;
 	std::vector<std::shared_ptr<Actor>> m_actors;
 	std::weak_ptr<Actor> m_playerActor;
 

@@ -1,14 +1,13 @@
 #pragma once
 
-#include "application/state/State.hpp"
-#include "world/World.hpp"
-#include "actor/ActorManager.hpp"
-#include "actor/ActorIdTracker.hpp"
-#include "actor/NPCSpawner.hpp"
-#include "application/TextureHolder.hpp"
-#include "application/Camera.hpp"
-#include "object/ObjectIdTracker.hpp"
-#include "object/Object.hpp"
+#include "State.hpp"
+#include "../../world/World.hpp"
+#include "../../actor/ActorManager.hpp"
+#include "../../actor/ActorIdTracker.hpp"
+#include "../TextureHolder.hpp"
+#include "../Camera.hpp"
+#include "../../object/ObjectIdTracker.hpp"
+#include "../../object/Object.hpp"
 
 
 class GameState : public State

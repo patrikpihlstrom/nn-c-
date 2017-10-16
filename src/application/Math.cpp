@@ -74,7 +74,7 @@ namespace math
 			auto segment = polygon.getEdgeSegment<float>(i);
 
 			if (lineIntersectsLine(a, b, segment.a, segment.b))
-					return true;
+				return true;
 		}
 
 		return false;

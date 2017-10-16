@@ -10,9 +10,8 @@ sources = Split("""
 src/actor/Actor.cpp
 src/actor/ActorIdTracker.cpp
 src/actor/ActorManager.cpp
-src/actor/NPCActor.cpp
+src/actor/NNActor.cpp
 src/actor/PlayerActor.cpp
-src/actor/NPCSpawner.cpp
 src/application/main.cpp
 src/application/Application.cpp
 src/application/Camera.cpp
@@ -28,11 +27,10 @@ src/world/Chunk.cpp
 src/world/Quadtree.cpp
 src/world/Region.cpp
 src/world/World.cpp
-src/world/procedural/Noise.cpp
 """)
 
 environment = Environment(CC='gcc')
-environment.Append(CPPPATH='src')
+#environment.Append(CPPPATH='.')
 environment.Append(LIBS=libs)
 environment.Append(CXXFLAGS='-std=c++11')
 environment.Program(target='No-Motivation', source=sources)

@@ -1,4 +1,4 @@
-#include "world/Chunk.hpp"
+#include "Chunk.hpp"
 
 
 Chunk::Chunk()

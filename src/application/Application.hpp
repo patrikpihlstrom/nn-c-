@@ -17,9 +17,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
-#include "application/state/State.hpp"
-#include "application/state/MenuState.hpp"
-#include "application/state/GameState.hpp"
+#include "state/State.hpp"
+#include "state/MenuState.hpp"
+#include "state/GameState.hpp"
 
 
 class Application

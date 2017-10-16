@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "actor/ActorId.hpp"
+#include "ActorId.hpp"
 
 
 class ActorIdTracker

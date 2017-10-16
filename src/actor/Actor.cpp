@@ -1,8 +1,8 @@
 #include "Actor.hpp"
 
-Actor::Actor() 
+Actor::Actor() :
+	m_size(16.f)
 {
-	m_facingRight = true;
 }
 
 Actor::~Actor()
@@ -17,13 +17,11 @@ void Actor::update(const float& deltaTime)
 
 void Actor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_sprite, states);
-	sf::RectangleShape bounds({(float)getBounds().width, (float)getBounds().height});
-	bounds.setPosition(getPosition());
-	bounds.setOutlineThickness(2.f);
-	bounds.setOutlineColor({255, 0, 0, 100});
-	bounds.setFillColor({0, 0, 0, 0});
-	target.draw(bounds, states);
+	sf::CircleShape circle;
+	circle.setRadius(m_size);
+	circle.setPosition(getPosition());
+	circle.setFillColor({255, 100, 255});
+	target.draw(circle, states);
 }
 
 uint8_t Actor::getHealth() const
@@ -44,20 +42,68 @@ void Actor::damage(const int8_t& factor)
 		m_health = 0;
 }
 
-void Actor::setTexture(const std::weak_ptr<sf::Texture> texture)
-{
-	if (auto _texture = texture.lock())
-		m_sprite.setTexture(*_texture.get(), true);
-
-	m_size = {(uint8_t)m_sprite.getTextureRect().width, (uint8_t)m_sprite.getTextureRect().height};
-}
-
 void Actor::control()
 {
-	if ((m_facingRight && m_velocity.x < 0) || (!m_facingRight && m_velocity.x > 0))
+	float speed = math::magnitude<float>(m_velocity);
+	//if (speed != m_desiredSpeed)
 	{
-		m_facingRight = !m_facingRight;
-		m_sprite.scale(-1.f, 1.f);
+		float deltaSpeed = m_desiredSpeed - speed;
+		if (std::abs(deltaSpeed) > MAX_ACC)
+		{
+			if (deltaSpeed < 0)
+			{
+				deltaSpeed = -MAX_ACC;
+			}
+			else
+			{
+				deltaSpeed = MAX_ACC;
+			}
+		}
+
+		float targetSpeed = speed + deltaSpeed;
+		m_velocity = {targetSpeed*std::cos(m_angle) - targetSpeed*std::sin(m_angle), targetSpeed*std::sin(m_angle) + targetSpeed*std::cos(m_angle)};
+		std::cout << m_velocity.x << ':' << m_velocity.y << std::endl;
+
+		speed = math::magnitude<float>(m_velocity);
+		if (speed > MAX_SPEED)
+		{
+			math::normalize(m_velocity);
+			m_velocity.x *= MAX_SPEED;
+			m_velocity.y *= MAX_SPEED;
+		}
+
+		std::cout << m_velocity.x << ':' << m_velocity.y << std::endl;
+	}
+
+	//if (m_desiredRotationRate != m_rotationRate)
+	{
+		float deltaRotationRate = m_desiredRotationRate - m_rotationRate;
+		if (std::abs(deltaRotationRate) > MAX_ROTATION_ACC)
+		{
+			if (deltaRotationRate < 0)
+			{
+				deltaRotationRate = -MAX_ROTATION_ACC;
+			}
+			else
+			{
+				deltaRotationRate = MAX_ROTATION_ACC;
+			}
+		}
+
+		m_rotationRate += deltaRotationRate;
+		if (std::abs(m_rotationRate) > MAX_ROTATION_RATE)
+		{
+			if (m_rotationRate < 0)
+			{
+				m_rotationRate = -MAX_ROTATION_RATE;
+			}
+			else
+			{
+				m_rotationRate = MAX_ROTATION_RATE;
+			}
+		}
+
+		m_angle += m_rotationRate;
 	}
 }
 
@@ -69,16 +115,6 @@ void Actor::updatePosition(const float& deltaTime)
 void Actor::move(const float x, const float y)
 {
 	Transformable::move(x, y);
-	m_sprite.setPosition(getPosition());
-
-	if (!m_facingRight)
-		m_sprite.move(m_size.x, 0);
-}
-
-void Actor::setSize(const uint8_t width, const uint8_t height)
-{
-	m_sprite.scale((float)width/m_size.x, (float)height/m_size.y);
-	m_size = {width, height};
 }
 
 ActorId Actor::getId() const
@@ -96,89 +132,23 @@ uint64_t Actor::getIdAsInt() const
 	return m_id.id;
 }
 
-sf::Sprite Actor::getSprite() const
-{
-	return m_sprite;
-}
-
-void Actor::setSprite(const sf::Sprite& sprite)
-{
-	m_sprite = sprite;
-}
-
-void Actor::setOrigin(const int x, const int y)
-{
-	m_origin = {x, y};
-}
-
-void Actor::setPositionMaster(const float x, const float y)
-{
-	m_sprite.setPosition(x, y);
-	Transformable::setPosition(x, y);
-}
-
-void Actor::setVelocity(const float x, const float y)
-{
-	m_velocity = {x, y};
-}
-
-float Actor::getOriginX() const
-{
-	return m_origin.x;
-}
-
-float Actor::getOriginY() const
-{
-	return m_origin.y;
-}
-
-float Actor::getPositionX() const
-{
-	return getPosition().x;
-}
-
-float Actor::getPositionY() const
-{
-	return getPosition().y;
-}
-
-float Actor::getVelocityX() const
-{
-	return m_velocity.x;
-}
-
-float Actor::getVelocityY() const
-{
-	return m_velocity.y;
-}
-
-float Actor::getPlayerPositionX() const
-{
-	return getPosition().x;
-}
-
-float Actor::getPlayerPositionY() const
-{
-	return getPosition().y;
-}
-
 bool Actor::operator<(const Actor& actor) const
 {
-	return getPosition().y + m_size.y < actor.getPosition().y + actor.getSize().y;
+	return getPosition().y + m_size < actor.getPosition().y + actor.getSize();
 }
 
-sf::Vector2<uint8_t> Actor::getSize() const
+float Actor::getSize() const
 {
 	return m_size;
 }
 
-sf::Rect<int> Actor::getBounds() const
+void Actor::setSize(const float size)
 {
-	return {(int)(getPosition().x - m_size.x/2), (int)(getPosition().y - m_size.y/2), m_size.x, m_size.y};
+	m_size = size;
 }
 
-bool Actor::hasPlayer() const
+sf::Rect<int> Actor::getBounds() const
 {
-	return false;
+	return {(int)getPosition().x - (int)m_size, (int)getPosition().y - (int)m_size, (int)m_size*2, (int)m_size*2};
 }
 

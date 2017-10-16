@@ -6,11 +6,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "application/Math.hpp"
-#include "object/Object.hpp"
+#include "../application/Math.hpp"
+#include "../object/Object.hpp"
 
 
-const unsigned char MAX_LEVEL = 3;
+const unsigned char MAX_LEVEL = 5;
 
 class Quadtree : public std::enable_shared_from_this<Quadtree>
 {
@@ -58,7 +58,8 @@ public:
 
 	sf::Rect<int> getBoundingBox() const;
 
-	void draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::RenderStates states) const;
+	//void draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::RenderStates states) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
 	std::shared_ptr<Quadtree> m_children[4];
@@ -71,7 +72,5 @@ private:
 	unsigned char m_level;
 
 	sf::Rect<int> m_boundingBox;
-
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 

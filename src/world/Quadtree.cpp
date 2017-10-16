@@ -21,8 +21,6 @@ void Quadtree::update()
 	{
 		if (auto parent = m_parent.lock())
 			parent->update();
-		else
-			std::cout << m_level << std::endl;
 	}
 	else if (canMergeChildren())
 	{
@@ -30,8 +28,6 @@ void Quadtree::update()
 
 		if (auto parent = m_parent.lock())
 			parent->update();
-		else
-			std::cout << m_level << std::endl;
 	}
 }
 
@@ -228,7 +224,7 @@ sf::Rect<int> Quadtree::getBoundingBox() const
 	return m_boundingBox;
 }
 
-void Quadtree::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::RenderStates states) const
+/*void Quadtree::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::RenderStates states) const
 {
 	std::vector<std::weak_ptr<Quadtree>> quadtrees;
 	getQuadtrees(quadtrees, bounds);
@@ -240,25 +236,24 @@ void Quadtree::draw(const sf::Rect<int>& bounds, sf::RenderTarget& target, sf::R
 			quadtree->draw(target, states);
 		}
 	}
-}
+}*/
 
 void Quadtree::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	/*sf::RectangleShape rect;
+	sf::RectangleShape rect;
 	rect.setPosition(m_boundingBox.left, m_boundingBox.top);
 	rect.setSize(sf::Vector2f(m_boundingBox.width, m_boundingBox.height));
 	rect.setFillColor(sf::Color(255, 0, 0, 25));
 	rect.setOutlineColor(sf::Color(255, 0, 0));
-	rect.setOutlineThickness(1.f);
+	rect.setOutlineThickness(3.f);
 	target.draw(rect, states);
-	*/
 
 	if (!m_children[0])
 	{
-		for (int i = 0; i < m_objects.size(); ++i)
-		{
-			m_objects[i]->draw(target, states);
-		}
+		//for (int i = 0; i < m_objects.size(); ++i)
+		//{
+		//	m_objects[i]->draw(target, states);
+		//}
 	}
 	else
 	{

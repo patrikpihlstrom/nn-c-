@@ -4,7 +4,7 @@
 
 #include <SFML/Graphics/View.hpp>
 
-#include "actor/Actor.hpp"
+#include "../actor/Actor.hpp"
 
 
 class Camera : public sf::View

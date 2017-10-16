@@ -1,4 +1,4 @@
-#include "actor/ActorManager.hpp"
+#include "ActorManager.hpp"
 
 
 ActorManager::ActorManager()
@@ -20,17 +20,17 @@ std::weak_ptr<Actor> ActorManager::getActor(const ActorId& id) const
 	return {};
 }
 
-void ActorManager::addActor(std::shared_ptr<Actor> actor)
+ActorId ActorManager::addActor(std::shared_ptr<Actor> actor)
 {
-	if (actor->isPlayer())
-		m_playerActor = actor;
 	/*else if (auto playerActor = m_playerActor.lock())
 	{
 		NPCActor* npcActor = dynamic_cast<NPCActor*>(actor.get());
 		npcActor->setPlayerActor(m_playerActor);
 	}*/
-
+	ActorId id = m_actorIdTracker.addActor();
+	actor->assign(id);
 	m_actors.push_back(actor);
+	return id;
 }
 
 void ActorManager::removeActor(const ActorId& id)
@@ -40,24 +40,31 @@ void ActorManager::removeActor(const ActorId& id)
 		if ((*it)->getId() == id)
 		{
 			m_actors.erase(it);
+			m_actorIdTracker.removeActor(id);
 			return;
 		}
 	}
 }
 
-void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
+void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree)
 {
-	deleteOutsiders({bounds.left - bounds.width*2, bounds.top - bounds.height*2, bounds.width*4, bounds.height*4});
+	//deleteOutsiders({bounds.left - bounds.width*2, bounds.top - bounds.height*2, bounds.width*4, bounds.height*4});
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
 		(*it)->update(deltaTime);
-		if ((*it)->isPlayer())
-			continue;
-
-		for (auto iter = m_actors.begin(); iter != m_actors.end(); ++iter)
+		auto objects = quadtree->getObjects((*it)->getBounds());
+		for (int i = 0; i < objects.size(); ++i)
 		{
-			if ((*iter)->isPlayer() || (*iter)->getId().id == (*it)->getId().id || math::distance<float>((*it)->getPosition(), (*iter)->getPosition()) >= 16)
+			if (auto object = objects[i].lock())
+			{
+
+			}
+		}
+
+		/*for (auto iter = m_actors.begin(); iter != m_actors.end(); ++iter)
+		{
+			if ((*iter)->getId().id == (*it)->getId().id || math::distance<float>((*it)->getPosition(), (*iter)->getPosition()) >= (*it)->getSize() + (*iter)->getSize())
 				continue;
 
 			if ((*it)->getPosition().x < (*iter)->getPosition().x)
@@ -81,7 +88,7 @@ void ActorManager::update(const float& deltaTime, const sf::Rect<int>& bounds)
 				(*it)->move(0, 1);
 				(*iter)->move(0, -1);
 			}
-		}
+		}*/
 	}
 
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompare());
@@ -97,12 +104,6 @@ void ActorManager::deleteOutsiders(const sf::Rect<int>& bounds)
 {
 	for (auto it = m_actors.begin(); it != m_actors.end();)
 	{
-		if ((*it)->isPlayer())
-		{
-			++it;
-			continue;
-		}
-
 		if (!(*it)->getBounds().intersects(bounds) && !bounds.intersects((*it)->getBounds()))
 			it = m_actors.erase(it);
 		else
