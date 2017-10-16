@@ -33,7 +33,7 @@ void Quadtree::update()
 
 void Quadtree::insert(const std::shared_ptr<Object> object)
 {
-	if (object->getBoundingBox().intersects(getBoundingBox()))
+	if (object->getBoundingBoxInt().intersects(getBoundingBox()))
 	{
 		if (!m_children[0])
 		{
@@ -45,7 +45,7 @@ void Quadtree::insert(const std::shared_ptr<Object> object)
 		{
 			for (int i = 0; i < 4; ++i)
 			{
-				if (m_children[i]->getBoundingBox().intersects(object->getBoundingBox()))
+				if (m_children[i]->getBoundingBox().intersects(object->getBoundingBoxInt()))
 				{
 					m_children[i]->insert(object);
 				}

@@ -11,10 +11,10 @@
 class Actor : public sf::Transformable, public sf::Drawable
 {
 public:
-	const float MAX_SPEED = 20;
+	const float MAX_SPEED = 50;
 	const float MAX_ACC = 0.01f;
 	const float MAX_ROTATION_RATE = 0.01f;
-	const float MAX_ROTATION_ACC = 0.0001f;
+	const float MAX_ROTATION_ACC = 0.002f;
 	
 	Actor();
 	~Actor();
@@ -40,7 +40,7 @@ public:
 	float getSize() const;
 	void setSize(const float size);
 
-	sf::Rect<int> getBounds() const;
+	virtual sf::Rect<int> getBounds() const;
 
 protected:
 	float m_desiredSpeed;

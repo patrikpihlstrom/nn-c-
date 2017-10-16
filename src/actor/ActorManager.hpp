@@ -17,24 +17,24 @@ public:
 	ActorManager();
 	~ActorManager();
 
-	ActorId addActor(std::shared_ptr<Actor> actor);
+	ActorId addActor(std::shared_ptr<NNActor> actor);
 	void removeActor(const ActorId& id);
 
 	void update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-	std::weak_ptr<Actor> getActor(const ActorId& id) const;
+	std::weak_ptr<NNActor> getActor(const ActorId& id) const;
 
 	size_t actorsSize() const;
 
 private:
 	void deleteOutsiders(const sf::Rect<int>& bounds);
 	ActorIdTracker m_actorIdTracker;
-	std::vector<std::shared_ptr<Actor>> m_actors;
+	std::vector<std::shared_ptr<NNActor>> m_actors;
 	std::weak_ptr<Actor> m_playerActor;
 
 	struct ActorCompare
 	{
-		bool operator()(const std::shared_ptr<Actor> l, const std::shared_ptr<Actor> r)
+		bool operator()(const std::shared_ptr<NNActor> l, const std::shared_ptr<NNActor> r)
 		{
 			return *l < *r;
 		}

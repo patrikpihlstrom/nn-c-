@@ -213,7 +213,8 @@ namespace math
 		return isLeft<T>(a, b, c) < 0;
 	}
 
-	sf::Vector2f getLineIntersection(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, bool& interrupted);
+	sf::Vector2f getLineIntersection(const sf::Vector2f a, const sf::Vector2f b, const sf::Vector2f c, const sf::Vector2f d, bool& interrupted);
+	sf::Vector2f getLineRectIntersection(const sf::Vector2f a, const sf::Vector2f b, const sf::Rect<float> rect, bool& interrupted);
 
 	template <typename T>
 	struct Segment

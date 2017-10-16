@@ -20,11 +20,11 @@ World::World(const long& seed) :
 	object->setSize({20, 900});
 	m_objects.push_back(object);
 	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
-	object->setPosition(0, 0);
+	object->setPosition(0, 300);
 	object->setSize({1600, 20});
 	m_objects.push_back(object);
 	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
-	object->setPosition(0, 880);
+	object->setPosition(0, 580);
 	object->setSize({1600, 20});
 	m_objects.push_back(object);
 

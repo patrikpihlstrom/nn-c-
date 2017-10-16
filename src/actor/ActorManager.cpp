@@ -9,7 +9,7 @@ ActorManager::~ActorManager()
 {
 }
 
-std::weak_ptr<Actor> ActorManager::getActor(const ActorId& id) const
+std::weak_ptr<NNActor> ActorManager::getActor(const ActorId& id) const
 {
 	for (int i = 0; i < m_actors.size(); ++i)
 	{
@@ -20,7 +20,7 @@ std::weak_ptr<Actor> ActorManager::getActor(const ActorId& id) const
 	return {};
 }
 
-ActorId ActorManager::addActor(std::shared_ptr<Actor> actor)
+ActorId ActorManager::addActor(std::shared_ptr<NNActor> actor)
 {
 	/*else if (auto playerActor = m_playerActor.lock())
 	{
@@ -54,11 +54,21 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 	{
 		(*it)->update(deltaTime);
 		auto objects = quadtree->getObjects((*it)->getBounds());
+		auto sensors = (*it)->getSensors();
 		for (int i = 0; i < objects.size(); ++i)
 		{
 			if (auto object = objects[i].lock())
 			{
-
+				for (int j = 0; j < sensors.size(); ++j)
+				{
+					bool intersects = false;
+					auto point = math::getLineRectIntersection((*it)->getPosition(), sensors[j], object->getBoundingBox(), intersects);
+					//if (intersects)
+					{
+						float value = 1.5f;// - math::distance<float>((*it)->getPosition(), point)/(*it)->SENSOR_DISTANCE;
+						(*it)->setInput(value, j);
+					}
+				}
 			}
 		}
 

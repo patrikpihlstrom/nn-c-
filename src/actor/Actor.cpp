@@ -62,7 +62,6 @@ void Actor::control()
 
 		float targetSpeed = speed + deltaSpeed;
 		m_velocity = {targetSpeed*std::cos(m_angle) - targetSpeed*std::sin(m_angle), targetSpeed*std::sin(m_angle) + targetSpeed*std::cos(m_angle)};
-		std::cout << m_velocity.x << ':' << m_velocity.y << std::endl;
 
 		speed = math::magnitude<float>(m_velocity);
 		if (speed > MAX_SPEED)
@@ -71,8 +70,6 @@ void Actor::control()
 			m_velocity.x *= MAX_SPEED;
 			m_velocity.y *= MAX_SPEED;
 		}
-
-		std::cout << m_velocity.x << ':' << m_velocity.y << std::endl;
 	}
 
 	//if (m_desiredRotationRate != m_rotationRate)

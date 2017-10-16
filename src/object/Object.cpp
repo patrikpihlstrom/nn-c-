@@ -34,7 +34,12 @@ void Object::setSize(const sf::Vector2f size)
 	m_size = size;
 }
 
-sf::Rect<int> Object::getBoundingBox() const
+sf::Rect<float> Object::getBoundingBox() const
+{
+	return {getPosition().x, getPosition().y, m_size.x, m_size.y};
+}
+
+sf::Rect<int> Object::getBoundingBoxInt() const
 {
 	return {(int)getPosition().x, (int)getPosition().y, (int)m_size.x, (int)m_size.y};
 }

@@ -12,6 +12,7 @@ src/actor/ActorIdTracker.cpp
 src/actor/ActorManager.cpp
 src/actor/NNActor.cpp
 src/actor/PlayerActor.cpp
+src/actor/nn/NeuralNet.cpp
 src/application/main.cpp
 src/application/Application.cpp
 src/application/Camera.cpp

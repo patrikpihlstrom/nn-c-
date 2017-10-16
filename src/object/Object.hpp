@@ -24,7 +24,8 @@ public:
 	sf::Vector2f getSize() const;
 	void setSize(const sf::Vector2f size);
 
-	sf::Rect<int> getBoundingBox() const;
+	sf::Rect<float> getBoundingBox() const;
+	sf::Rect<int> getBoundingBoxInt() const;
 
 protected:
 	ObjectId m_id;

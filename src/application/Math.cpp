@@ -54,7 +54,7 @@ namespace math
 		return points;
 	}
 
-	sf::Vector2f getLineIntersection(const sf::Vector2f& a, const sf::Vector2f& b, const sf::Vector2f& c, const sf::Vector2f& d, bool& interrupted)
+	sf::Vector2f getLineIntersection(const sf::Vector2f a, const sf::Vector2f b, const sf::Vector2f c, const sf::Vector2f d, bool& interrupted)
 	{
 		sf::Vector2f intersection;
 
@@ -65,6 +65,76 @@ namespace math
 		}
 		else
 			return b;
+	}
+
+	bool getLinesIntersection(const sf::Vector2f a, const sf::Vector2f b, const sf::Vector2f c, const sf::Vector2f d, sf::Vector2f& i)
+	{
+		float s1_x, s1_y, s2_x, s2_y;
+		s1_x = b.x - a.x;
+		s1_y = b.y - a.y;
+		s2_x = d.x - c.x;
+		s2_y = d.y - c.y;
+
+		float s, t;
+		s = (-s1_y * (a.x - c.x) + s1_x * (a.y - c.y)) / (-s2_x * s1_y + s1_x * s2_y);
+		t = ( s2_x * (a.y - c.y) - s2_y * (a.x - c.x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+		if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+		{
+			i.x = a.x + (t * s1_x);
+			i.y = a.y + (t * s1_y);
+			return true;
+		}
+
+		return false;
+	}
+
+	sf::Vector2f getLineRectIntersection(const sf::Vector2f a, const sf::Vector2f b, const sf::Rect<float> rect, bool& interrupted)
+	{
+		float len = distance(a, b);
+		sf::Vector2f point = b;
+		sf::Vector2f potential = b;
+
+		if (getLinesIntersection(a, b, {rect.left, rect.top}, {rect.left, rect.top + rect.height}, potential))
+		{
+			point = potential;
+			len = distance(a, point);
+			interrupted = true;
+		}
+
+		if (getLinesIntersection(a, b, {rect.left + rect.width, rect.top}, {rect.left + rect.width, rect.top + rect.height}, potential))
+		{
+			if (len > distance(a, potential))
+			{
+				point = potential;
+				len = distance(a, point);
+			}
+
+			interrupted = true;
+		}
+
+		if (getLinesIntersection(a, b, {rect.left, rect.top}, {rect.left + rect.width, rect.top}, potential))
+		{
+			if (len > distance(a, potential))
+			{
+				point = potential;
+				len = distance(a, point);
+			}
+
+			interrupted = true;
+		}
+
+		if (getLinesIntersection(a, b, {rect.left, rect.top + rect.height}, {rect.left + rect.width, rect.top + rect.height}, potential))
+		{
+			if (len > distance(a, potential))
+			{
+				point = potential;
+			}
+
+			interrupted = true;
+		}
+
+		return point;
 	}
 
 	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, const Polygon& polygon)
