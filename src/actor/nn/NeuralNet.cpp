@@ -37,7 +37,9 @@ NeuralNet::NeuralNet(const std::vector<sf::Vector2f> sensors)
 		auto neuron = std::shared_ptr<Neuron>(new Neuron());
 		for (int j = 0; j < output.size(); ++j)
 		{
-			neuron->out.insert(std::pair<float, std::shared_ptr<Neuron>>(1.f, output[j]));
+			float weight = (double)std::rand()/RAND_MAX;
+			std::cout << weight << std::endl;
+			neuron->out.insert(std::pair<float, std::shared_ptr<Neuron>>(weight, output[j]));
 		}
 
 		neurons.push_back(neuron);
@@ -48,14 +50,13 @@ NeuralNet::~NeuralNet()
 {
 }
 
-std::vector<float> NeuralNet::evaluate(const std::vector<float> input)
+std::map<float, int> NeuralNet::evaluate(const std::vector<float> input)
 {
-	std::vector<float> result;
-	result.resize(output.size(), 0);
+	std::map<float, int> result;
 
 	for (int i = 0; i < neurons.size(); ++i)
 	{
-		if (i < input.size())
+		if (i < input.size() && input[i] > 0.f)
 		{
 			neurons[i]->fire(input[i]);
 		}
@@ -63,7 +64,7 @@ std::vector<float> NeuralNet::evaluate(const std::vector<float> input)
 
 	for (int i = 0; i < output.size(); ++i)
 	{
-		result[i] = output[i]->value/input.size();
+		result.insert(std::pair<float, int>(output[i]->value/input.size(), i));
 		output[i]->value = 0;
 	}
 

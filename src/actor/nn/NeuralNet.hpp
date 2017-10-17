@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <vector>
 #include <iostream>
 
@@ -18,6 +19,6 @@ public:
 	std::vector<std::shared_ptr<Neuron>> neurons;
 	std::vector<std::shared_ptr<Neuron>> output;
 
-	std::vector<float> evaluate(const std::vector<float> input);
+	std::map<float, int> evaluate(const std::vector<float> input);
 };
 

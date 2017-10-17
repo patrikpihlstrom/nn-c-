@@ -8,25 +8,34 @@ World::World()
 World::World(const long& seed) :
 	m_seed(seed)
 {
-	m_quadtree = std::shared_ptr<Quadtree>(new Quadtree({0, 0, 1600, 900}, 0));
+	float width = 3200, height = 1800;
+	m_quadtree = std::shared_ptr<Quadtree>(new Quadtree({0, 0, (int)width, (int)height}, 0));
 	std::cout << "SEED: " << m_seed << std::endl;
 	srand(m_seed);
 	auto object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
 	object->setPosition(0, 0);
-	object->setSize({20, 900});
+	object->setSize({20, height});
 	m_objects.push_back(object);
 	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
-	object->setPosition(1580, 0);
-	object->setSize({20, 900});
+	object->setPosition(width - 20, 0);
+	object->setSize({20, height});
 	m_objects.push_back(object);
 	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
-	object->setPosition(0, 300);
-	object->setSize({1600, 20});
+	object->setPosition(0, 0);
+	object->setSize({width, 20});
 	m_objects.push_back(object);
 	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
-	object->setPosition(0, 580);
-	object->setSize({1600, 20});
+	object->setPosition(0, height - 20);
+	object->setSize({width, 20});
 	m_objects.push_back(object);
+
+	for (int i = 0; i < 20; ++i)
+	{
+		object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
+		object->setPosition(rand()%((int)width-200 + 1) + 100.f, rand()%((int)height-200 + 1) + 100.f);
+		object->setSize({rand()%(50-100 + 1) + 50.f, rand()%(50-100 + 1) + 50.f});
+		m_objects.push_back(object);
+	}
 
 	/*object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
 	object->setPosition(800, 450);
@@ -38,9 +47,12 @@ World::World(const long& seed) :
 		m_quadtree->insert(*it);
 	}
 
-	auto actor = std::shared_ptr<NNActor>(new NNActor());
-	actor->setPosition(800, 450);
-	m_actorManager.addActor(actor);
+	for (int i = 0; i < 10; ++i)
+	{
+		auto actor = std::shared_ptr<NNActor>(new NNActor());
+		actor->setPosition(width/2, height/2);
+		m_actorManager.addActor(actor);
+	}
 }
 
 World::~World()

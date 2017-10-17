@@ -23,7 +23,7 @@ struct Neuron
 			auto neuron = it->second.lock();
 			if (neuron)
 			{
-				neuron->fire(value);
+				neuron->fire(value*it->first);
 			}
 		}
 	}

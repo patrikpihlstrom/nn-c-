@@ -63,9 +63,9 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 				{
 					bool intersects = false;
 					auto point = math::getLineRectIntersection((*it)->getPosition(), sensors[j], object->getBoundingBox(), intersects);
-					//if (intersects)
+					if (intersects)
 					{
-						float value = 1.5f;// - math::distance<float>((*it)->getPosition(), point)/(*it)->SENSOR_DISTANCE;
+						float value = 1.2f - math::distance<float>((*it)->getPosition(), point)/(*it)->SENSOR_DISTANCE;
 						(*it)->setInput(value, j);
 					}
 				}

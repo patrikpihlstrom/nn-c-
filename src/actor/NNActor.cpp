@@ -4,7 +4,7 @@
 NNActor::NNActor() : 
 	Actor()
 {
-	m_angle = M_PI*2*std::rand();
+	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
 	m_theta = M_PI*2/SENSOR_COUNT;
 	m_inputs.resize(SENSOR_COUNT, 0.f);
 	for (int i = 0; i < SENSOR_COUNT; ++i)
@@ -15,8 +15,8 @@ NNActor::NNActor() :
 
 	m_neuralNet = NeuralNet(m_sensors);
 
-	m_desiredSpeed = MAX_SPEED;
-	m_desiredRotationRate = 0;
+	m_desiredSpeed = MAX_SPEED*((double)std::rand()/RAND_MAX);
+	m_desiredRotationRate = MAX_ROTATION_RATE*((double)std::rand()/RAND_MAX);
 }
 
 NNActor::~NNActor()
@@ -37,6 +37,7 @@ void NNActor::update(const float& deltaTime)
 {
 	control();
 	updatePosition(deltaTime);
+	//std::cout << "Angle: " << m_angle << std::endl;
 	for (int i = 0; i < m_sensors.size(); ++i)
 	{
 		sf::Vector2f sensor = sf::Vector2f(getPosition().x + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle) - SENSOR_DISTANCE*std::sin(m_theta*i+m_angle), getPosition().y + SENSOR_DISTANCE*std::sin(m_theta*i+m_angle) + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle));
@@ -48,31 +49,37 @@ void NNActor::update(const float& deltaTime)
 void NNActor::control()
 {
 	auto decision = m_neuralNet.evaluate(m_inputs);
-	for (int i = 0; i < decision.size(); ++i)
+	if (decision.rbegin() != decision.rend() && decision.rbegin()->first >= 0.01f)
 	{
-		std::cout << i << ": " << decision[i] << std::endl;
-		if (decision[i] >= 0.01f)
+		switch (decision.rbegin()->second)
 		{
-			switch (i)
-			{
-				case 0:
-					m_desiredRotationRate = -MAX_ROTATION_RATE;
-				break;
+			case 1:
+				//std::cout << "- rotation" << std::endl;
+				m_desiredRotationRate = -MAX_ROTATION_RATE*decision.rbegin()->first*10;
+			break;
 
-				case 1:
-					m_desiredRotationRate = MAX_ROTATION_RATE;
-				break;
+			case 0:
+				//std::cout << "+ rotation" << std::endl;
+				m_desiredRotationRate = MAX_ROTATION_RATE*decision.rbegin()->first*10;
+			break;
 
-				case 2:
-					m_desiredSpeed = MAX_SPEED;
-				break;
+			case 3:
+				//std::cout << "+ speed" << std::endl;
+				m_desiredSpeed = MAX_SPEED*decision.rbegin()->first*10;
+			break;
 
-				case 3:
-					m_desiredSpeed = -MAX_SPEED;
-				break;
-			}
+			case 2:
+				//std::cout << "- speed" << std::endl;
+				m_desiredSpeed = -MAX_SPEED*decision.rbegin()->first*10;
+			break;
 		}
 	}
+	else
+	{
+		m_desiredRotationRate = 0;
+	}
+
+	//std::cout << "Desired speed: " << m_desiredSpeed << "	Desired rotation rate: " << m_desiredRotationRate << std::endl;
 
 	Actor::control();
 }

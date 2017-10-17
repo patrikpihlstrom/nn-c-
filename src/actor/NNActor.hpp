@@ -3,11 +3,13 @@
 #include "Actor.hpp"
 #include "nn/NeuralNet.hpp"
 
+#include <algorithm>
+
 
 class NNActor : public Actor, public std::enable_shared_from_this<NNActor>
 {
 public:
-	const float SENSOR_DISTANCE = 90.f;
+	const float SENSOR_DISTANCE = 180.f;
 	const unsigned short SENSOR_COUNT = 15;
 
 	NNActor();

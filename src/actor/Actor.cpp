@@ -3,6 +3,8 @@
 Actor::Actor() :
 	m_size(16.f)
 {
+	m_dead = false;
+	m_angle = 0.f;
 }
 
 Actor::~Actor()
@@ -99,6 +101,8 @@ void Actor::control()
 				m_rotationRate = MAX_ROTATION_RATE;
 			}
 		}
+
+		std::cout << "Speed: " << speed << "	Rotation rate: " << m_rotationRate << std::endl;
 
 		m_angle += m_rotationRate;
 	}
