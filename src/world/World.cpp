@@ -47,7 +47,7 @@ World::World(const long& seed) :
 		m_quadtree->insert(*it);
 	}
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		auto actor = std::shared_ptr<NNActor>(new NNActor());
 		actor->setPosition(width/2, height/2);
@@ -74,6 +74,6 @@ void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 	target.draw(m_actorManager, states);
 
-	//m_quadtree->draw(target, states);
+	m_quadtree->draw(target, states);
 }
 

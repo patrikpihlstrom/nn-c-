@@ -243,9 +243,9 @@ void Quadtree::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	sf::RectangleShape rect;
 	rect.setPosition(m_boundingBox.left, m_boundingBox.top);
 	rect.setSize(sf::Vector2f(m_boundingBox.width, m_boundingBox.height));
-	rect.setFillColor(sf::Color(255, 0, 0, 25));
-	rect.setOutlineColor(sf::Color(255, 0, 0));
-	rect.setOutlineThickness(3.f);
+	rect.setFillColor(sf::Color(255, 0, 0, 10));
+	rect.setOutlineColor(sf::Color(255, 0, 0, 100));
+	rect.setOutlineThickness(2.f);
 	target.draw(rect, states);
 
 	if (!m_children[0])

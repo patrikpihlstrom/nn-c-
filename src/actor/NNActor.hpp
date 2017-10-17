@@ -23,10 +23,14 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	sf::Rect<int> getBounds() const;
+	sf::Rect<float> getPhysicalBounds() const;
 	std::vector<sf::Vector2f> getSensors() const;
 
 	float getInput(const int index) const;
 	void setInput(const float value, const int index);
+
+	bool isDead() const;
+	void setDead(const bool dead);
 
 private:
 	void control();

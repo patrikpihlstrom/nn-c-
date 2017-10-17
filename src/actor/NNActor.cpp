@@ -15,8 +15,9 @@ NNActor::NNActor() :
 
 	m_neuralNet = NeuralNet(m_sensors);
 
-	m_desiredSpeed = MAX_SPEED*((double)std::rand()/RAND_MAX);
-	m_desiredRotationRate = MAX_ROTATION_RATE*((double)std::rand()/RAND_MAX);
+	m_desiredSpeed = MAX_SPEED;
+
+	//m_desiredRotationRate = MAX_ROTATION_RATE*((double)std::rand()/RAND_MAX);
 }
 
 NNActor::~NNActor()
@@ -89,16 +90,26 @@ void NNActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	sf::CircleShape circle;
 	circle.setRadius(m_size);
 	circle.setPosition({getPosition().x - m_size, getPosition().y - m_size});
-	circle.setFillColor({255, 100, 255});
+	if (m_dead)
+	{
+		circle.setFillColor({255, 100, 100});
+	}
+	else
+	{
+		circle.setFillColor({255, 100, 255});
+	}
 	target.draw(circle, states);
 
-	for (int i = 0; i < m_sensors.size(); ++i)
+	if (!m_dead)
 	{
-		sf::CircleShape circle;
-		circle.setRadius(4);
-		circle.setPosition({m_sensors[i].x - 2, m_sensors[i].y - 2});
-		circle.setFillColor({(unsigned char)(20*m_inputs[i]*10), 100, 255});
-		target.draw(circle, states);
+		for (int i = 0; i < m_sensors.size(); ++i)
+		{
+			sf::CircleShape circle;
+			circle.setRadius(4);
+			circle.setPosition({m_sensors[i].x - 2, m_sensors[i].y - 2});
+			circle.setFillColor({(unsigned char)(20*m_inputs[i]*10), 100, 255});
+			target.draw(circle, states);
+		}
 	}
 }
 
@@ -128,5 +139,20 @@ void NNActor::setInput(const float value, const int index)
 sf::Rect<int> NNActor::getBounds() const
 {
 	return {(int)getPosition().x - (int)m_size - (int)SENSOR_DISTANCE, (int)getPosition().y - (int)m_size - (int)SENSOR_DISTANCE, (int)m_size*2 + (int)SENSOR_DISTANCE*2, (int)m_size*2 + (int)SENSOR_DISTANCE*2};
+}
+
+sf::Rect<float> NNActor::getPhysicalBounds() const
+{
+	return {getPosition().x - m_size, getPosition().y - m_size, m_size*2, m_size*2};
+}
+
+bool NNActor::isDead() const
+{
+	return m_dead;
+}
+
+void NNActor::setDead(const bool dead)
+{
+	m_dead = dead;
 }
 

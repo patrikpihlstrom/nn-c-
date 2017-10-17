@@ -52,6 +52,11 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
+		if ((*it)->isDead())
+		{
+			continue;
+		}
+
 		(*it)->update(deltaTime);
 		auto objects = quadtree->getObjects((*it)->getBounds());
 		auto sensors = (*it)->getSensors();
@@ -59,6 +64,12 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 		{
 			if (auto object = objects[i].lock())
 			{
+				if (object->getBoundingBox().intersects((*it)->getPhysicalBounds()))
+				{
+					(*it)->setDead(true);
+					continue;
+				}
+
 				for (int j = 0; j < sensors.size(); ++j)
 				{
 					bool intersects = false;
@@ -69,6 +80,11 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 						(*it)->setInput(value, j);
 					}
 				}
+			}
+
+			if ((*it)->isDead())
+			{
+				break;
 			}
 		}
 

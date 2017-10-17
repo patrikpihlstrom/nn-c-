@@ -102,7 +102,7 @@ void Actor::control()
 			}
 		}
 
-		std::cout << "Speed: " << speed << "	Rotation rate: " << m_rotationRate << std::endl;
+		//std::cout << "Speed: " << speed << "	Rotation rate: " << m_rotationRate << std::endl;
 
 		m_angle += m_rotationRate;
 	}

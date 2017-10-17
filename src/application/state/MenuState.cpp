@@ -34,7 +34,6 @@ void MenuState::enter(sf::RenderWindow& window)
 	m_buttons[1]->setSprite(sprite);
 
 	auto image = window.capture();
-	image.flipVertically();
 
 	window.clear({188, 149, 108, 255});
 	window.setView(m_view);
@@ -42,9 +41,9 @@ void MenuState::enter(sf::RenderWindow& window)
 	m_gameStateTexture.loadFromImage(image);
 	m_gameStateSprite.setTexture(m_gameStateTexture);
 
-	m_blurShader.setParameter("texture", m_gameStateTexture);
-	m_blurShader.setParameter("width", window.getSize().x);
-	m_blurShader.setParameter("height", window.getSize().y);
+	//m_blurShader.setParameter("texture", m_gameStateTexture);
+	//m_blurShader.setParameter("width", window.getSize().x);
+	//m_blurShader.setParameter("height", window.getSize().y);
 
 	m_selectedIndex = 0;
 
@@ -110,7 +109,7 @@ void MenuState::update(const float& deltaTime, const sf::RenderWindow& window)
 
 void MenuState::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_gameStateSprite, &m_blurShader);
+	target.draw(m_gameStateSprite, states);
 
 	for (int i = 0; i < m_buttons.size(); ++i)
 	{
