@@ -11,10 +11,10 @@ NeuralNet::NeuralNet()
 	output.push_back(std::shared_ptr<Neuron>(new Neuron()));
 
 	// + speed
-	output.push_back(std::shared_ptr<Neuron>(new Neuron()));
+	//output.push_back(std::shared_ptr<Neuron>(new Neuron()));
 
 	// - speed
-	output.push_back(std::shared_ptr<Neuron>(new Neuron()));
+	//output.push_back(std::shared_ptr<Neuron>(new Neuron()));
 }
 
 NeuralNet::NeuralNet(const std::vector<sf::Vector2f> sensors)
@@ -27,10 +27,10 @@ NeuralNet::NeuralNet(const std::vector<sf::Vector2f> sensors)
 	output.push_back(std::shared_ptr<Neuron>(new Neuron()));
 
 	// + speed
-	output.push_back(std::shared_ptr<Neuron>(new Neuron()));
+	//output.push_back(std::shared_ptr<Neuron>(new Neuron()));
 
 	// - speed
-	output.push_back(std::shared_ptr<Neuron>(new Neuron()));
+	//output.push_back(std::shared_ptr<Neuron>(new Neuron()));
 
 	for (int i = 0; i < sensors.size(); ++i)
 	{
@@ -38,7 +38,6 @@ NeuralNet::NeuralNet(const std::vector<sf::Vector2f> sensors)
 		for (int j = 0; j < output.size(); ++j)
 		{
 			float weight = (double)std::rand()/RAND_MAX;
-			std::cout << weight << std::endl;
 			neuron->out.insert(std::pair<float, std::shared_ptr<Neuron>>(weight, output[j]));
 		}
 

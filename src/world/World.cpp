@@ -29,11 +29,11 @@ World::World(const long& seed) :
 	object->setSize({width, 20});
 	m_objects.push_back(object);
 
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
 		object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
 		object->setPosition(rand()%((int)width-200 + 1) + 100.f, rand()%((int)height-200 + 1) + 100.f);
-		object->setSize({rand()%(50-100 + 1) + 50.f, rand()%(50-100 + 1) + 50.f});
+		object->setSize({rand()%(10-75 + 1) + 10.f, rand()%(10-75 + 1) + 10.f});
 		m_objects.push_back(object);
 	}
 
@@ -47,7 +47,7 @@ World::World(const long& seed) :
 		m_quadtree->insert(*it);
 	}
 
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < 30; ++i)
 	{
 		auto actor = std::shared_ptr<NNActor>(new NNActor());
 		actor->setPosition(width/2, height/2);

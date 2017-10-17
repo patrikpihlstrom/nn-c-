@@ -16,8 +16,7 @@ NNActor::NNActor() :
 	m_neuralNet = NeuralNet(m_sensors);
 
 	m_desiredSpeed = MAX_SPEED;
-
-	//m_desiredRotationRate = MAX_ROTATION_RATE*((double)std::rand()/RAND_MAX);
+	m_desiredRotationRate = 0;
 }
 
 NNActor::~NNActor()
@@ -54,22 +53,22 @@ void NNActor::control()
 	{
 		switch (decision.rbegin()->second)
 		{
-			case 1:
+			case 0:
 				//std::cout << "- rotation" << std::endl;
 				m_desiredRotationRate = -MAX_ROTATION_RATE*decision.rbegin()->first*10;
 			break;
 
-			case 0:
+			case 1:
 				//std::cout << "+ rotation" << std::endl;
 				m_desiredRotationRate = MAX_ROTATION_RATE*decision.rbegin()->first*10;
 			break;
 
-			case 3:
+			case 2:
 				//std::cout << "+ speed" << std::endl;
 				m_desiredSpeed = MAX_SPEED*decision.rbegin()->first*10;
 			break;
 
-			case 2:
+			case 3:
 				//std::cout << "- speed" << std::endl;
 				m_desiredSpeed = -MAX_SPEED*decision.rbegin()->first*10;
 			break;
@@ -105,9 +104,16 @@ void NNActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		for (int i = 0; i < m_sensors.size(); ++i)
 		{
 			sf::CircleShape circle;
+			sf::Color color = {(unsigned char)(20*m_inputs[i]*10), (unsigned char)(10*m_inputs[i]*10), (unsigned char)(10*m_inputs[i]*10)};
 			circle.setRadius(4);
 			circle.setPosition({m_sensors[i].x - 2, m_sensors[i].y - 2});
-			circle.setFillColor({(unsigned char)(20*m_inputs[i]*10), 100, 255});
+			circle.setFillColor(color);
+			sf::Vertex line[] = 
+			{
+				sf::Vertex(m_sensors[i], color),
+				sf::Vertex(getPosition(), color)
+			};
+			target.draw(line, 2, sf::Lines);
 			target.draw(circle, states);
 		}
 	}

@@ -10,7 +10,7 @@ class NNActor : public Actor, public std::enable_shared_from_this<NNActor>
 {
 public:
 	const float SENSOR_DISTANCE = 180.f;
-	const unsigned short SENSOR_COUNT = 15;
+	const unsigned short SENSOR_COUNT = 20;
 
 	NNActor();
 	~NNActor();
