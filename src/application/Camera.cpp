@@ -14,22 +14,22 @@ Camera::~Camera()
 {
 }
 
-void Camera::update(const sf::Vector2f& actorPosition, const sf::Vector2<unsigned char>& actorBounds)
+void Camera::update(const sf::Vector2f& actorPosition)
 {
 	if (getCenter() != actorPosition)
 	{
-		m_velocity.x = (actorPosition.x + actorBounds.x/2 - getCenter().x)/11;
-		m_velocity.y = (actorPosition.y + actorBounds.y/2 - getCenter().y)/11;
+		m_velocity.x = (actorPosition.x - getCenter().x)/11;
+		m_velocity.y = (actorPosition.y - getCenter().y)/11;
 
 		if (std::abs(m_velocity.x) < 0.01)
 		{
-			move(actorPosition.x + actorBounds.x/2 - getCenter().x, 0);
+			move(actorPosition.x - getCenter().x, 0);
 			m_velocity.x = 0;
 		}
 
 		if (std::abs(m_velocity.y) < 0.01)
 		{
-			move(0, actorPosition.y + actorBounds.y/2 - getCenter().y);
+			move(0, actorPosition.y - getCenter().y);
 			m_velocity.y = 0;
 		}
 	}

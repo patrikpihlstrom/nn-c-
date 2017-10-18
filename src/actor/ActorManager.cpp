@@ -48,7 +48,11 @@ void ActorManager::removeActor(const ActorId& id)
 
 void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree)
 {
-	//deleteOutsiders({bounds.left - bounds.width*2, bounds.top - bounds.height*2, bounds.width*4, bounds.height*4});
+	m_time += deltaTime;
+	if (m_time >= 480)
+	{
+		newGeneration();
+	}
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
@@ -57,67 +61,49 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 			continue;
 		}
 
-		(*it)->update(deltaTime);
-		auto objects = quadtree->getObjects((*it)->getBounds());
-		auto sensors = (*it)->getSensors();
-		for (int i = 0; i < objects.size(); ++i)
+		if ((m_time >= 60 && (*it)->getDistance() <= 500) || math::distance<float>((*it)->getPosition(), {0, 0}) >= 1000.f)
 		{
-			if (auto object = objects[i].lock())
+			(*it)->setDead(true);
+		}
+		else
+		{
+			(*it)->update(deltaTime);
+			auto objects = quadtree->getObjects((*it)->getBounds());
+			auto sensors = (*it)->getSensors();
+			for (int i = 0; i < objects.size(); ++i)
 			{
-				if (object->getBoundingBox().intersects((*it)->getPhysicalBounds()))
+				if (auto object = objects[i].lock())
 				{
-					(*it)->setDead(true);
-					continue;
-				}
-
-				for (int j = 0; j < sensors.size(); ++j)
-				{
-					bool intersects = false;
-					auto point = math::getLineRectIntersection((*it)->getPosition(), sensors[j], object->getBoundingBox(), intersects);
-					if (intersects)
+					if (object->getBoundingBox().intersects((*it)->getPhysicalBounds()))
 					{
-						float value = 1.2f - math::distance<float>((*it)->getPosition(), point)/(*it)->SENSOR_DISTANCE;
+						(*it)->setDead(true);
+						continue;
+					}
+
+					for (int j = 0; j < sensors.size(); ++j)
+					{
+						bool intersects = false;
+						auto point = math::getLineRectIntersection((*it)->getPosition(), sensors[j], object->getBoundingBox(), intersects);
+						if (intersects)
+						{
+							float value = 1.5f - math::distance<float>((*it)->getPosition(), point)/(*it)->SENSOR_DISTANCE;
 						(*it)->setInput(value, j);
+						}
 					}
 				}
-			}
 
-			if ((*it)->isDead())
-			{
-				break;
+				if ((*it)->isDead())
+				{
+					break;
+				}
 			}
 		}
-
-		/*for (auto iter = m_actors.begin(); iter != m_actors.end(); ++iter)
-		{
-			if ((*iter)->getId().id == (*it)->getId().id || math::distance<float>((*it)->getPosition(), (*iter)->getPosition()) >= (*it)->getSize() + (*iter)->getSize())
-				continue;
-
-			if ((*it)->getPosition().x < (*iter)->getPosition().x)
-			{
-				(*it)->move(-1, 0);
-				(*iter)->move(1, 0);
-			}
-			else if ((*it)->getPosition().x < (*iter)->getPosition().x)
-			{
-				(*it)->move(1, 0);
-				(*iter)->move(-1, 0);
-			}
-
-			if ((*it)->getPosition().y < (*iter)->getPosition().y)
-			{
-				(*it)->move(0, -1);
-				(*iter)->move(0, 1);
-			}
-			else if ((*it)->getPosition().x < (*iter)->getPosition().x)
-			{
-				(*it)->move(0, 1);
-				(*iter)->move(0, -1);
-			}
-		}*/
 	}
 
-	std::sort(m_actors.begin(), m_actors.end(), ActorCompare());
+	if (shouldResetActors())
+	{
+		newGeneration();
+	}
 }
 
 void ActorManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -140,5 +126,74 @@ void ActorManager::deleteOutsiders(const sf::Rect<int>& bounds)
 size_t ActorManager::actorsSize() const
 {
 	return m_actors.size();
+}
+
+bool ActorManager::shouldResetActors() const
+{
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
+		if (!(*it)->isDead())
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void ActorManager::resetActors()
+{
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
+		(*it).reset(new NNActor());
+		(*it)->setPosition(1280/2, 720/2);
+	}
+}
+
+void ActorManager::resetActors(const std::vector<std::vector<float>> dna)
+{
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
+		(*it).reset(new NNActor(dna));
+		(*it)->setPosition(1280/2, 720/2);
+	}
+}
+
+void ActorManager::newGeneration()
+{
+	m_time = 0;
+	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
+	std::cout << m_actors[0]->getDistance() << std::endl;
+	std::vector<std::vector<float>> combinedDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
+		for (int i = 0; i < combinedDna.size(); ++i)
+		{
+			int r = std::rand()%100;
+			if (r >= 90)
+			{
+				for (int j = 0; j < combinedDna[i].size(); ++j)
+				{
+					combinedDna[i][j] = (double)std::rand()/RAND_MAX;
+				}
+			}
+			else if (r >= 50)
+			{
+				combinedDna[i] = secondDna[i];
+			}
+
+			/*std::cout << '[';
+			for (int j = 0; j < combinedDna[i].size(); ++j)
+			{
+				std::cout << combinedDna[i][j] << ", ";
+			}
+			std::cout << ']';*/
+		}
+
+		(*it).reset(new NNActor(combinedDna));
+		(*it)->setPosition(1280/2, 720/2);
+	}
+
+	//std::cout << std::endl;
 }
 

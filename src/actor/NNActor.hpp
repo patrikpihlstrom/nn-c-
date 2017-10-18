@@ -10,9 +10,10 @@ class NNActor : public Actor, public std::enable_shared_from_this<NNActor>
 {
 public:
 	const float SENSOR_DISTANCE = 180.f;
-	const unsigned short SENSOR_COUNT = 20;
+	const unsigned short SENSOR_COUNT = 30;
 
 	NNActor();
+	NNActor(const std::vector<std::vector<float>> dna);
 	~NNActor();
 
 	uint8_t getHealth() const;
@@ -32,6 +33,8 @@ public:
 	bool isDead() const;
 	void setDead(const bool dead);
 
+	std::vector<std::vector<float>> getDna() const;
+
 private:
 	void control();
 
@@ -40,5 +43,6 @@ private:
 	std::vector<float> m_inputs;
 	double m_theta;
 	NeuralNet m_neuralNet;
+	std::vector<std::vector<float>> m_dna;
 };
 

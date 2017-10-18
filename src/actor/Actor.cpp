@@ -1,8 +1,8 @@
 #include "Actor.hpp"
 
-Actor::Actor() :
-	m_size(16.f)
+Actor::Actor()
 {
+	m_distance = 0;
 	m_dead = false;
 	m_angle = 0.f;
 }
@@ -47,69 +47,67 @@ void Actor::damage(const int8_t& factor)
 void Actor::control()
 {
 	float speed = math::magnitude<float>(m_velocity);
-	//if (speed != m_desiredSpeed)
+	float deltaSpeed = m_desiredSpeed - speed;
+	if (std::abs(deltaSpeed) > MAX_ACC)
 	{
-		float deltaSpeed = m_desiredSpeed - speed;
-		if (std::abs(deltaSpeed) > MAX_ACC)
+		if (deltaSpeed < 0)
 		{
-			if (deltaSpeed < 0)
-			{
-				deltaSpeed = -MAX_ACC;
-			}
-			else
-			{
-				deltaSpeed = MAX_ACC;
-			}
+			deltaSpeed = -MAX_ACC;
 		}
-
-		float targetSpeed = speed + deltaSpeed;
-		m_velocity = {targetSpeed*std::cos(m_angle) - targetSpeed*std::sin(m_angle), targetSpeed*std::sin(m_angle) + targetSpeed*std::cos(m_angle)};
-
-		speed = math::magnitude<float>(m_velocity);
-		if (speed > MAX_SPEED)
+		else
 		{
-			math::normalize(m_velocity);
-			m_velocity.x *= MAX_SPEED;
-			m_velocity.y *= MAX_SPEED;
+			deltaSpeed = MAX_ACC;
 		}
 	}
 
-	//if (m_desiredRotationRate != m_rotationRate)
+	float targetSpeed = speed + deltaSpeed;
+	m_velocity = {targetSpeed*std::cos(m_angle) - targetSpeed*std::sin(m_angle), targetSpeed*std::sin(m_angle) + targetSpeed*std::cos(m_angle)};
+
+	speed = math::magnitude<float>(m_velocity);
+	if (speed > MAX_SPEED)
 	{
-		float deltaRotationRate = m_desiredRotationRate - m_rotationRate;
-		if (std::abs(deltaRotationRate) > MAX_ROTATION_ACC)
-		{
-			if (deltaRotationRate < 0)
-			{
-				deltaRotationRate = -MAX_ROTATION_ACC;
-			}
-			else
-			{
-				deltaRotationRate = MAX_ROTATION_ACC;
-			}
-		}
-
-		m_rotationRate += deltaRotationRate;
-		if (std::abs(m_rotationRate) > MAX_ROTATION_RATE)
-		{
-			if (m_rotationRate < 0)
-			{
-				m_rotationRate = -MAX_ROTATION_RATE;
-			}
-			else
-			{
-				m_rotationRate = MAX_ROTATION_RATE;
-			}
-		}
-
-		//std::cout << "Speed: " << speed << "	Rotation rate: " << m_rotationRate << std::endl;
-
-		m_angle += m_rotationRate;
+		math::normalize(m_velocity);
+		m_velocity.x *= MAX_SPEED;
+		m_velocity.y *= MAX_SPEED;
 	}
+
+	if (speed <= 0.001)
+	{
+		m_dead = true;
+	}
+
+	float deltaRotationRate = m_desiredRotationRate - m_rotationRate;
+	if (std::abs(deltaRotationRate) > MAX_ROTATION_ACC)
+	{
+		if (deltaRotationRate < 0)
+		{
+			deltaRotationRate = -MAX_ROTATION_ACC;
+		}
+		else
+		{
+			deltaRotationRate = MAX_ROTATION_ACC;
+		}
+	}
+
+	m_rotationRate += deltaRotationRate;
+	if (std::abs(m_rotationRate) > MAX_ROTATION_RATE)
+	{
+		if (m_rotationRate < 0)
+		{
+			m_rotationRate = -MAX_ROTATION_RATE;
+		}
+		else
+		{
+			m_rotationRate = MAX_ROTATION_RATE;
+		}
+	}
+
+	m_angle += m_rotationRate;
 }
 
 void Actor::updatePosition(const float& deltaTime)
 {
+	m_distance += math::magnitude<float>({m_velocity.x*deltaTime, m_velocity.y*deltaTime});
 	move(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
 }
 
@@ -151,5 +149,10 @@ void Actor::setSize(const float size)
 sf::Rect<int> Actor::getBounds() const
 {
 	return {(int)getPosition().x - (int)m_size, (int)getPosition().y - (int)m_size, (int)m_size*2, (int)m_size*2};
+}
+
+float Actor::getDistance() const
+{
+	return m_distance;
 }
 

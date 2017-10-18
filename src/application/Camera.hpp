@@ -14,7 +14,7 @@ public:
 	Camera();
 	~Camera();
 
-	void update(const sf::Vector2f& actorPosition, const sf::Vector2<unsigned char>& actorBounds);
+	void update(const sf::Vector2f& actorPosition);
 
 	void zoom(const float& factor);
 	float getZoom() const;

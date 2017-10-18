@@ -4,6 +4,33 @@
 NNActor::NNActor() : 
 	Actor()
 {
+	m_size = 8.f;
+	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
+	m_theta = M_PI*2/SENSOR_COUNT;
+	m_inputs.resize(SENSOR_COUNT, 0.f);
+	m_dna.resize(SENSOR_COUNT, std::vector<float>(4, 0));
+	for (int i = 0; i < SENSOR_COUNT; ++i)
+	{
+		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(m_theta*i) - SENSOR_DISTANCE*std::sin(m_theta*i), SENSOR_DISTANCE*std::sin(m_theta*i) + SENSOR_DISTANCE*std::cos(m_theta*i));
+		m_sensors.push_back(sensor);
+
+		for (int j = 0; j < 4; ++j)
+		{
+			m_dna[i][j] = (double)std::rand()/RAND_MAX;
+		}
+	}
+
+	m_neuralNet = NeuralNet(m_dna);
+
+	m_desiredSpeed = MAX_SPEED/6.f;
+	//m_desiredRotationRate = MAX_ROTATION_RATE/3.f;
+}
+
+NNActor::NNActor(const std::vector<std::vector<float>> dna) :
+	Actor()
+{
+	m_dna = dna;
+	m_size = 8.f;
 	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
 	m_theta = M_PI*2/SENSOR_COUNT;
 	m_inputs.resize(SENSOR_COUNT, 0.f);
@@ -13,10 +40,10 @@ NNActor::NNActor() :
 		m_sensors.push_back(sensor);
 	}
 
-	m_neuralNet = NeuralNet(m_sensors);
+	m_neuralNet = NeuralNet(dna);
 
-	m_desiredSpeed = MAX_SPEED;
-	m_desiredRotationRate = 0;
+	m_desiredSpeed = MAX_SPEED/6.f;
+	//m_desiredRotationRate = MAX_ROTATION_RATE/3.f;
 }
 
 NNActor::~NNActor()
@@ -97,26 +124,27 @@ void NNActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		circle.setFillColor({255, 100, 255});
 	}
-	target.draw(circle, states);
 
 	if (!m_dead)
 	{
 		for (int i = 0; i < m_sensors.size(); ++i)
 		{
-			sf::CircleShape circle;
-			sf::Color color = {(unsigned char)(20*m_inputs[i]*10), (unsigned char)(10*m_inputs[i]*10), (unsigned char)(10*m_inputs[i]*10)};
-			circle.setRadius(4);
-			circle.setPosition({m_sensors[i].x - 2, m_sensors[i].y - 2});
-			circle.setFillColor(color);
+			//sf::CircleShape sensor;
+			sf::Color color = {(unsigned char)(20*m_inputs[i]*10), (unsigned char)(10*m_inputs[i]*10), (unsigned char)(10*m_inputs[i]*10), 100};
+			//sensor.setRadius(4);
+			//sensor.setPosition({m_sensors[i].x - 2, m_sensors[i].y - 2});
+			//sensor.setFillColor(color);
 			sf::Vertex line[] = 
 			{
 				sf::Vertex(m_sensors[i], color),
 				sf::Vertex(getPosition(), color)
 			};
 			target.draw(line, 2, sf::Lines);
-			target.draw(circle, states);
+			//target.draw(sensor, states);
 		}
 	}
+
+	target.draw(circle, states);
 }
 
 std::vector<sf::Vector2f> NNActor::getSensors() const
@@ -160,5 +188,10 @@ bool NNActor::isDead() const
 void NNActor::setDead(const bool dead)
 {
 	m_dead = dead;
+}
+
+std::vector<std::vector<float>> NNActor::getDna() const
+{
+	return m_dna;
 }
 

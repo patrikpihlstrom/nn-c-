@@ -14,6 +14,7 @@ class NeuralNet
 public:
 	NeuralNet();
 	NeuralNet(const std::vector<sf::Vector2f> sensors);
+	NeuralNet(const std::vector<std::vector<float>> dna);
 	~NeuralNet();
 
 	std::vector<std::shared_ptr<Neuron>> neurons;

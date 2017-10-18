@@ -31,12 +31,27 @@ private:
 	ActorIdTracker m_actorIdTracker;
 	std::vector<std::shared_ptr<NNActor>> m_actors;
 	std::weak_ptr<Actor> m_playerActor;
+	float m_time;
+
+	bool shouldResetActors() const;
+	void resetActors();
+	void resetActors(const std::vector<std::vector<float>> dna);
+
+	void newGeneration();
 
 	struct ActorCompare
 	{
 		bool operator()(const std::shared_ptr<NNActor> l, const std::shared_ptr<NNActor> r)
 		{
 			return *l < *r;
+		}
+	};
+
+	struct ActorCompareDistance
+	{
+		bool operator()(const std::shared_ptr<NNActor> l, const std::shared_ptr<NNActor> r)
+		{
+			return l->getDistance() > r->getDistance();
 		}
 	};
 };

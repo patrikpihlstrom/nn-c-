@@ -30,6 +30,7 @@ public:
 protected:
 	ObjectId m_id;
 	sf::Vector2f m_size;
+	math::Polygon m_polygon;
 
 };
 
