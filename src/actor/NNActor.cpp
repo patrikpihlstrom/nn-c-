@@ -6,7 +6,7 @@ NNActor::NNActor() :
 {
 	m_size = 8.f;
 	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
-	m_theta = M_PI*2/SENSOR_COUNT;
+	m_theta = M_PI/2/SENSOR_COUNT;
 	m_inputs.resize(SENSOR_COUNT, 0.f);
 	m_dna.resize(SENSOR_COUNT, std::vector<float>(4, 0));
 	for (int i = 0; i < SENSOR_COUNT; ++i)
@@ -32,11 +32,11 @@ NNActor::NNActor(const std::vector<std::vector<float>> dna) :
 	m_dna = dna;
 	m_size = 8.f;
 	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
-	m_theta = M_PI*2/SENSOR_COUNT;
+	m_theta = M_PI/2/SENSOR_COUNT;
 	m_inputs.resize(SENSOR_COUNT, 0.f);
 	for (int i = 0; i < SENSOR_COUNT; ++i)
 	{
-		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(m_theta*i) - SENSOR_DISTANCE*std::sin(m_theta*i), SENSOR_DISTANCE*std::sin(m_theta*i) + SENSOR_DISTANCE*std::cos(m_theta*i));
+		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(m_theta*i-(m_theta/SENSOR_COUNT)) - SENSOR_DISTANCE*std::sin(m_theta*i-(m_theta/SENSOR_COUNT)), SENSOR_DISTANCE*std::sin(m_theta*i-(m_theta/SENSOR_COUNT)) + SENSOR_DISTANCE*std::cos(m_theta*i-(m_theta/SENSOR_COUNT)));
 		m_sensors.push_back(sensor);
 	}
 
@@ -67,7 +67,7 @@ void NNActor::update(const float& deltaTime)
 	//std::cout << "Angle: " << m_angle << std::endl;
 	for (int i = 0; i < m_sensors.size(); ++i)
 	{
-		sf::Vector2f sensor = sf::Vector2f(getPosition().x + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle) - SENSOR_DISTANCE*std::sin(m_theta*i+m_angle), getPosition().y + SENSOR_DISTANCE*std::sin(m_theta*i+m_angle) + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle));
+		sf::Vector2f sensor = sf::Vector2f(getPosition().x + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)) - SENSOR_DISTANCE*std::sin(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)), getPosition().y + SENSOR_DISTANCE*std::sin(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)) + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)));
 		m_sensors[i] = sensor;
 		m_inputs[i] = 0.f;
 	}
