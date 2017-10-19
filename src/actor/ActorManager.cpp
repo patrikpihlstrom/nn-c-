@@ -154,7 +154,8 @@ void ActorManager::resetActors(const std::vector<std::vector<float>> dna)
 {
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
-		(*it).reset(new NNActor(dna));
+		//(*it).reset(new NNActor(dna));
+		(*it).reset(new NNActor());
 		(*it)->setPosition(1280/2, 720/2);
 	}
 }
@@ -164,10 +165,10 @@ void ActorManager::newGeneration()
 	m_time = 0;
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
 	std::cout << m_actors[0]->getDistance() << std::endl;
-	std::vector<std::vector<float>> combinedDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
+	std::map<unsigned short, std::vector<std::vector<float>>> combinedDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
-		for (int i = 0; i < combinedDna.size(); ++i)
+		/*for (int i = 0; i < combinedDna.size(); ++i)
 		{
 			int r = std::rand()%100;
 			if (r >= 90)
@@ -182,13 +183,15 @@ void ActorManager::newGeneration()
 				combinedDna[i] = secondDna[i];
 			}
 
-			/*std::cout << '[';
+			std::cout << '[';
 			for (int j = 0; j < combinedDna[i].size(); ++j)
 			{
 				std::cout << combinedDna[i][j] << ", ";
 			}
-			std::cout << ']';*/
-		}
+			std::cout << ']';
+		}*/
+
+		
 
 		(*it).reset(new NNActor(combinedDna));
 		(*it)->setPosition(1280/2, 720/2);

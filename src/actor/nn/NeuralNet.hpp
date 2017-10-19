@@ -14,12 +14,19 @@ class NeuralNet
 public:
 	NeuralNet();
 	NeuralNet(const std::vector<sf::Vector2f> sensors);
-	NeuralNet(const std::vector<std::vector<float>> dna);
+	NeuralNet(const std::map<unsigned short, std::vector<std::vector<float>>> dna);
 	~NeuralNet();
 
-	std::vector<std::shared_ptr<Neuron>> neurons;
-	std::vector<std::shared_ptr<Neuron>> output;
+	std::map<unsigned short, std::vector<Neuron>> neurons;
+	std::vector<Neuron> output;
 
 	std::map<float, int> evaluate(const std::vector<float> input);
+
+	std::map<unsigned short, std::vector<std::vector<float>>> getDna();
+
+private:
+	void initialize();
+
+	unsigned short m_hiddenLayers; 
 };
 

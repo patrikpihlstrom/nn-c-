@@ -8,25 +8,20 @@ NNActor::NNActor() :
 	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
 	m_theta = M_PI/2/SENSOR_COUNT;
 	m_inputs.resize(SENSOR_COUNT, 0.f);
-	m_dna.resize(SENSOR_COUNT, std::vector<float>(4, 0));
 	for (int i = 0; i < SENSOR_COUNT; ++i)
 	{
 		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(m_theta*i) - SENSOR_DISTANCE*std::sin(m_theta*i), SENSOR_DISTANCE*std::sin(m_theta*i) + SENSOR_DISTANCE*std::cos(m_theta*i));
 		m_sensors.push_back(sensor);
-
-		for (int j = 0; j < 4; ++j)
-		{
-			m_dna[i][j] = (double)std::rand()/RAND_MAX;
-		}
 	}
 
-	m_neuralNet = NeuralNet(m_dna);
+	m_neuralNet = NeuralNet(m_sensors);
+	m_dna = m_neuralNet.getDna();
 
 	m_desiredSpeed = MAX_SPEED/6.f;
 	//m_desiredRotationRate = MAX_ROTATION_RATE/3.f;
 }
 
-NNActor::NNActor(const std::vector<std::vector<float>> dna) :
+NNActor::NNActor(const std::map<unsigned short, std::vector<std::vector<float>>> dna) :
 	Actor()
 {
 	m_dna = dna;
@@ -190,8 +185,31 @@ void NNActor::setDead(const bool dead)
 	m_dead = dead;
 }
 
-std::vector<std::vector<float>> NNActor::getDna() const
+std::map<unsigned short, std::vector<std::vector<float>>> NNActor::getDna() const
 {
 	return m_dna;
+}
+
+void NNActor::printDna() const
+{
+	for (auto it = m_dna.begin(); it != m_dna.end(); ++it)
+	{
+		std::cout << "[";
+		for (int i = 0; i < it->second.size(); ++i)
+		{
+			std::cout << "[";
+			for (int j = 0; j < it->second[i].size(); ++j)
+			{
+				std::cout << it->second[i][j];
+
+				if (j < it->second[i].size() - 1)
+				{
+					std::cout << ',';
+				}
+			}
+			std::cout << "]";
+		}
+		std::cout << "]" << std::endl;
+	}
 }
 

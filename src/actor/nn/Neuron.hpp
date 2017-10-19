@@ -3,12 +3,20 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <vector>
 
 
 struct Neuron
 {
+	struct Connection
+	{
+		float weight;
+		Neuron* out;
+	};
+
 	float value;
-	std::map<float, std::weak_ptr<Neuron>> out;
+	std::map<unsigned short, std::vector<Connection>> out;
+	unsigned short inputs; // the amount of neurons in the previous layer
 
 	Neuron() :
 		value(0)
@@ -17,13 +25,16 @@ struct Neuron
 
 	void fire(const float value = 1)
 	{
-		this->value = value;
+		this->value = value/inputs;
 		for (auto it = out.begin(); it != out.end(); ++it)
 		{
-			auto neuron = it->second.lock();
-			if (neuron)
+			for (int i = 0; i < it->second.size(); ++i)
 			{
-				neuron->fire(value*it->first);
+				auto neuron = it->second[i].out;
+				if (neuron)
+				{
+					neuron->fire(this->value*it->first);
+				}
 			}
 		}
 	}

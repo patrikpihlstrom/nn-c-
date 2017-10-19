@@ -71,11 +71,6 @@ void Actor::control()
 		m_velocity.y *= MAX_SPEED;
 	}
 
-	if (speed <= 0.001)
-	{
-		m_dead = true;
-	}
-
 	float deltaRotationRate = m_desiredRotationRate - m_rotationRate;
 	if (std::abs(deltaRotationRate) > MAX_ROTATION_ACC)
 	{
