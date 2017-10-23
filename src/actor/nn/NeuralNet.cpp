@@ -1,200 +1,158 @@
 #include "NeuralNet.hpp"
 
+#include <assert.h>
+
 
 NeuralNet::NeuralNet()
 {
-	initialize();
 }
 
-NeuralNet::NeuralNet(const std::vector<sf::Vector2f> sensors) :
-	m_hiddenLayers(1)
+NeuralNet::NeuralNet(NeuralNet::Settings const& settings) :
+	m_numInputs(settings.numInputs),
+	m_numHidden(settings.numHidden),
+	m_numOutputs(settings.numOutputs)
 {
-	neurons.insert(std::pair<unsigned short, std::vector<Neuron>>(m_hiddenLayers, std::vector<Neuron>(sensors.size())));
-	for (int i = 0; i < sensors.size(); ++i)
-	{
-		Neuron neuron = {};
-		for (int j = 0; j < neurons[1].size(); ++j)
-		{
-			float weight = (double)std::rand()/RAND_MAX;
-			neuron.out[1].push_back({weight, &(neurons[1][j])});
-		}
+	assert(settings.numInputs > 0 && settings.numOutputs > 0 && settings.numHidden > 0);
 
-		neurons[m_hiddenLayers].push_back(neuron);
-	}
-
-	for (auto it = neurons.rbegin(); it != neurons.rend(); ++it)
-	{
-		auto previous = std::prev(it);
-        for (int i = 0; i < it->second.size(); ++i)
-		{
-			it->second[i].inputs = previous->second.size();
-		}
-	}
+	initializeNetwork();
+	initializeWeights();
 }
 
-NeuralNet::NeuralNet(const std::map<unsigned short, std::vector<std::vector<float>>> dna) :
-    m_hiddenLayers(1)
+NeuralNet::NeuralNet(Settings const& settings, std::vector<double> const& weights) :
+	m_numInputs(settings.numInputs),
+	m_numHidden(settings.numHidden),
+	m_numOutputs(settings.numOutputs)
 {
-	for (auto layer = dna.begin(); layer != dna.end(); ++layer)
-	{
-		for (int i = 0; i < layer->second.size(); ++i) // for each neuron in this layer
-		{
-			if (layer->first + 1 < neurons.size()) // if we're not at the last hidden layer
-			{
-				neurons[layer->first][i].out[layer->first + 1].clear();
-				neurons[layer->first][i].out[layer->first + 1].reserve(neurons[layer->first + 1].size());
-				for (int j = 0; j < neurons[layer->first + 1].size(); ++j)
-				{
-					std::cout << layer->second[i][j] << std::endl;
-					//neurons[layer->first][i]->out[layer->first + 1].push_back({layer->second[i][j], neurons[layer->first + 1][j]});
-				}
-			}
-			else
-			{
-				neurons[layer->first][i].out[layer->first + 1].clear();
-				neurons[layer->first][i].out[layer->first + 1].reserve(neurons[layer->first + 1].size());
-				for (int j = 0; j < output.size(); ++j)
-				{
-					std::cout << layer->second[i][j] << std::endl;
-					//neurons[layer->first][i]->out[layer->first + 1].push_back({layer->second[i][j], output[j]});
-				}
-			}
-		}
-	}
+	assert(settings.numInputs > 0 && settings.numOutputs > 0 && settings.numHidden > 0);
 
-	/*neurons[m_hiddenLayers] = std::vector<std::shared_ptr<Neuron>>();
-	for (int i = 0; i < dna.size(); ++i)
-	{
-		auto neuron = std::shared_ptr<Neuron>(new Neuron());
-		for (int j = 0; j < output.size(); ++j)
-		{
-			neuron->out.insert(std::pair<float, std::shared_ptr<Neuron>>(dna[i][j], output[j]));
-		}
-
-		neurons[m_hiddenLayers].push_back(neuron);
-	}*/
-
-	for (auto it = neurons.rbegin(); it != neurons.rend(); ++it)
-	{
-		auto previous = std::prev(it);
-        for (int i = 0; i < it->second.size(); ++i)
-		{
-			it->second[i].inputs = previous->second.size();
-		}
-	}
+	initializeNetwork();
+	loadWeights(weights);
 }
 
 NeuralNet::~NeuralNet()
 {
 }
 
-void NeuralNet::initialize()
+void NeuralNet::initializeNetwork()
 {
-	m_hiddenLayers = 1;
-	output.clear();
-	neurons.clear();
-	output.reserve(2);
+	// bias neurons for the input and hidden layers
+	int32_t const totalNumInputs = m_numInputs + 1;
+	int32_t const totalNumHiddens = m_numHidden + 1;
 
-	// rotation
-	output.push_back(Neuron());
+	m_inputNeurons.resize(totalNumInputs);
+	m_hiddenNeurons.resize(totalNumHiddens);
+	m_outputNeurons.resize(m_numOutputs);
+	m_clampedOutputs.resize(m_numOutputs);
 
-	// speed
-	output.push_back(Neuron());
+	memset(m_inputNeurons.data(), 0, m_inputNeurons.size() * sizeof(double));
+	memset(m_hiddenNeurons.data(), 0, m_hiddenNeurons.size() * sizeof(double));
+	memset(m_outputNeurons.data(), 0, m_outputNeurons.size() * sizeof(double));
+	memset(m_clampedOutputs.data(), 0, m_clampedOutputs.size() * sizeof(int32_t));
 
-	// input layer
-	neurons[0] = std::vector<Neuron>();
+	// set the bias values
+	m_inputNeurons.back() = -1.0;
+	m_hiddenNeurons.back() = -1.0;
 
-	for (int i = m_hiddenLayers; i > 0; --i) // construct hidden layers
+	// init layer weights
+	int32_t const numInputHiddenWeights = totalNumInputs * totalNumHiddens;
+	int32_t const numHiddenOutputWeights = totalNumHiddens * m_numOutputs;
+	m_weightsInputHidden.resize(numInputHiddenWeights);
+	m_weightsHiddenOutput.resize(numHiddenOutputWeights);
+}
+
+void NeuralNet::initializeWeights()
+{
+	std::random_device rd;
+	std::mt19937 generator(rd());
+
+	double const distributionRangeHalfWidth = (2.4/m_numInputs);
+	double const standardDeviation = distributionRangeHalfWidth * 2/6;
+	std::normal_distribution<> normalDistribution(0, standardDeviation);
+
+	// set weights to normally distributed random values between [-2.4 / numInputs, 2.4 / numInputs]
+	for (int32_t inputIndex = 0; inputIndex <= m_numInputs; inputIndex++)
 	{
-		neurons[i] = std::vector<Neuron>();
-		for (int n = 0; n < output.size()*2; ++n)
+		for (int32_t hiddenIndex = 0; hiddenIndex < m_numHidden; hiddenIndex++)
 		{
-			Neuron neuron = {};
-			neuron.out[i+1] = std::vector<Neuron::Connection>();
-			if (i == m_hiddenLayers) // connect layer to output layer
-			{
-				neuron.out[i+1].reserve(output.size());
-				for (int j = 0; j < output.size(); ++j)
-				{
-					float weight = (double)std::rand()/RAND_MAX;
-					std::cout << weight << std::endl;
-					neuron.out[i+1].push_back({weight, &output[j]});
-				}
-			}
-			else // connect layer to previous layer
-			{
-				neuron.out[i+1].reserve(neurons[i + 1].size());
-				for (int j = 0; j < neurons[i + 1].size(); ++j)
-				{
-					float weight = (double)std::rand()/RAND_MAX;
-					std::cout << weight << std::endl;
-					neuron.out[i+1].push_back({weight, &neurons[i + 1][j]});
-					neurons[i + 1][j].inputs = neurons[i].size();
-				}
-			}
+			int32_t const weightIndex = getInputHiddenWeightIndex(inputIndex, hiddenIndex);
+			double const weight = normalDistribution(generator);
+			m_weightsInputHidden[weightIndex] = weight;
+		}
+	}
 
-			neurons[i].push_back(neuron);
+	// set weights to normally distributed random values between [-2.4 / numInputs, 2.4 / numInputs]
+	for (int32_t hiddenIndex = 0; hiddenIndex <= m_numHidden; hiddenIndex++)
+	{
+		for (int32_t outputIndex = 0; outputIndex < m_numOutputs; outputIndex++)
+		{
+			int32_t const weightIndex = getHiddenOutputWeightIndex(hiddenIndex, outputIndex);
+			double const weight = normalDistribution(generator);
+			m_weightsHiddenOutput[weightIndex] = weight;
 		}
 	}
 }
 
-std::map<float, int> NeuralNet::evaluate(const std::vector<float> input)
+void NeuralNet::loadWeights(std::vector<double> const& weights)
 {
-	std::map<float, int> result;
+	int32_t const numInputHiddenWeights = m_numInputs * m_numHidden;
+	int32_t const numHiddenOutputWeights = m_numHidden * m_numOutputs;
+	assert(weights.size() == numInputHiddenWeights + numHiddenOutputWeights);
 
-	for (int i = 0; i < neurons[0].size(); ++i)
+	int32_t weightIndex = 0;
+	for (auto inputHiddenIndex = 0; inputHiddenIndex < numInputHiddenWeights; inputHiddenIndex++)
 	{
-		if (i < input.size() && input[i] > 0.f)
-		{
-			neurons[0][i].fire(input[i]);
-		}
+		m_weightsInputHidden[inputHiddenIndex] = weights[weightIndex];
+		weightIndex++;
 	}
 
-	for (int i = 0; i < output.size(); ++i)
+	for (auto hiddenOutputIndex = 0; hiddenOutputIndex < numHiddenOutputWeights; hiddenOutputIndex++)
 	{
-		result.insert(std::pair<float, int>(output[i].value, i));
-		output[i].value = 0;
+		m_weightsHiddenOutput[hiddenOutputIndex] = weights[weightIndex];
+		weightIndex++;
 	}
-
-	return result;
 }
 
-std::map<unsigned short, std::vector<std::vector<float>>> NeuralNet::getDna()
+std::vector<double> const& NeuralNet::evaluate(std::vector<double> const& input)
 {
-	std::map<unsigned short, std::vector<std::vector<float>>> dna;
-	for (auto it = neurons.begin(); it != neurons.end(); ++it) // for each layer
+	/*for (int i = 0; i < input.size(); ++i)
 	{
-		dna[it->first] = std::vector<std::vector<float>>(it->second.size());
-		for (int i = 0; i < it->second.size(); ++i) // for each neuron in layer
+		std::cout << i << ": " << input[i] << std::endl;
+	}*/
+
+	assert(input.size() == m_numInputs);
+	assert(m_inputNeurons.back() == -1.0 && m_hiddenNeurons.back() == -1.0);
+
+	// Set input values
+	memcpy(m_inputNeurons.data(), input.data(), input.size() * sizeof(double));
+
+	// Update hidden neurons
+	for (int32_t hiddenIndex = 0; hiddenIndex < m_numHidden; hiddenIndex++)
+	{
+		m_hiddenNeurons[hiddenIndex] = 0;
+		for (int32_t inputIndex = 0; inputIndex <= m_numInputs; inputIndex++)
 		{
-			dna[it->first][i].reserve(it->second[i].out[it->first].size());
-			for (int j = 0; j < it->second[i].out[it->first].size(); ++j) // for each connection in neuron
-			{
-				dna[it->first][i].push_back(it->second[i].out[it->first][j].weight);
-			}
+			int32_t const weightIndex = getInputHiddenWeightIndex(inputIndex, hiddenIndex);
+			m_hiddenNeurons[hiddenIndex] += m_inputNeurons[inputIndex] * m_weightsInputHidden[weightIndex];
 		}
+
+		m_hiddenNeurons[hiddenIndex] = sigmoidActivationFunction(m_hiddenNeurons[hiddenIndex]);
 	}
 
-	for (auto it = dna.begin(); it != dna.end(); ++it)
+	for (int32_t outputIndex = 0; outputIndex < m_numOutputs; outputIndex++)
 	{
-		std::cout << "[";
-		for (int i = 0; i < it->second.size(); ++i)
-		{
-			std::cout << "[";
-			for (int j = 0; j < it->second[i].size(); ++j)
-			{
-				std::cout << it->second[i][j];
+		m_outputNeurons[outputIndex] = 0;
 
-				if (j < it->second[i].size() - 1)
-				{
-					std::cout << ',';
-				}
-			}
-			std::cout << "]";
+		for (int32_t hiddenIndex = 0; hiddenIndex <= m_numHidden; hiddenIndex++)
+		{
+			int32_t const weightIndex = getHiddenOutputWeightIndex(hiddenIndex, outputIndex);
+			m_outputNeurons[outputIndex] += m_hiddenNeurons[hiddenIndex] * m_weightsHiddenOutput[weightIndex];
 		}
-		std::cout << "]" << std::endl;
+
+		m_outputNeurons[outputIndex] = sigmoidActivationFunction(m_outputNeurons[outputIndex]);
+		m_clampedOutputs[outputIndex] = clampOutputValue(m_outputNeurons[outputIndex]);
 	}
 
-	return dna;
+	std::sort(m_clampedOutputs.begin(), m_clampedOutputs.end());
+	return m_clampedOutputs;
 }
 
