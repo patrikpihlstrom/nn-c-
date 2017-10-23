@@ -14,14 +14,14 @@ NNActor::NNActor() :
 		m_sensors.push_back(sensor);
 	}
 
-	m_neuralNet = NeuralNet(m_sensors);
-	m_dna = m_neuralNet.getDna();
+	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT/2, 4});
+	m_dna = m_neuralNet.getWeights();
 
 	m_desiredSpeed = MAX_SPEED/6.f;
 	//m_desiredRotationRate = MAX_ROTATION_RATE/3.f;
 }
 
-NNActor::NNActor(const std::map<unsigned short, std::vector<std::vector<float>>> dna) :
+NNActor::NNActor(const std::vector<double> dna) :
 	Actor()
 {
 	m_dna = dna;
@@ -35,7 +35,7 @@ NNActor::NNActor(const std::map<unsigned short, std::vector<std::vector<float>>>
 		m_sensors.push_back(sensor);
 	}
 
-	m_neuralNet = NeuralNet(dna);
+	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT/2, 4}, dna);
 
 	m_desiredSpeed = MAX_SPEED/6.f;
 	//m_desiredRotationRate = MAX_ROTATION_RATE/3.f;
@@ -71,34 +71,34 @@ void NNActor::update(const float& deltaTime)
 void NNActor::control()
 {
 	auto decision = m_neuralNet.evaluate(m_inputs);
-	if (decision.rbegin() != decision.rend() && decision.rbegin()->first >= 0.01f)
+	for (int i = 0; i < decision.size(); ++i)
 	{
-		switch (decision.rbegin()->second)
+		std::cout << i << ": " << decision[i] << std::endl;
+		if (std::abs(decision[i]) >= 0.6)
 		{
-			case 0:
-				//std::cout << "- rotation" << std::endl;
-				m_desiredRotationRate = -MAX_ROTATION_RATE*decision.rbegin()->first*10;
-			break;
+			switch (i)
+			{
+				case 0:
+					std::cout << "- rotation" << std::endl;
+					m_desiredRotationRate = -MAX_ROTATION_RATE*decision[i]*10;
+				break;
 
-			case 1:
-				//std::cout << "+ rotation" << std::endl;
-				m_desiredRotationRate = MAX_ROTATION_RATE*decision.rbegin()->first*10;
-			break;
+				case 1:
+					std::cout << "+ rotation" << std::endl;
+					m_desiredRotationRate = MAX_ROTATION_RATE*decision[i]*10;
+				break;
 
-			case 2:
-				//std::cout << "+ speed" << std::endl;
-				m_desiredSpeed = MAX_SPEED*decision.rbegin()->first*10;
-			break;
+				case 2:
+					std::cout << "+ speed" << std::endl;
+					m_desiredSpeed = MAX_SPEED*decision[i]*10;
+				break;
 
-			case 3:
-				//std::cout << "- speed" << std::endl;
-				m_desiredSpeed = -MAX_SPEED*decision.rbegin()->first*10;
-			break;
+				case 3:
+					std::cout << "- speed" << std::endl;
+					m_desiredSpeed = -MAX_SPEED*decision[i]*10;
+				break;
+			}
 		}
-	}
-	else
-	{
-		m_desiredRotationRate = 0;
 	}
 
 	//std::cout << "Desired speed: " << m_desiredSpeed << "	Desired rotation rate: " << m_desiredRotationRate << std::endl;
@@ -185,31 +185,12 @@ void NNActor::setDead(const bool dead)
 	m_dead = dead;
 }
 
-std::map<unsigned short, std::vector<std::vector<float>>> NNActor::getDna() const
+std::vector<double> NNActor::getDna() const
 {
 	return m_dna;
 }
 
 void NNActor::printDna() const
 {
-	for (auto it = m_dna.begin(); it != m_dna.end(); ++it)
-	{
-		std::cout << "[";
-		for (int i = 0; i < it->second.size(); ++i)
-		{
-			std::cout << "[";
-			for (int j = 0; j < it->second[i].size(); ++j)
-			{
-				std::cout << it->second[i][j];
-
-				if (j < it->second[i].size() - 1)
-				{
-					std::cout << ',';
-				}
-			}
-			std::cout << "]";
-		}
-		std::cout << "]" << std::endl;
-	}
 }
 

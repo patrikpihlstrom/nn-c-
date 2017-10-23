@@ -164,37 +164,26 @@ void ActorManager::newGeneration()
 {
 	m_time = 0;
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
-	std::cout << m_actors[0]->getDistance() << std::endl;
-	std::map<unsigned short, std::vector<std::vector<float>>> combinedDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
+	//std::cout << m_actors[0]->getDistance() << std::endl;
+	auto combinedDna = m_actors[0]->getDna(), firstDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
-		/*for (int i = 0; i < combinedDna.size(); ++i)
+		for (int i = 0; i < combinedDna.size(); ++i)
 		{
 			int r = std::rand()%100;
 			if (r >= 90)
 			{
-				for (int j = 0; j < combinedDna[i].size(); ++j)
-				{
-					combinedDna[i][j] = (double)std::rand()/RAND_MAX;
-				}
+				combinedDna[i] = (double)std::rand()/RAND_MAX;
 			}
 			else if (r >= 50)
 			{
 				combinedDna[i] = secondDna[i];
 			}
-
-			std::cout << '[';
-			for (int j = 0; j < combinedDna[i].size(); ++j)
-			{
-				std::cout << combinedDna[i][j] << ", ";
-			}
-			std::cout << ']';
-		}*/
-
-		
+		}
 
 		(*it).reset(new NNActor(combinedDna));
 		(*it)->setPosition(1280/2, 720/2);
+		combinedDna = firstDna;
 	}
 
 	//std::cout << std::endl;
