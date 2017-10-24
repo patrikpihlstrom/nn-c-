@@ -6,6 +6,9 @@
 #include <vector>
 #include <iostream>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <algorithm>
 
 
 class NeuralNet

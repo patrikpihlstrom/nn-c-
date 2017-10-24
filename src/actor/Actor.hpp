@@ -12,8 +12,8 @@ class Actor : public sf::Transformable, public sf::Drawable
 {
 public:
 	const float MAX_SPEED = 25;
-	const float MAX_ACC = 0.001f;
-	const float MAX_ROTATION_RATE = 0.01f;
+	const float MAX_ACC = 0.005f;
+	const float MAX_ROTATION_RATE = 0.005f;
 	const float MAX_ROTATION_ACC = 0.0005f;
 	
 	Actor();

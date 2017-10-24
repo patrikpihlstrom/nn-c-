@@ -74,28 +74,28 @@ void NNActor::control()
 	for (int i = 0; i < decision.size(); ++i)
 	{
 		std::cout << i << ": " << decision[i] << std::endl;
-		if (std::abs(decision[i]) >= 0.6)
+		if (std::abs(decision[i]) >= 0.65)
 		{
 			switch (i)
 			{
 				case 0:
 					std::cout << "- rotation" << std::endl;
-					m_desiredRotationRate = -MAX_ROTATION_RATE*decision[i]*10;
+					m_desiredRotationRate = -MAX_ROTATION_RATE*decision[i];
 				break;
 
 				case 1:
 					std::cout << "+ rotation" << std::endl;
-					m_desiredRotationRate = MAX_ROTATION_RATE*decision[i]*10;
+					m_desiredRotationRate = MAX_ROTATION_RATE*decision[i];
 				break;
 
 				case 2:
 					std::cout << "+ speed" << std::endl;
-					m_desiredSpeed = MAX_SPEED*decision[i]*10;
+					m_desiredSpeed = MAX_SPEED*decision[i];
 				break;
 
 				case 3:
 					std::cout << "- speed" << std::endl;
-					m_desiredSpeed = -MAX_SPEED*decision[i]*10;
+					m_desiredSpeed = -MAX_SPEED*decision[i];
 				break;
 			}
 		}

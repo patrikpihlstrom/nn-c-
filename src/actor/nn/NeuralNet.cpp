@@ -96,7 +96,7 @@ void NeuralNet::loadWeights(std::vector<double> const& weights)
 {
 	int32_t const numInputHiddenWeights = m_numInputs * m_numHidden;
 	int32_t const numHiddenOutputWeights = m_numHidden * m_numOutputs;
-	assert(weights.size() == numInputHiddenWeights + numHiddenOutputWeights);
+	//assert(weights.size() == numInputHiddenWeights + numHiddenOutputWeights);
 
 	int32_t weightIndex = 0;
 	for (auto inputHiddenIndex = 0; inputHiddenIndex < numInputHiddenWeights; inputHiddenIndex++)

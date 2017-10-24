@@ -29,7 +29,27 @@ World::World(const long& seed) :
 	object->setSize({width, 20});
 	m_objects.push_back(object);
 
-	for (int i = 0; i < 30; ++i)
+	/*object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
+	object->setPosition(width/2 - 60, height/2 - 175);
+	object->setSize({20, height/2});
+	m_objects.push_back(object);
+
+	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
+	object->setPosition(width/2 + 70, height/2 - 100);
+	object->setSize({20, height/2});
+	m_objects.push_back(object);
+
+	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
+	object->setPosition(width/2 + 70, height/2 - 100);
+	object->setSize({width/2 - 200, 20});
+	m_objects.push_back(object);
+
+	object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
+	object->setPosition(width/2 + 70, height/2 - 200);
+	object->setSize({width/2, 20});
+	m_objects.push_back(object);*/
+
+	for (int i = 0; i < 20; ++i)
 	{
 		object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
 		object->setPosition(rand()%((int)width-200 + 1) + 100.f, rand()%((int)height-200 + 1) + 100.f);

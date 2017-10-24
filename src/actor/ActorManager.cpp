@@ -171,7 +171,7 @@ void ActorManager::newGeneration()
 		for (int i = 0; i < combinedDna.size(); ++i)
 		{
 			int r = std::rand()%100;
-			if (r >= 90)
+			if (r >= 95)
 			{
 				combinedDna[i] = (double)std::rand()/RAND_MAX;
 			}
