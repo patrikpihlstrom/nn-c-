@@ -14,11 +14,9 @@ NNActor::NNActor() :
 		m_sensors.push_back(sensor);
 	}
 
-	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT/2, 4});
+	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT*2, 2});
 	m_dna = m_neuralNet.getWeights();
-
-	m_desiredSpeed = MAX_SPEED/6.f;
-	//m_desiredRotationRate = MAX_ROTATION_RATE/3.f;
+	m_desiredSpeed = MAX_SPEED/5.f;
 }
 
 NNActor::NNActor(const std::vector<double> dna) :
@@ -35,10 +33,7 @@ NNActor::NNActor(const std::vector<double> dna) :
 		m_sensors.push_back(sensor);
 	}
 
-	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT/2, 4}, dna);
-
-	m_desiredSpeed = MAX_SPEED/6.f;
-	//m_desiredRotationRate = MAX_ROTATION_RATE/3.f;
+	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT*2, 2}, dna);
 }
 
 NNActor::~NNActor()
@@ -74,28 +69,16 @@ void NNActor::control()
 	for (int i = 0; i < decision.size(); ++i)
 	{
 		std::cout << i << ": " << decision[i] << std::endl;
-		if (std::abs(decision[i]) >= 0.65)
+		if (std::abs(decision[i]) >= 0.4)
 		{
 			switch (i)
 			{
 				case 0:
-					std::cout << "- rotation" << std::endl;
-					m_desiredRotationRate = -MAX_ROTATION_RATE*decision[i];
+					m_desiredRotationRate = MAX_ROTATION_RATE*(decision[i] - 0.5f);
 				break;
 
 				case 1:
-					std::cout << "+ rotation" << std::endl;
-					m_desiredRotationRate = MAX_ROTATION_RATE*decision[i];
-				break;
-
-				case 2:
-					std::cout << "+ speed" << std::endl;
-					m_desiredSpeed = MAX_SPEED*decision[i];
-				break;
-
-				case 3:
-					std::cout << "- speed" << std::endl;
-					m_desiredSpeed = -MAX_SPEED*decision[i];
+					m_desiredSpeed = MAX_SPEED*(decision[i] - 0.5f);
 				break;
 			}
 		}

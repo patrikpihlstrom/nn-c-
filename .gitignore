@@ -2,14 +2,7 @@
 *.swn
 *.swp
 *.swo
-*.out
-*.opensdf
-Debug/
-Release/
-Tribal/assets/
-Tribal/Debug/
-Tribal/Release/
-Tribal/SourceCodePro-Regular.ttf
+*.mtl
 No-Motivation
 .sconsign.dblite
 

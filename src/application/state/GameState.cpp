@@ -10,6 +10,7 @@ GameState::GameState() :
 	m_textureHolder->loadTextures("assets/Textures.lst");
 
 	m_world = World(time(NULL));
+	m_world.load("map.obj");
 }
 
 GameState::~GameState()

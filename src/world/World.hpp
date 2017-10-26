@@ -22,6 +22,8 @@ public:
 	World(const long& seed);
 	~World();
 
+	void load(const std::string& path);
+
 	void update(const float& deltaTime);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
@@ -38,6 +40,18 @@ private:
 			return hash;
 		}
 	};
+
+	std::vector<int> getAllInstancesOfChar(const std::string& string, const char& character)
+	{
+		std::vector<int> indices;
+		for (int i = 0; i < string.size(); ++i)
+		{
+			if (string[i] == character)
+				indices.push_back(i);
+		}
+
+		return indices;
+	}
 
 	std::shared_ptr<Quadtree> m_quadtree;
 	std::vector<std::shared_ptr<Object>> m_objects;

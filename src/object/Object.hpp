@@ -27,10 +27,16 @@ public:
 	sf::Rect<float> getBoundingBox() const;
 	sf::Rect<int> getBoundingBoxInt() const;
 
+	math::Polygon getPolygon() const;
+	void setPolygon(const math::Polygon& polygon);
+
+	bool hasPolygon() const;
+
 protected:
 	ObjectId m_id;
 	sf::Vector2f m_size;
 	math::Polygon m_polygon;
+	sf::ConvexShape m_shape;
 
 };
 

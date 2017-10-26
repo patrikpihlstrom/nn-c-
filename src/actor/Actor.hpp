@@ -14,7 +14,7 @@ public:
 	const float MAX_SPEED = 25;
 	const float MAX_ACC = 0.005f;
 	const float MAX_ROTATION_RATE = 0.005f;
-	const float MAX_ROTATION_ACC = 0.0005f;
+	const float MAX_ROTATION_ACC = 0.05f;
 	
 	Actor();
 	~Actor();

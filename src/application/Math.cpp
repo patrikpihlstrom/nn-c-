@@ -167,6 +167,26 @@ namespace math
 		return result;
 	}
 
+	bool rectIntersectsPolygon(const sf::Rect<float> rect, const Polygon& polygon)
+	{
+		sf::Vector2f rectLines[4] = {{rect.left, rect.top}, {rect.left + rect.width, rect.top}, {rect.left + rect.width, rect.top + rect.height}, {rect.left, rect.top + rect.height}};
+		
+		bool interrupted = false;
+
+		for (int i = 0; i < polygon.getEdgeCount(); ++i)
+		{
+			auto segment = polygon.getEdgeSegment<float>(i);
+			auto p = getLineRectIntersection(segment.a, segment.b, rect, interrupted);
+
+			if (interrupted)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	bool pointInPolygon(const sf::Vector2f& point, const Polygon& polygon)
 	{
 		auto bounds = polygon.getBounds();

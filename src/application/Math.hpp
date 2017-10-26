@@ -235,8 +235,13 @@ namespace math
 			return m_points;
 		}
 
-		void constructEdges()
+		void constructEdges(const bool sort = false)
 		{
+			if (sort)
+			{
+				convexHull();
+			}
+
 			sf::Vector2f a, b;
 			m_edges.clear();
 
@@ -330,7 +335,7 @@ namespace math
 
 		void convexHull()
 		{
-			m_points = math::convexHull(m_points);
+			m_points = math::convexHull<float>(m_points);
 		}
 
 		sf::Rect<int> getBounds() const
@@ -540,6 +545,7 @@ namespace math
 
 	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, const Polygon& polygon);
 	bool lineIntersectsPolygon(const sf::Vector2f& a, const sf::Vector2f& b, sf::Vector2f& c, sf::Vector2f& d, const Polygon& polygon);
+	bool rectIntersectsPolygon(const sf::Rect<float> rect, const Polygon& polygon);
 	bool pointInPolygon(const sf::Vector2f& point, const Polygon& polygon);
 
 	struct Intersection
