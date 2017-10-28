@@ -20,6 +20,17 @@ std::weak_ptr<NNActor> ActorManager::getActor(const ActorId& id) const
 	return {};
 }
 
+std::weak_ptr<NNActor> ActorManager::getTopActor()
+{
+	if (m_actors.empty())
+	{
+		return std::weak_ptr<NNActor>();
+	}
+	
+	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
+	return *m_actors.begin();
+}
+
 ActorId ActorManager::addActor(std::shared_ptr<NNActor> actor)
 {
 	/*else if (auto playerActor = m_playerActor.lock())
@@ -48,11 +59,12 @@ void ActorManager::removeActor(const ActorId& id)
 
 void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree)
 {
+	m_topActor = getTopActor();
 	m_time += deltaTime;
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
-		if (m_time >= 40)
+		if (m_time >= 300)
 		{
 			(*it)->setDead(true);
 		}
@@ -135,7 +147,29 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 void ActorManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
 		(*it)->draw(target, states);
+	}
+
+	/*for (int i = 0; i < 5; ++i)
+	{
+		if (i < m_actors.size())
+		{
+			m_actors[i]->draw(target, states);
+		}
+		else
+		{
+			continue;
+		}
+	}*/
+}
+
+void ActorManager::drawNeuralNet(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	if (auto topActor = m_topActor.lock())
+	{
+		topActor->drawNeuralNet(target, states);
+	}
 }
 
 void ActorManager::deleteOutsiders(const sf::Rect<int>& bounds)
@@ -192,8 +226,11 @@ void ActorManager::newGeneration()
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
 	auto firstDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
 	auto combinedDna = firstDna;
+	int mutatedStrands = combinedDna.size()/10, inheritedStrands = (combinedDna.size()/10)*3;
+
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
+		std::cout << '[';
 		for (int i = 0; i < combinedDna.size(); ++i)
 		{
 			int r = std::rand()%100;
@@ -205,7 +242,11 @@ void ActorManager::newGeneration()
 			{
 				combinedDna[i] = secondDna[i];
 			}
+
+			std::cout << combinedDna[i] << ',';
 		}
+
+		std::cout << ']' << std::endl;
 
 		(*it).reset(new NNActor(combinedDna));
 		(*it)->setPosition(1280/2, 80);

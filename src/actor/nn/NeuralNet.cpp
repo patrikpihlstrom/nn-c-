@@ -126,7 +126,7 @@ std::vector<double> const& NeuralNet::evaluate(std::vector<double> const& input)
 	memcpy(m_inputNeurons.data(), input.data(), input.size() * sizeof(double));
 
 	// Update hidden neurons
-	for (int32_t hiddenIndex = 0; hiddenIndex < m_numHidden; hiddenIndex++)
+	/*for (int32_t hiddenIndex = 0; hiddenIndex < m_numHidden; hiddenIndex++)
 	{
 		m_hiddenNeurons[hiddenIndex] = 0;
 		for (int32_t inputIndex = 0; inputIndex <= m_numInputs; inputIndex++)
@@ -136,23 +136,90 @@ std::vector<double> const& NeuralNet::evaluate(std::vector<double> const& input)
 		}
 
 		m_hiddenNeurons[hiddenIndex] = sigmoidActivationFunction(m_hiddenNeurons[hiddenIndex]);
-	}
+	}*/
 
 	for (int32_t outputIndex = 0; outputIndex < m_numOutputs; outputIndex++)
 	{
 		m_outputNeurons[outputIndex] = 0;
 
-		for (int32_t hiddenIndex = 0; hiddenIndex <= m_numHidden; hiddenIndex++)
+		for (int32_t hiddenIndex = 0; hiddenIndex <= m_numInputs; hiddenIndex++)
 		{
-			int32_t const weightIndex = getHiddenOutputWeightIndex(hiddenIndex, outputIndex);
-			m_outputNeurons[outputIndex] += m_hiddenNeurons[hiddenIndex] * m_weightsHiddenOutput[weightIndex];
+			int32_t const weightIndex = getInputHiddenWeightIndex(hiddenIndex, outputIndex);
+			m_outputNeurons[outputIndex] += m_inputNeurons[hiddenIndex] * m_weightsInputHidden[weightIndex];
 		}
 
 		m_outputNeurons[outputIndex] = sigmoidActivationFunction(m_outputNeurons[outputIndex]);
 		m_clampedOutputs[outputIndex] = clampOutputValue(m_outputNeurons[outputIndex]);
 	}
 
-	std::sort(m_clampedOutputs.begin(), m_clampedOutputs.end());
 	return m_clampedOutputs;
+}
+
+void NeuralNet::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	int midLayer = 0;
+	float midY = 0;
+
+	if (m_numInputs >= m_numHidden && m_numInputs >= m_numOutputs)
+	{
+		midY = m_numInputs*16;
+	}
+	else if (m_numHidden >= m_numInputs && m_numHidden >= m_numOutputs)
+	{
+		midLayer = 1;
+		midY = m_numHidden*16;
+	}
+	else if (m_numOutputs >= m_numInputs && m_numOutputs >= m_numHidden)
+	{
+		midLayer = 2;
+		midY = m_numOutputs*16;
+	}
+
+	sf::CircleShape circle;
+	circle.setRadius(16.f);
+	circle.setFillColor({100, 200, 100});
+	for (int i = 0; i < m_numInputs; ++i)
+	{
+		if (midLayer == 0)
+		{
+			circle.setPosition(32, 32*i + 32);
+		}
+		else
+		{
+			circle.setPosition(32, midY - ((float)m_numInputs/2.f)*32 + 32*i + 32);
+		}
+
+		target.draw(circle);
+	}
+
+	circle.setFillColor({200, 100, 200});
+	for (int i = 0; i < m_numHidden; ++i)
+	{
+		if (midLayer == 1)
+		{
+			circle.setPosition(32*5, 32*i + 32);
+		}
+		else
+		{
+			circle.setPosition(32*5, midY - ((float)m_numHidden/2.f)*32 + 32*i + 32);
+		}
+
+		target.draw(circle);
+	}
+
+	circle.setFillColor({100, 200, 200});
+	for (int i = 0; i < m_numOutputs; ++i)
+	{
+		if (midLayer == 2)
+		{
+			circle.setPosition(32*10, 32*i + 32);
+		}
+		else
+		{
+			circle.setPosition(32*10, midY - ((float)m_numOutputs/2.f)*32 + 32*i + 32);
+		}
+
+		target.draw(circle);
+	}
 }
 

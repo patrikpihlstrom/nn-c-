@@ -36,7 +36,7 @@ void Application::run()
 	
 	sf::Clock dt;
 	sf::Time deltaTime;
-	sf::Time updateTime = sf::seconds(1.f/(60.f*15));
+	sf::Time updateTime = sf::seconds(1.f/(60.f*1));
 
 	while(m_running)
 	{
@@ -51,7 +51,7 @@ void Application::run()
 		render();
 		while (deltaTime > updateTime)
 		{
-			update(updateTime.asSeconds()*15);
+			update(updateTime.asSeconds()*1);
 			deltaTime -= updateTime;
 		}
 	}

@@ -5,18 +5,20 @@ NNActor::NNActor() :
 	Actor()
 {
 	m_size = 8.f;
-	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
 	m_theta = M_PI/2/SENSOR_COUNT;
+	m_angle = M_PI;
+	m_angle = M_PI;
 	m_inputs.resize(SENSOR_COUNT, 0.f);
 	for (int i = 0; i < SENSOR_COUNT; ++i)
 	{
-		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(m_theta*i) - SENSOR_DISTANCE*std::sin(m_theta*i), SENSOR_DISTANCE*std::sin(m_theta*i) + SENSOR_DISTANCE*std::cos(m_theta*i));
+		double angle = m_theta*i-(m_theta/SENSOR_COUNT);
+		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(angle) - SENSOR_DISTANCE*std::sin(angle), SENSOR_DISTANCE*std::sin(angle) + SENSOR_DISTANCE*std::cos(angle));
 		m_sensors.push_back(sensor);
 	}
 
 	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT*2, 2});
 	m_dna = m_neuralNet.getWeights();
-	m_desiredSpeed = MAX_SPEED/5.f;
+	m_desiredSpeed = MAX_SPEED;
 }
 
 NNActor::NNActor(const std::vector<double> dna) :
@@ -24,16 +26,18 @@ NNActor::NNActor(const std::vector<double> dna) :
 {
 	m_dna = dna;
 	m_size = 8.f;
-	m_angle = M_PI*2*((double)std::rand()/RAND_MAX);
 	m_theta = M_PI/2/SENSOR_COUNT;
+	m_angle = M_PI;
 	m_inputs.resize(SENSOR_COUNT, 0.f);
 	for (int i = 0; i < SENSOR_COUNT; ++i)
 	{
-		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(m_theta*i-(m_theta/SENSOR_COUNT)) - SENSOR_DISTANCE*std::sin(m_theta*i-(m_theta/SENSOR_COUNT)), SENSOR_DISTANCE*std::sin(m_theta*i-(m_theta/SENSOR_COUNT)) + SENSOR_DISTANCE*std::cos(m_theta*i-(m_theta/SENSOR_COUNT)));
+		double angle = m_theta*i-(m_theta/SENSOR_COUNT);
+		sf::Vector2f sensor = sf::Vector2f(SENSOR_DISTANCE*std::cos(angle) - SENSOR_DISTANCE*std::sin(angle), SENSOR_DISTANCE*std::sin(angle) + SENSOR_DISTANCE*std::cos(angle));
 		m_sensors.push_back(sensor);
 	}
 
 	m_neuralNet = NeuralNet({SENSOR_COUNT, SENSOR_COUNT*2, 2}, dna);
+	m_desiredSpeed = MAX_SPEED;
 }
 
 NNActor::~NNActor()
@@ -57,7 +61,8 @@ void NNActor::update(const float& deltaTime)
 	//std::cout << "Angle: " << m_angle << std::endl;
 	for (int i = 0; i < m_sensors.size(); ++i)
 	{
-		sf::Vector2f sensor = sf::Vector2f(getPosition().x + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)) - SENSOR_DISTANCE*std::sin(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)), getPosition().y + SENSOR_DISTANCE*std::sin(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)) + SENSOR_DISTANCE*std::cos(m_theta*i+m_angle-(m_theta/SENSOR_COUNT)));
+		double angle = m_theta*i+m_angle-(m_theta*SENSOR_COUNT/2);
+		sf::Vector2f sensor = sf::Vector2f(getPosition().x + SENSOR_DISTANCE*std::cos(angle) - SENSOR_DISTANCE*std::sin(angle), getPosition().y + SENSOR_DISTANCE*std::sin(angle) + SENSOR_DISTANCE*std::cos(angle));
 		m_sensors[i] = sensor;
 		m_inputs[i] = 0.f;
 	}
@@ -66,21 +71,34 @@ void NNActor::update(const float& deltaTime)
 void NNActor::control()
 {
 	auto decision = m_neuralNet.evaluate(m_inputs);
+	int highestValueIndex = 0;
 	for (int i = 0; i < decision.size(); ++i)
 	{
-		std::cout << i << ": " << decision[i] << std::endl;
-		if (std::abs(decision[i]) >= 0.4)
+		if (decision[i] > decision[highestValueIndex])
 		{
-			switch (i)
-			{
-				case 0:
-					m_desiredRotationRate = MAX_ROTATION_RATE*(decision[i] - 0.5f);
-				break;
+			highestValueIndex = i;
+		}
+	}
 
-				case 1:
-					m_desiredSpeed = MAX_SPEED*(decision[i] - 0.5f);
-				break;
-			}
+	if (decision[highestValueIndex] >= 0.5)
+	{
+		switch (highestValueIndex)
+		{
+			case 0:
+				m_desiredRotationRate = MAX_ROTATION_RATE*(decision[highestValueIndex]);
+			break;
+
+			case 1:
+				m_desiredRotationRate = -MAX_ROTATION_RATE*(decision[highestValueIndex]);
+			break;
+
+			//case 2:
+			//	m_desiredSpeed = MAX_SPEED*(decision[highestValueIndex]);
+			//break;
+
+			//case 3:
+			//	m_desiredSpeed = -MAX_SPEED*(decision[highestValueIndex]);
+			//break;
 		}
 	}
 
@@ -123,6 +141,11 @@ void NNActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 	target.draw(circle, states);
+}
+
+void NNActor::drawNeuralNet(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(m_neuralNet, states);
 }
 
 std::vector<sf::Vector2f> NNActor::getSensors() const

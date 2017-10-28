@@ -9,7 +9,7 @@
 class NNActor : public Actor, public std::enable_shared_from_this<NNActor>
 {
 public:
-	const float SENSOR_DISTANCE = 180.f;
+	const float SENSOR_DISTANCE = 100.f;
 	const uint32_t SENSOR_COUNT = 5;
 
 	NNActor();
@@ -22,6 +22,7 @@ public:
 
 	void update(const float& deltaTime);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawNeuralNet(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	sf::Rect<int> getBounds() const;
 	sf::Rect<float> getPhysicalBounds() const;

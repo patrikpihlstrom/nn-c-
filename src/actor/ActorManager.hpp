@@ -22,15 +22,21 @@ public:
 
 	void update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawNeuralNet(sf::RenderTarget& target, sf::RenderStates states) const;
+
 	std::weak_ptr<NNActor> getActor(const ActorId& id) const;
+	std::weak_ptr<NNActor> getTopActor();
 
 	size_t actorsSize() const;
 
 private:
 	void deleteOutsiders(const sf::Rect<int>& bounds);
 	ActorIdTracker m_actorIdTracker;
+
 	std::vector<std::shared_ptr<NNActor>> m_actors;
+	std::weak_ptr<NNActor> m_topActor;
 	std::weak_ptr<Actor> m_playerActor;
+
 	float m_time;
 
 	bool shouldResetActors() const;

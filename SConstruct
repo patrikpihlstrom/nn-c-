@@ -1,4 +1,4 @@
-print '\x1b[31m' + "\n--------------------No-Motivation--------------------" + '\033[0m'
+print '\x1b[31m' + "\n--------------------NeuralNet--------------------" + '\033[0m'
 
 libs = Split("""
 sfml-graphics
@@ -33,5 +33,5 @@ environment = Environment(CC='gcc')
 #environment.Append(CPPPATH='.')
 environment.Append(LIBS=libs)
 environment.Append(CXXFLAGS='-std=c++11')
-environment.Program(target='No-Motivation', source=sources)
+environment.Program(target='NeuralNet', source=sources)
 

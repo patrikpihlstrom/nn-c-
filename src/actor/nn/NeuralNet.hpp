@@ -10,8 +10,10 @@
 #include <string.h>
 #include <algorithm>
 
+#include <SFML/Graphics.hpp>
 
-class NeuralNet
+
+class NeuralNet : public sf::Drawable
 {
 	inline static double sigmoidActivationFunction(double x)
 	{
@@ -71,6 +73,8 @@ public:
 		weights.insert(weights.end(), m_weightsHiddenOutput.begin(), m_weightsHiddenOutput.end());
 		return weights;
 	}
+
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
 	void initializeNetwork();
