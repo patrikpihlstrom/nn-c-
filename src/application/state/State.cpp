@@ -17,7 +17,7 @@ void State::enter(sf::RenderWindow& window)
 	m_options = true;
 }
 
-void State::update(const float& deltaTime, const sf::RenderWindow& window)
+void State::update(const float& deltaTime, sf::RenderWindow& window)
 {
 	if (!m_escape && sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		m_signalStack.push_back(Signal::Switch);

@@ -20,7 +20,9 @@ public:
 	ActorId addActor(std::shared_ptr<NNActor> actor);
 	void removeActor(const ActorId& id);
 
-	void update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree);
+	void setStart(const sf::Vector2f position);
+	void setFinish(const math::Polygon polygon);
+	void update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree, Camera& camera);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void drawNeuralNet(sf::RenderTarget& target, sf::RenderStates states) const;
 
@@ -29,6 +31,8 @@ public:
 
 	size_t actorsSize() const;
 
+	void processSight(const sf::Image image);
+
 private:
 	void deleteOutsiders(const sf::Rect<int>& bounds);
 	ActorIdTracker m_actorIdTracker;
@@ -36,6 +40,9 @@ private:
 	std::vector<std::shared_ptr<NNActor>> m_actors;
 	std::weak_ptr<NNActor> m_topActor;
 	std::weak_ptr<Actor> m_playerActor;
+
+	sf::Vector2f m_start;
+	math::Polygon m_finish;
 
 	float m_time;
 
@@ -58,6 +65,14 @@ private:
 		bool operator()(const std::shared_ptr<NNActor> l, const std::shared_ptr<NNActor> r)
 		{
 			return l->getDistance() > r->getDistance();
+		}
+	};
+
+	struct ActorCompareAge
+	{
+		bool operator()(const std::shared_ptr<NNActor> l, const std::shared_ptr<NNActor> r)
+		{
+			return l->getAge() > r->getAge();
 		}
 	};
 };

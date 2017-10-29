@@ -50,7 +50,7 @@ void MenuState::enter(sf::RenderWindow& window)
 	State::enter(window);
 }
 
-void MenuState::update(const float& deltaTime, const sf::RenderWindow& window)
+void MenuState::update(const float& deltaTime, sf::RenderWindow& window)
 {
 	if (m_buttons[0])
 	{

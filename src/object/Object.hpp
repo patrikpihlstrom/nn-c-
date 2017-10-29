@@ -8,6 +8,13 @@
 #include "../application/Math.hpp"
 #include "ObjectId.hpp"
 
+enum class ObjectType
+{
+	obstacle,
+	food,
+	start,
+	finish
+};
 
 class Object : public sf::Drawable, public sf::Transformable
 {
@@ -32,11 +39,20 @@ public:
 
 	bool hasPolygon() const;
 
+	ObjectType getType() const;
+	void setType(const ObjectType type);
+
+	sf::Color getColor() const;
+
+	bool dead = false;
+
 protected:
 	ObjectId m_id;
+	ObjectType m_type;
 	sf::Vector2f m_size;
 	math::Polygon m_polygon;
 	sf::ConvexShape m_shape;
+	sf::Color m_color;
 
 };
 

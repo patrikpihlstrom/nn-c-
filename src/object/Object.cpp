@@ -35,7 +35,8 @@ void Object::setSize(const sf::Vector2f size)
 }
 
 sf::Rect<float> Object::getBoundingBox() const
-	{if (m_polygon.getPointCount())
+{
+	if (m_polygon.getPointCount() > 0)
 	{
 		auto bounds = m_polygon.getBounds();
 		return {(float)bounds.left, (float)bounds.top, (float)bounds.width, (float)bounds.height};
@@ -67,27 +68,68 @@ void Object::setPolygon(const math::Polygon& polygon)
 	{
 		m_shape.setPoint(i, polygon.getPoint(i));
 	}
-	m_shape.setFillColor({100, 255, 100});
+	m_shape.setFillColor({200, 200, 200});
 }
 
 void Object::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (m_shape.getPointCount() > 0)
+	switch (m_type)
 	{
-		target.draw(m_shape, states);
+		case ObjectType::obstacle:
+			if (m_shape.getPointCount() > 0)
+			{
+				target.draw(m_shape, states);
+			}
+			else
+			{
+				sf::RectangleShape shape;
+				shape.setPosition(getPosition());
+				shape.setSize(m_size);
+				shape.setFillColor(m_color);
+				target.draw(shape, states);
+			}
+		break;
+
+		case ObjectType::food:
+			sf::CircleShape shape;
+			shape.setRadius(12.f);
+			shape.setFillColor(m_color);
+			shape.setPosition(getPosition());
+			target.draw(shape, states);
+		break;
 	}
-	else
-	{
-		sf::RectangleShape shape;
-		shape.setPosition(getPosition());
-		shape.setSize(m_size);
-		shape.setFillColor(sf::Color(100, 100, 100));
-		target.draw(shape, states);
-	}
+	
 }
 
 bool Object::hasPolygon() const
 {
 	return m_polygon.getPointCount() > 0;
+}
+
+ObjectType Object::getType() const
+{
+	return m_type;
+}
+
+void Object::setType(const ObjectType type)
+{
+	m_type = type;
+	
+	switch (type)
+	{
+		case ObjectType::food:
+			m_size = {24, 24};
+			m_color = {120, 100, 250};
+		break;
+
+		case ObjectType::obstacle:
+			m_color = {100, 100, 100};
+		break;
+	}
+}
+
+sf::Color Object::getColor() const
+{
+	return m_color;
 }
 

@@ -17,7 +17,7 @@ public:
 	~GameState();
 
 	void enter(sf::RenderWindow& window);
-	void update(const float& deltaTime, const sf::RenderWindow& window);
+	void update(const float& deltaTime, sf::RenderWindow& window);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void exit();
 

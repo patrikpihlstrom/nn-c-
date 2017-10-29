@@ -8,17 +8,19 @@ World::World()
 World::World(const long& seed) :
 	m_seed(seed)
 {
-	float width = 1280, height = 720;
-	m_quadtree = std::shared_ptr<Quadtree>(new Quadtree({0, 0, (int)width, (int)height}, 0));
-	std::cout << "SEED: " << m_seed << std::endl;
+	m_quadtree = std::shared_ptr<Quadtree>(new Quadtree({-2500, -2500, 5000, 5000}, 0));
 	srand(m_seed);
 
 	for (int i = 0; i < 10; ++i)
 	{
 		auto actor = std::shared_ptr<NNActor>(new NNActor());
-		actor->setPosition(width/2, 80);
+		actor->setPosition(0, 0);
 		m_actorManager.addActor(actor);
 	}
+
+	m_camera.zoom(6.5f);
+	m_foodTimer = 0;
+	m_sightTimer = 0;
 }
 
 World::~World()
@@ -39,7 +41,7 @@ void World::load(const std::string& path)
 
 			if (!line.empty() && line[0] == 'o') // new object
 			{
-				auto objectType = line.substr(2);
+				auto objectType = getType(line.substr(2));
 				math::Polygon polygon;
 				std::getline(file, line);
 				while (!line.empty() && line[0] != 'u')
@@ -55,13 +57,26 @@ void World::load(const std::string& path)
 					}
 					std::getline(file, line);
 				}
-				
-				polygon.constructEdges(true);
-				auto object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
-				object->setPosition(0, 0);
-				object->setPolygon(polygon);
-				m_objects.push_back(object);
-				m_quadtree->insert(object);
+
+				if (objectType == ObjectType::obstacle)
+				{
+					polygon.constructEdges(true);
+					auto object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
+					object->setType(objectType);
+					object->setPosition(0, 0);
+					object->setPolygon(polygon);
+					m_objects.push_back(object);
+					m_quadtree->insert(object);
+				}
+				else if (objectType == ObjectType::start)
+				{
+					m_actorManager.setStart(polygon.getPoint(0));
+				}
+				else if (objectType == ObjectType::finish)
+				{
+					polygon.constructEdges(true);
+					m_actorManager.setFinish(polygon);
+				}
 			}
 		}
 	}
@@ -69,22 +84,41 @@ void World::load(const std::string& path)
 
 void World::update(const float& deltaTime)
 {
+	m_foodTimer -= deltaTime;
+	if (m_foodTimer <= 0)
+	{
+		float angle = ((double)rand()/(RAND_MAX))*M_PI*2;
+		float distance = ((double)rand()/(RAND_MAX))*1500.f;
+		auto object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
+		object->setPosition({distance*std::cos(angle) - distance*std::sin(angle), distance*std::sin(angle) + distance*std::cos(angle)});
+		object->setType(ObjectType::food);
+		m_objects.push_back(object);
+		m_quadtree->insert(object);
+		m_foodTimer = 2.f;
+	}
+
 	//m_quadtree->update();
-	m_actorManager.update(deltaTime, m_quadtree);
+	m_actorManager.update(deltaTime, m_quadtree, m_camera);
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
-		target.draw(*(*it), states);
+		if (!(*it)->dead)
+		{
+			target.draw(*(*it), states);
+		}
 	}
 
 	target.draw(m_actorManager, states);
 	//m_actorManager.drawNeuralNet(target, states);
 
-	//m_quadtree->draw(target, states);
+	m_quadtree->draw(target, states);
 }
 
-
+sf::View World::getView() const
+{
+	return m_camera;
+}
 

@@ -27,7 +27,7 @@ std::weak_ptr<NNActor> ActorManager::getTopActor()
 		return std::weak_ptr<NNActor>();
 	}
 	
-	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
+	std::sort(m_actors.begin(), m_actors.end(), ActorCompareAge());
 	return *m_actors.begin();
 }
 
@@ -57,10 +57,19 @@ void ActorManager::removeActor(const ActorId& id)
 	}
 }
 
-void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree)
+void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree, Camera& camera)
 {
 	m_topActor = getTopActor();
 	m_time += deltaTime;
+
+	//if (auto actor = m_topActor.lock())
+	//{
+	//	camera.update(actor->getPosition());
+	//}
+	//else
+	//{
+	//	camera.update(m_actors[0]->getPosition());
+	//}
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
@@ -73,55 +82,93 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 		{
 			continue;
 		}
-		else
+
+		(*it)->update(deltaTime);
+		auto objects = quadtree->getObjects((*it)->getBounds());
+		auto sensors = (*it)->getSensors();
+		for (int i = 0; i < objects.size(); ++i)
 		{
-			(*it)->update(deltaTime);
-			auto objects = quadtree->getObjects((*it)->getBounds());
-			auto sensors = (*it)->getSensors();
-			for (int i = 0; i < objects.size(); ++i)
+			if (auto object = objects[i].lock())
 			{
-				if (auto object = objects[i].lock())
+				if (object->dead)
 				{
-					if (object->hasPolygon())
+					continue;
+				}
+
+				if (object->hasPolygon())
+				{
+					if (math::rectIntersectsPolygon((*it)->getPhysicalBounds(), object->getPolygon()))
 					{
-						if (math::rectIntersectsPolygon((*it)->getPhysicalBounds(), object->getPolygon()))
+						switch (object->getType())
 						{
-							(*it)->setDead(true);
-							continue;
+							case ObjectType::food:
+								(*it)->addHealth(100);
+								object->dead = true;
+							break;
+
+							case ObjectType::obstacle:
+								(*it)->setDead(true);
+							break;
 						}
 					}
-					else if (object->getBoundingBox().intersects((*it)->getPhysicalBounds()))
+				}
+				else if (object->getBoundingBox().intersects((*it)->getPhysicalBounds()))
+				{
+					switch (object->getType())
 					{
-						(*it)->setDead(true);
-						continue;
-					}
+						case ObjectType::food:
+							(*it)->addHealth(100);
+							object->dead = true;
+						break;
 
-					for (int j = 0; j < sensors.size(); ++j)
+						case ObjectType::obstacle:
+							(*it)->setDead(true);
+						break;
+					}
+				}
+
+				if ((*it)->isDead())
+				{
+					continue;
+				}
+
+				for (int j = 0; j < sensors.size(); ++j)
+				{
+					if (object->hasPolygon() && object->getType() != ObjectType::food)
 					{
-						if (object->hasPolygon())
+						sf::Vector2f a = sensors[j], b = sensors[j];
+						bool intersects = math::lineIntersectsPolygon((*it)->getPosition(), sensors[j], a, b, object->getPolygon());
+						if (intersects)
 						{
-							sf::Vector2f a = sensors[j], b = sensors[j];
-							bool intersects = math::lineIntersectsPolygon((*it)->getPosition(), sensors[j], a, b, object->getPolygon());
-							if (intersects)
+							if (a == b || math::distance((*it)->getPosition(), a) < math::distance((*it)->getPosition(), b))
 							{
-								if (a == b || math::distance((*it)->getPosition(), a) < math::distance((*it)->getPosition(), b))
-								{
-									float value = 1.5f - math::distance<float>((*it)->getPosition(), a)/(*it)->SENSOR_DISTANCE;
-									(*it)->setInput(value, j);
-								}
-								else
-								{
-									float value = 1.5f - math::distance<float>((*it)->getPosition(), b)/(*it)->SENSOR_DISTANCE;
-									(*it)->setInput(value, j);
-								}
+								float value = 1.5f - math::distance<float>((*it)->getPosition(), a)/(*it)->SENSOR_DISTANCE;
+								(*it)->setInput(value, j);
+							}
+							else
+							{
+								float value = 1.5f - math::distance<float>((*it)->getPosition(), b)/(*it)->SENSOR_DISTANCE;
+								(*it)->setInput(value, j);
 							}
 						}
-						else
+					}
+
+					if (!object->hasPolygon() || object->getType() == ObjectType::food)
+					{
+						bool intersects = false;
+						sf::Vector2f point;
+						point = math::getLineRectIntersection((*it)->getPosition(), sensors[j], object->getBoundingBox(), intersects);
+						if (intersects)
 						{
-							bool intersects = false;
-							sf::Vector2f point;
-							point = math::getLineRectIntersection((*it)->getPosition(), sensors[j], object->getBoundingBox(), intersects);
-							if (intersects)
+							if (j >= (*it)->SENSOR_COUNT)
+							{
+								(*it)->setSensor(j, point);
+								auto color = object->getColor();
+								(*it)->setInput(color.r/255.f, j + (j-(*it)->SENSOR_COUNT)*3);
+								(*it)->setInput(color.g/255.f, j + (j-(*it)->SENSOR_COUNT)*3 + 1);
+								(*it)->setInput(color.b/255.f, j + (j-(*it)->SENSOR_COUNT)*3 + 2);
+							}
+							else
 							{
 								float value = 1.5f - math::distance<float>((*it)->getPosition(), point)/(*it)->SENSOR_DISTANCE;
 								(*it)->setInput(value, j);
@@ -129,11 +176,11 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 						}
 					}
 				}
+			}
 
-				if ((*it)->isDead())
-				{
-					break;
-				}
+			if ((*it)->isDead())
+			{
+				break;
 			}
 		}
 	}
@@ -206,7 +253,7 @@ void ActorManager::resetActors()
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
 		(*it).reset(new NNActor());
-		(*it)->setPosition(1280/2, 720/2);
+		(*it)->setPosition(0, 0);
 	}
 }
 
@@ -216,14 +263,14 @@ void ActorManager::resetActors(const std::vector<std::vector<float>> dna)
 	{
 		//(*it).reset(new NNActor(dna));
 		(*it).reset(new NNActor());
-		(*it)->setPosition(1280/2, 720/2);
+		(*it)->setPosition(m_start);
 	}
 }
 
 void ActorManager::newGeneration()
 {
 	m_time = 0;
-	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
+	std::sort(m_actors.begin(), m_actors.end(), ActorCompareAge());
 	auto firstDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
 	auto combinedDna = firstDna;
 	int mutatedStrands = combinedDna.size()/10, inheritedStrands = (combinedDna.size()/10)*3;
@@ -249,10 +296,46 @@ void ActorManager::newGeneration()
 		std::cout << ']' << std::endl;
 
 		(*it).reset(new NNActor(combinedDna));
-		(*it)->setPosition(1280/2, 80);
+		(*it)->setPosition(m_start);
 		combinedDna = firstDna;
 	}
 
 	//std::cout << std::endl;
+}
+
+void ActorManager::setStart(const sf::Vector2f position)
+{
+	m_start = position;
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
+		(*it)->setPosition(position.x, position.y);
+	}
+}
+
+void ActorManager::setFinish(const math::Polygon polygon)
+{
+	m_finish = polygon;
+}
+
+void ActorManager::processSight(const sf::Image image)
+{
+	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
+	{
+		if ((*it)->isDead())
+		{
+			continue;
+		}
+		
+		for (int i = (*it)->SENSOR_COUNT - 1; i < (*it)->SENSOR_COUNT+(*it)->EYE_COUNT; ++i)
+		{
+			float r = 0, g = 0, b = 0;
+			for (int x = 0, y = 0; x < 5; ++x)
+			{
+				for (y = 0; y < 5; ++y)
+				{
+				}
+			}
+		}
+	}
 }
 

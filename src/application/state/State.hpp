@@ -24,7 +24,7 @@ public:
 	~State();
 
 	virtual void enter(sf::RenderWindow& window);
-	virtual void update(const float& deltaTime, const sf::RenderWindow& window);
+	virtual void update(const float& deltaTime, sf::RenderWindow& window);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	virtual void exit();
 

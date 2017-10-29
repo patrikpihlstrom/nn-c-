@@ -1,7 +1,7 @@
 #include "Camera.hpp"
 
 Camera::Camera() :
-	sf::View()
+	sf::View({0, 0}, {1600, 900})
 {
 }
 

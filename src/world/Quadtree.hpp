@@ -32,7 +32,10 @@ public:
 
 	void getQuadtrees(std::vector<std::weak_ptr<Quadtree>>& quadtrees, const sf::Rect<int>& boundingBox) const;
 	void getObjects(std::vector<std::weak_ptr<Object>>& objects, std::vector<ObjectId>& objectIds) const;
+	void getObjects(std::vector<std::weak_ptr<Object>>& objects, std::vector<ObjectId>& objectIds, const ObjectType type) const;
+
 	std::vector<std::weak_ptr<Object>> getObjects(const sf::Rect<int>& boundingBox) const;
+	std::vector<std::weak_ptr<Object>> getObstacles(const sf::Rect<int>& boundingBox) const;
 
 	std::shared_ptr<Object> getObject(const ObjectId& id) const;
 

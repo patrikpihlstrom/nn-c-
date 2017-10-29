@@ -3,7 +3,7 @@
 PlayerActor::PlayerActor() :
 	Actor()
 {
-	m_camera.reset(new Camera({0, 0}, {1280, 720})); // Here
+	m_camera.reset(new Camera());
 }
 
 PlayerActor::~PlayerActor()

@@ -27,8 +27,12 @@ public:
 	void update(const float& deltaTime);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+	sf::View getView() const;
+
 private:
 	long m_seed;
+
+	float m_foodTimer, m_sightTimer;
 
 	struct Hash
 	{
@@ -57,5 +61,21 @@ private:
 	std::vector<std::shared_ptr<Object>> m_objects;
 	ObjectIdTracker m_objectIdTracker;
 	ActorManager m_actorManager;
+
+	ObjectType getType(const std::string typeString)
+	{
+		if (typeString.size() >= 5 && typeString.substr(0, 5) == "start")
+		{
+			return ObjectType::start;
+		}
+		else if (typeString.size() >= 6 && typeString.substr(0, 6) == "finish")
+		{
+			return ObjectType::finish;
+		}
+
+		return ObjectType::obstacle;
+	}
+
+	Camera m_camera;
 };
 

@@ -22,9 +22,10 @@ void GameState::enter(sf::RenderWindow& window)
 	State::enter(window);
 }
 
-void GameState::update(const float& deltaTime, const sf::RenderWindow& window)
+void GameState::update(const float& deltaTime, sf::RenderWindow& window)
 {
 	m_world.update(deltaTime);
+	window.setView(m_world.getView());
 	State::update(deltaTime, window);
 }
 

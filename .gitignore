@@ -3,6 +3,7 @@
 *.swp
 *.swo
 *.mtl
+*.blend
 NeuralNet
 .sconsign.dblite
 

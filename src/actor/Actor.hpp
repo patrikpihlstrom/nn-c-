@@ -44,6 +44,8 @@ public:
 
 	float getDistance() const;
 
+	int getAge() const;
+
 protected:
 	float m_desiredSpeed;
 	float m_desiredRotationRate;
@@ -55,7 +57,7 @@ protected:
 	ActorId m_id;
 
 	bool m_dead;
-	uint8_t m_health;
+	int m_health, m_age;
 
 	sf::Vector2f m_velocity;
 

@@ -151,3 +151,8 @@ float Actor::getDistance() const
 	return m_distance;
 }
 
+int Actor::getAge() const
+{
+	return m_age;
+}
+
