@@ -12,7 +12,7 @@ public:
 	const float SENSOR_DISTANCE = 100.f;
 	const float SIGHT_DISTANCE = 300.f;
 	const uint32_t SENSOR_COUNT = 5;
-	const uint32_t EYE_COUNT = 3;
+	const uint32_t EYE_COUNT = 5;
 
 	NNActor();
 	NNActor(const std::vector<double> dna);

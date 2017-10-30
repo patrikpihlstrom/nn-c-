@@ -176,17 +176,32 @@ void NeuralNet::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 	sf::CircleShape circle;
-	circle.setRadius(16.f);
+	circle.setRadius(32.f);
 	circle.setFillColor({100, 200, 100});
 	for (int i = 0; i < m_numInputs; ++i)
 	{
 		if (midLayer == 0)
 		{
-			circle.setPosition(32, 32*i + 32);
+			circle.setPosition(-5000, 96*i + 32);
 		}
 		else
 		{
-			circle.setPosition(32, midY - ((float)m_numInputs/2.f)*32 + 32*i + 32);
+			circle.setPosition(-5000, midY - ((float)m_numInputs/2.f)*64 + 96*i + 32);
+		}
+
+		for (int j = 0; j < m_numHidden; ++j)
+		{
+			sf::Vertex line[] = {{circle.getPosition(), {20, 20, 20}}, {circle.getPosition(), {20, 20, 20}}};
+			if (midLayer == 1)
+			{
+				line[1].position = {-4000 + 64*5 + 16, 96*j - midY + 16};
+			}
+			else
+			{
+				line[1].position = {-4000 + 64*5 + 16, midY - ((float)m_numHidden/2.f)*64 + 96*j + 32 + 16};
+			}
+
+			target.draw(line, std::abs(m_weightsInputHidden[j])*10.f, sf::Lines);
 		}
 
 		target.draw(circle);
@@ -197,11 +212,11 @@ void NeuralNet::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		if (midLayer == 1)
 		{
-			circle.setPosition(32*5, 32*i + 32);
+			circle.setPosition(-4000 + 64*5, 96*i - midY);
 		}
 		else
 		{
-			circle.setPosition(32*5, midY - ((float)m_numHidden/2.f)*32 + 32*i + 32);
+			circle.setPosition(-4000 + 64*5, midY - ((float)m_numHidden/2.f)*64 + 96*i + 32);
 		}
 
 		target.draw(circle);
@@ -212,11 +227,11 @@ void NeuralNet::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		if (midLayer == 2)
 		{
-			circle.setPosition(32*10, 32*i + 32);
+			circle.setPosition(-3500 + 64*10, 96*i - midY);
 		}
 		else
 		{
-			circle.setPosition(32*10, midY - ((float)m_numOutputs/2.f)*32 + 32*i + 32);
+			circle.setPosition(-3500 + 64*10, midY - ((float)m_numOutputs/2.f)*64 + 64*i + 32);
 		}
 
 		target.draw(circle);

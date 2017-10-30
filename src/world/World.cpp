@@ -92,6 +92,7 @@ void World::update(const float& deltaTime)
 		auto object = std::shared_ptr<Object>(new Object(m_objectIdTracker.addObject()));
 		object->setPosition({distance*std::cos(angle) - distance*std::sin(angle), distance*std::sin(angle) + distance*std::cos(angle)});
 		object->setType(ObjectType::food);
+		object->dead = false;
 		m_objects.push_back(object);
 		m_quadtree->insert(object);
 		m_foodTimer = 2.f;
@@ -99,20 +100,30 @@ void World::update(const float& deltaTime)
 
 	//m_quadtree->update();
 	m_actorManager.update(deltaTime, m_quadtree, m_camera);
+
+	auto it = m_objects.begin();
+	while (it != m_objects.end())
+	{
+		if ((*it)->dead)
+		{
+			it = m_objects.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
 	{
-		if (!(*it)->dead)
-		{
-			target.draw(*(*it), states);
-		}
+		target.draw(*(*it), states);
 	}
 
 	target.draw(m_actorManager, states);
-	//m_actorManager.drawNeuralNet(target, states);
+	m_actorManager.drawNeuralNet(target, states);
 
 	m_quadtree->draw(target, states);
 }

@@ -17,17 +17,14 @@ Quadtree::~Quadtree()
 
 void Quadtree::update()
 {
-	if (!m_children[0])
-	{
-		if (auto parent = m_parent.lock())
-			parent->update();
-	}
-	else if (canMergeChildren())
+	if (canMergeChildren())
 	{
 		mergeChildren();
+	}
 
-		if (auto parent = m_parent.lock())
-			parent->update();
+	if (auto parent = m_parent.lock())
+	{
+		parent->update();
 	}
 }
 
@@ -128,7 +125,7 @@ bool Quadtree::canMergeChildren() const
 
 	for (int i = 0; i < 4; ++i)
 	{
-		if (!m_children[i]->empty())
+		if (!m_children[i]->empty() || !m_children[i]->canMerge())
 			return false;
 	}
 

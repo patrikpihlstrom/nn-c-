@@ -168,7 +168,7 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 								(*it)->setInput(color.g/255.f, j + (j-(*it)->SENSOR_COUNT)*3 + 1);
 								(*it)->setInput(color.b/255.f, j + (j-(*it)->SENSOR_COUNT)*3 + 2);
 							}
-							else
+							else if (object->getType() != ObjectType::food)
 							{
 								float value = 1.5f - math::distance<float>((*it)->getPosition(), point)/(*it)->SENSOR_DISTANCE;
 								(*it)->setInput(value, j);
