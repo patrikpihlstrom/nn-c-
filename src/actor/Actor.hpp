@@ -1,20 +1,13 @@
 #pragma once
 
-#include <memory>
 
-#include <SFML/Graphics.hpp>
 
-#include "ActorId.hpp"
-#include "../application/Math.hpp"
 
 
 class Actor : public sf::Transformable, public sf::Drawable
 {
 public:
-	const float MAX_SPEED = 200;
-	const float MAX_ACC = 0.05f;
-	const float MAX_ROTATION_RATE = 0.05f;
-	const float MAX_ROTATION_ACC = 0.05f;
+
 	
 	Actor();
 	~Actor();
@@ -22,44 +15,13 @@ public:
 	virtual void update(const float& deltaTime);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	uint8_t getHealth() const;
-	void setHealth(const uint8_t health);
-	void damage(const int8_t& factor);
 
-	ActorId getId() const;
-	void assign(const ActorId& id);
 	uint64_t getIdAsInt() const;
 
-	void move(const float x, const float y);
 
-	bool operator<(const Actor& actor) const;
-	
-	virtual void control();
-	virtual void updatePosition(const float& deltaTime);
-
-	float getSize() const;
-	void setSize(const float size);
-
-	virtual sf::Rect<int> getBounds() const;
-
-	float getDistance() const;
-
-	int getAge() const;
 
 protected:
-	float m_desiredSpeed;
-	float m_desiredRotationRate;
-	float m_rotationRate;
-	float m_angle;
-	float m_size;
-	float m_distance;
 
-	ActorId m_id;
-
-	bool m_dead;
-	int m_health, m_age;
-
-	sf::Vector2f m_velocity;
 
 private:
 };

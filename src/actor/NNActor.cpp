@@ -1,12 +1,11 @@
 #include "NNActor.hpp"
 
 
-NNActor::NNActor() : 
-	Actor()
+NNActor::NNActor()
 {
 	m_size = 8.f;
-	m_theta = M_PI/2/SENSOR_COUNT;
-	m_angle = M_PI;
+	m_age = 0;
+	m_theta = 2*M_PI/SENSOR_COUNT;
 	m_angle = M_PI;
 	m_health = 1000;
 	m_inputs.resize(SENSOR_COUNT + EYE_COUNT*3 + 1, 0.f);
@@ -19,23 +18,23 @@ NNActor::NNActor() :
 
 	for (int i = 0; i < EYE_COUNT; ++i)
 	{
-		double angle = (m_theta/2)*i-((m_theta/2)/EYE_COUNT);
+		double angle = (M_PI/25)*i-((M_PI/25)/EYE_COUNT);
 		sf::Vector2f sensor = sf::Vector2f(SIGHT_DISTANCE*std::cos(angle) - SIGHT_DISTANCE*std::sin(angle), SIGHT_DISTANCE*std::sin(angle) + SIGHT_DISTANCE*std::cos(angle));
 		m_sensors.push_back(sensor);
 	}
 
-	m_neuralNet = NeuralNet({SENSOR_COUNT + EYE_COUNT*3 + 1, m_inputs.size()*2, 4});
+	m_neuralNet = NeuralNet((NeuralNet::Settings){SENSOR_COUNT + EYE_COUNT*3 + 1, m_inputs.size()*2, 4});
 	m_dna = m_neuralNet.getWeights();
 	m_desiredSpeed = MAX_SPEED;
 	m_desiredRotationRate = 0;
 }
 
-NNActor::NNActor(const std::vector<double> dna) :
-	Actor()
+NNActor::NNActor(const std::vector<double> dna)
 {
 	m_dna = dna;
+	m_age = 0;
 	m_size = 8.f;
-	m_theta = M_PI/2/SENSOR_COUNT;
+	m_theta = 2*M_PI/SENSOR_COUNT;
 	m_angle = M_PI;
 	m_health = 1000;
 	m_inputs.resize(SENSOR_COUNT + EYE_COUNT*3 + 1, 0.f);
@@ -48,7 +47,7 @@ NNActor::NNActor(const std::vector<double> dna) :
 
 	for (int i = 0; i < EYE_COUNT; ++i)
 	{
-		double angle = (m_theta/2)*i-((m_theta/2)/EYE_COUNT);
+		double angle = (M_PI/25)*i-((M_PI/25)/EYE_COUNT);
 		sf::Vector2f sensor = sf::Vector2f(SIGHT_DISTANCE*std::cos(angle) - SIGHT_DISTANCE*std::sin(angle), SIGHT_DISTANCE*std::sin(angle) + SIGHT_DISTANCE*std::cos(angle));
 		m_sensors.push_back(sensor);
 	}
@@ -62,60 +61,37 @@ NNActor::~NNActor()
 {
 }
 
-bool NNActor::isPlayer() const
-{
-	return false;
-}
-
-bool NNActor::isNN() const
-{
-	return true;
-}
-
 void NNActor::update(const float& deltaTime)
 {
 	m_health -= 1*deltaTime;
-	if (m_health <= 0)
+	m_age += 1*deltaTime;
+	control();
+	sf::Transformable::move(m_velocity.x*deltaTime, m_velocity.y*deltaTime);
+	//std::cout << "Angle: " << m_angle << std::endl;
+	for (int i = 0; i < m_sensors.size(); ++i)
 	{
-		m_dead = true;
+		double angle = m_theta*i+m_angle-(m_theta*SENSOR_COUNT/2.f);
+		sf::Vector2f sensor = sf::Vector2f(getPosition().x + SENSOR_DISTANCE*std::cos(angle) - SENSOR_DISTANCE*std::sin(angle), getPosition().y + SENSOR_DISTANCE*std::sin(angle) + SENSOR_DISTANCE*std::cos(angle));
+		m_sensors[i] = sensor;
+		m_inputs[i] = 0.f;
 	}
-	else
-	{
-		m_age += deltaTime;
-		control();
-		updatePosition(deltaTime);
-		//std::cout << "Angle: " << m_angle << std::endl;
-		for (int i = 0; i < m_sensors.size(); ++i)
-		{
-			double angle = m_theta*i+m_angle-(m_theta*SENSOR_COUNT/2.f);
-			sf::Vector2f sensor = sf::Vector2f(getPosition().x + SENSOR_DISTANCE*std::cos(angle) - SENSOR_DISTANCE*std::sin(angle), getPosition().y + SENSOR_DISTANCE*std::sin(angle) + SENSOR_DISTANCE*std::cos(angle));
-			m_sensors[i] = sensor;
-			m_inputs[i] = 0.f;
-		}
 
-		for (int i = 0; i < EYE_COUNT; ++i)
-		{
-			double angle = (m_theta/2)*i+m_angle-((m_theta/2)*EYE_COUNT/2.f);
-			sf::Vector2f eye = sf::Vector2f(getPosition().x + SIGHT_DISTANCE*std::cos(angle) - SIGHT_DISTANCE*std::sin(angle), getPosition().y + SIGHT_DISTANCE*std::sin(angle) + SIGHT_DISTANCE*std::cos(angle));
-			m_sensors[SENSOR_COUNT + i] = eye;
-			m_inputs[SENSOR_COUNT + i] = 0.f;
-		}
+	for (int i = 0; i < EYE_COUNT; ++i)
+	{
+		double angle = (M_PI/25)*i+m_angle-((M_PI/25)*EYE_COUNT/2.f);
+		sf::Vector2f eye = sf::Vector2f(getPosition().x + SIGHT_DISTANCE*std::cos(angle) - SIGHT_DISTANCE*std::sin(angle), getPosition().y + SIGHT_DISTANCE*std::sin(angle) + SIGHT_DISTANCE*std::cos(angle));
+		m_sensors[SENSOR_COUNT + i] = eye;
+		m_inputs[SENSOR_COUNT + i] = 0.f;
 	}
 }
 
 void NNActor::control()
 {
-	for (int i = 0; i < EYE_COUNT; ++i)
-	{
-		for (int j = 0; j < 3; ++j)
-		{
-			std::cout << i << ": " << j << ": " << m_inputs[SENSOR_COUNT + i*3 + j] << std::endl;
-		}
-	}
-
 	m_inputs.back() = (1000.f-m_health)/1000.f;
 	m_desiredRotationRate = 0;
+	m_rotationRate = 0;
 	auto decision = m_neuralNet.evaluate(m_inputs);
+	m_inputs.resize(SENSOR_COUNT + EYE_COUNT*3 + 1, 0.f);
 	int highestValueIndex = 0;
 	for (int i = 0; i < decision.size(); ++i)
 	{
@@ -147,9 +123,58 @@ void NNActor::control()
 		}
 	}
 
-	//std::cout << "Desired speed: " << m_desiredSpeed << "	Desired rotation rate: " << m_desiredRotationRate << std::endl;
+	float speed = math::magnitude<float>(m_velocity);
+	float deltaSpeed = m_desiredSpeed - speed;
+	if (std::abs(deltaSpeed) > MAX_ACC)
+	{
+		if (deltaSpeed < 0)
+		{
+			deltaSpeed = -MAX_ACC;
+		}
+		else
+		{
+			deltaSpeed = MAX_ACC;
+		}
+	}
 
-	Actor::control();
+	float targetSpeed = speed + deltaSpeed;
+	m_velocity = {targetSpeed*std::cos(m_angle) - targetSpeed*std::sin(m_angle), targetSpeed*std::sin(m_angle) + targetSpeed*std::cos(m_angle)};
+
+	speed = math::magnitude<float>(m_velocity);
+	if (speed > MAX_SPEED)
+	{
+		math::normalize(m_velocity);
+		m_velocity.x *= MAX_SPEED;
+		m_velocity.y *= MAX_SPEED;
+	}
+
+	float deltaRotationRate = m_desiredRotationRate - m_rotationRate;
+	if (std::abs(deltaRotationRate) > MAX_ROTATION_ACC)
+	{
+		if (deltaRotationRate < 0)
+		{
+			deltaRotationRate = -MAX_ROTATION_ACC;
+		}
+		else
+		{
+			deltaRotationRate = MAX_ROTATION_ACC;
+		}
+	}
+
+	m_rotationRate += deltaRotationRate;
+	if (std::abs(m_rotationRate) > MAX_ROTATION_RATE)
+	{
+		if (m_rotationRate < 0)
+		{
+			m_rotationRate = -MAX_ROTATION_RATE;
+		}
+		else
+		{
+			m_rotationRate = MAX_ROTATION_RATE;
+		}
+	}
+
+	m_angle += m_rotationRate;
 }
 
 void NNActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -166,7 +191,7 @@ void NNActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		circle.setFillColor({255, 100, 255});
 	}
 
-	if (!m_dead)
+	/*if (!m_dead)
 	{
 		for (int i = 0; i < m_sensors.size(); ++i)
 		{
@@ -183,7 +208,7 @@ void NNActor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			target.draw(line, 2, sf::Lines);
 			//target.draw(sensor, states);
 		}
-	}
+	}*/
 
 	target.draw(circle, states);
 }
@@ -198,7 +223,7 @@ std::vector<sf::Vector2f> NNActor::getSensors() const
 	return m_sensors;
 }
 
-float NNActor::getInput(int index) const
+double NNActor::getInput(int index) const
 {
 	if (index < m_inputs.size())
 	{
@@ -208,7 +233,7 @@ float NNActor::getInput(int index) const
 	return 0.f;
 }
 
-void NNActor::setInput(const float value, const int index)
+void NNActor::setInput(const double value, const int index)
 {
 	if (index < m_inputs.size() && m_inputs[index] < value)
 	{
@@ -263,8 +288,48 @@ void NNActor::setSensor(const int index, const sf::Vector2f sensor)
 	}
 }
 
+int NNActor::getHealth() const
+{
+	return m_health;
+}
+
+void NNActor::setHealth(const uint8_t health)
+{
+	m_health = health;
+}
+
 void NNActor::addHealth(const int health)
 {
 	m_health += health;
+}
+
+ActorId NNActor::getId() const
+{
+	return m_id;
+}
+
+void NNActor::assign(const ActorId& id)
+{
+	m_id = id;
+}
+
+bool NNActor::operator<(const NNActor& actor) const
+{
+	return getPosition().y + m_size < actor.getPosition().y + actor.getSize();
+}
+
+float NNActor::getSize() const
+{
+	return m_size;
+}
+
+void NNActor::setSize(const float size)
+{
+	m_size = size;
+}
+
+float NNActor::getAge() const
+{
+	return m_age;
 }
 

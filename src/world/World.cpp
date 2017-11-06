@@ -11,14 +11,15 @@ World::World(const long& seed) :
 	m_quadtree = std::shared_ptr<Quadtree>(new Quadtree({-2500, -2500, 5000, 5000}, 0));
 	srand(m_seed);
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		auto actor = std::shared_ptr<NNActor>(new NNActor());
 		actor->setPosition(0, 0);
+		actor->setDead(true);
 		m_actorManager.addActor(actor);
 	}
 
-	m_camera.zoom(6.5f);
+	m_camera.zoom(6.f);
 	m_foodTimer = 0;
 	m_sightTimer = 0;
 }
@@ -98,21 +99,22 @@ void World::update(const float& deltaTime)
 		m_foodTimer = 2.f;
 	}
 
-	//m_quadtree->update();
-	m_actorManager.update(deltaTime, m_quadtree, m_camera);
-
+	m_quadtree->update();
 	auto it = m_objects.begin();
 	while (it != m_objects.end())
 	{
 		if ((*it)->dead)
 		{
+			bool removed = m_quadtree->remove((*it)->getId());
 			it = m_objects.erase(it);
 		}
 		else
 		{
-			++it;
+			it++;
 		}
 	}
+
+	m_actorManager.update(deltaTime, m_quadtree, m_camera);
 }
 
 void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -123,9 +125,9 @@ void World::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 	target.draw(m_actorManager, states);
-	m_actorManager.drawNeuralNet(target, states);
+	//m_actorManager.drawNeuralNet(target, states);
 
-	m_quadtree->draw(target, states);
+	//m_quadtree->draw(target, states);
 }
 
 sf::View World::getView() const

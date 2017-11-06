@@ -1,11 +1,13 @@
 #include "Object.hpp"
 
 
-Object::Object()
+Object::Object() :
+	dead(false)
 {
 }
 
 Object::Object(const ObjectId id) :
+	dead(false),
 	m_id(id)
 {
 }

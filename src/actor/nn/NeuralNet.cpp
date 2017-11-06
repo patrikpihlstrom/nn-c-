@@ -7,7 +7,7 @@ NeuralNet::NeuralNet()
 {
 }
 
-NeuralNet::NeuralNet(NeuralNet::Settings const& settings) :
+NeuralNet::NeuralNet(Settings const& settings) :
 	m_numInputs(settings.numInputs),
 	m_numHidden(settings.numHidden),
 	m_numOutputs(settings.numOutputs)

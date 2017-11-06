@@ -7,7 +7,6 @@ sfml-system
 """)
 
 sources = Split("""
-src/actor/Actor.cpp
 src/actor/ActorIdTracker.cpp
 src/actor/ActorManager.cpp
 src/actor/NNActor.cpp

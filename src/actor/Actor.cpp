@@ -26,15 +26,7 @@ void Actor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(circle, states);
 }
 
-uint8_t Actor::getHealth() const
-{
-	return m_health;
-}
 
-void Actor::setHealth(const uint8_t health)
-{
-	m_health = health;
-}
 
 void Actor::damage(const int8_t& factor)
 {
@@ -151,8 +143,5 @@ float Actor::getDistance() const
 	return m_distance;
 }
 
-int Actor::getAge() const
-{
-	return m_age;
-}
+
 

@@ -1,59 +1,105 @@
 #pragma once
 
-#include "Actor.hpp"
-#include "nn/NeuralNet.hpp"
-
 #include <algorithm>
+#include <memory>
+
+#include "nn/NeuralNet.hpp"
+#include "ActorId.hpp"
+#include "../application/Math.hpp"
+
+#include <SFML/Graphics.hpp>
 
 
-class NNActor : public Actor, public std::enable_shared_from_this<NNActor>
-{
+class NNActor : public sf::Drawable, public sf::Transformable {
 public:
-	const float SENSOR_DISTANCE = 100.f;
-	const float SIGHT_DISTANCE = 300.f;
-	const uint32_t SENSOR_COUNT = 5;
-	const uint32_t EYE_COUNT = 5;
+    const float MAX_SPEED = 200;
+    const float MAX_ACC = 0.05f;
+    const float MAX_ROTATION_RATE = 0.05f;
+    const float MAX_ROTATION_ACC = 0.05f;
+    const float SENSOR_DISTANCE = 100.f;
+    const float SIGHT_DISTANCE = 1000.f;
+    const unsigned short SENSOR_COUNT = 9;
+    const unsigned short EYE_COUNT = 12;
 
-	NNActor();
-	NNActor(const std::vector<double> dna);
-	~NNActor();
+public:
+    NNActor();
 
-	uint8_t getHealth() const;
-	bool isPlayer() const;
-	bool isNN() const;
+    NNActor(const std::vector<double> dna);
 
-	void update(const float& deltaTime);
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-	void drawNeuralNet(sf::RenderTarget& target, sf::RenderStates states) const;
+    ~NNActor();
 
-	sf::Rect<int> getBounds() const;
-	sf::Rect<float> getPhysicalBounds() const;
-	std::vector<sf::Vector2f> getSensors() const;
+    ActorId getId() const;
 
-	float getInput(const int index) const;
-	void setInput(const float value, const int index);
+    void assign(const ActorId &id);
 
-	bool isDead() const;
-	void setDead(const bool dead);
+    void update(const float &deltaTime);
 
-	std::vector<double> getDna() const;
-	void printDna() const;
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-	sf::Vector2f getSensor(const int index);
-	void setSensor(const int index, const sf::Vector2f sensor);
+    void drawNeuralNet(sf::RenderTarget &target, sf::RenderStates states) const;
 
-	void addHealth(const int health);
+    sf::Rect<int> getBounds() const;
+
+    sf::Rect<float> getPhysicalBounds() const;
+
+    bool isDead() const;
+
+    void setDead(const bool dead);
+
+    std::vector<double> getDna() const;
+
+    void printDna() const;
+
+    double getInput(const int index) const;
+
+    void setInput(const double value, const int index);
+
+    std::vector<sf::Vector2f> getSensors() const;
+
+    sf::Vector2f getSensor(const int index);
+
+    void setSensor(const int index, const sf::Vector2f sensor);
+
+    int getHealth() const;
+
+    void setHealth(const uint8_t health);
+
+    void addHealth(const int health);
+
+    void move(const float x, const float y);
+
+    bool operator<(const NNActor &actor) const;
+
+    float getSize() const;
+
+    void setSize(const float size);
+
+    float getAge() const;
 
 private:
-	void control();
+    ActorId m_id;
+    float m_desiredSpeed,
+            m_desiredRotationRate,
+            m_rotationRate,
+            m_angle,
+            m_theta,
+            m_size,
+            m_distance,
+            m_age;
 
-	std::weak_ptr<Actor> m_playerActor;
-	std::vector<sf::Vector2f> m_sensors;
-	std::vector<double> m_inputs;
-	double m_theta;
-	NeuralNet m_neuralNet;
-	std::vector<double> m_dna;
+    bool m_dead;
+    int m_health;
 
-	bool m_finished;
+    sf::Vector2f m_velocity;
+
+    std::vector<sf::Vector2f> m_sensors;
+    std::vector<double> m_inputs;
+    std::vector<double> m_dna;
+
+    NeuralNet m_neuralNet;
+
+private:
+    void control();
+
 };
 

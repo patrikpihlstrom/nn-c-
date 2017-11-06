@@ -21,9 +21,7 @@ public:
 
 	void update();
 
-	void insert(const std::shared_ptr<Object> object);
-
-	bool remove(const std::shared_ptr<Object> object);
+	void insert(const std::weak_ptr<Object> object);
 	bool remove(const ObjectId& id);
 
 	bool canMerge() const; // Checks itself and its siblings.
@@ -37,7 +35,7 @@ public:
 	std::vector<std::weak_ptr<Object>> getObjects(const sf::Rect<int>& boundingBox) const;
 	std::vector<std::weak_ptr<Object>> getObstacles(const sf::Rect<int>& boundingBox) const;
 
-	std::shared_ptr<Object> getObject(const ObjectId& id) const;
+	std::weak_ptr<Object> getObject(const ObjectId& id) const;
 
 	struct compare : public std::unary_function<ObjectId, bool>
 	{
@@ -51,9 +49,14 @@ public:
 			return arg.getId() == id;
 		}
 
-		bool operator() (const std::shared_ptr<Object> arg)
+		bool operator() (const std::weak_ptr<Object> arg)
 		{
-			return arg->getId() == id;
+			if (auto object = arg.lock())
+			{
+				return object->getId() == id;
+			}
+
+			return false;
 		}
 
 		ObjectId id;
@@ -67,7 +70,7 @@ public:
 private:
 	std::shared_ptr<Quadtree> m_children[4];
 	std::weak_ptr<Quadtree> m_parent;
-	std::vector<std::shared_ptr<Object>> m_objects;
+	std::vector<std::weak_ptr<Object>> m_objects;
 
 	void split();
 	void mergeChildren();

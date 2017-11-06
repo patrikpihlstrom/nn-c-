@@ -5,11 +5,10 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "PlayerActor.hpp"
 #include "ActorIdTracker.hpp"
 #include "NNActor.hpp"
-#include "Actor.hpp"
 #include "../world/Quadtree.hpp"
+#include "../application/Camera.hpp"
 
 class ActorManager : public sf::Drawable
 {
@@ -39,16 +38,17 @@ private:
 
 	std::vector<std::shared_ptr<NNActor>> m_actors;
 	std::weak_ptr<NNActor> m_topActor;
-	std::weak_ptr<Actor> m_playerActor;
 
 	sf::Vector2f m_start;
 	math::Polygon m_finish;
 
 	float m_time;
+	unsigned int m_generations;
+	bool m_space;
 
 	bool shouldResetActors() const;
 	void resetActors();
-	void resetActors(const std::vector<std::vector<float>> dna);
+	void resetActors(const std::vector<double> dna);
 
 	void newGeneration();
 
@@ -57,14 +57,6 @@ private:
 		bool operator()(const std::shared_ptr<NNActor> l, const std::shared_ptr<NNActor> r)
 		{
 			return *l < *r;
-		}
-	};
-
-	struct ActorCompareDistance
-	{
-		bool operator()(const std::shared_ptr<NNActor> l, const std::shared_ptr<NNActor> r)
-		{
-			return l->getDistance() > r->getDistance();
 		}
 	};
 

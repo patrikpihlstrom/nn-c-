@@ -84,7 +84,7 @@ void PlayerActor::control()
 void PlayerActor::update(const float& deltaTime)
 {
 	control();
-	m_camera->update(getPosition(), {0, 0});
+	//m_camera->update(getPosition(), {0, 0});
 
 	Actor::update(deltaTime);
 }

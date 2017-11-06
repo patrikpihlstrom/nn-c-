@@ -3,6 +3,8 @@
 
 ActorManager::ActorManager()
 {
+	m_generations = 0;
+	m_space = false;
 }
 
 ActorManager::~ActorManager()
@@ -59,6 +61,19 @@ void ActorManager::removeActor(const ActorId& id)
 
 void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree, Camera& camera)
 {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+	{
+		if (!m_space)
+		{
+			newGeneration();
+			m_space = true;
+		}
+	}
+	else if (m_space)
+	{
+		m_space = false;
+	}
+
 	m_topActor = getTopActor();
 	m_time += deltaTime;
 
@@ -72,8 +87,8 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 	//}
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
-	{
-		if (m_time >= 300)
+	{	
+		if ((*it)->getHealth() <= 0)
 		{
 			(*it)->setDead(true);
 		}
@@ -102,7 +117,7 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 						switch (object->getType())
 						{
 							case ObjectType::food:
-								(*it)->addHealth(100);
+								(*it)->addHealth(500);
 								object->dead = true;
 							break;
 
@@ -134,7 +149,7 @@ void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quad
 
 				for (int j = 0; j < sensors.size(); ++j)
 				{
-					if (object->hasPolygon() && object->getType() != ObjectType::food)
+					if (object->hasPolygon() && object->getType() == ObjectType::obstacle)
 					{
 						sf::Vector2f a = sensors[j], b = sensors[j];
 						bool intersects = math::lineIntersectsPolygon((*it)->getPosition(), sensors[j], a, b, object->getPolygon());
@@ -257,27 +272,32 @@ void ActorManager::resetActors()
 	}
 }
 
-void ActorManager::resetActors(const std::vector<std::vector<float>> dna)
+void ActorManager::resetActors(const std::vector<double> dna)
 {
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
-		//(*it).reset(new NNActor(dna));
-		(*it).reset(new NNActor());
+		(*it).reset(new NNActor(dna));
 		(*it)->setPosition(m_start);
 	}
 }
 
 void ActorManager::newGeneration()
 {
+	std::cout << "-- new gen --" << std::endl;
 	m_time = 0;
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompareAge());
+
+	std::cout << "generation: " << m_generations << std::endl;
+	std::cout << "fitness: " << m_actors[0]->getAge() << std::endl;
+
 	auto firstDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();
 	auto combinedDna = firstDna;
 	int mutatedStrands = combinedDna.size()/10, inheritedStrands = (combinedDna.size()/10)*3;
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
-		std::cout << '[';
+		combinedDna = firstDna;
+		//std::cout << '[';
 		for (int i = 0; i < combinedDna.size(); ++i)
 		{
 			int r = std::rand()%100;
@@ -289,18 +309,15 @@ void ActorManager::newGeneration()
 			{
 				combinedDna[i] = secondDna[i];
 			}
-
-			std::cout << combinedDna[i] << ',';
 		}
 
-		std::cout << ']' << std::endl;
-
 		(*it).reset(new NNActor(combinedDna));
-		(*it)->setPosition(m_start);
+		(*it)->setDead(false);
+		(*it)->setPosition({m_start.x + ((float)std::rand()/RAND_MAX - 0.5f)*100.f, m_start.y + ((float)std::rand()/RAND_MAX - 0.5f)*100.f});
 		combinedDna = firstDna;
 	}
 
-	//std::cout << std::endl;
+	m_generations++;
 }
 
 void ActorManager::setStart(const sf::Vector2f position)
