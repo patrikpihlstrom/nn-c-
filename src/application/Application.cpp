@@ -114,7 +114,7 @@ void Application::update(const float& deltaTime)
 void Application::render()
 {
 	//m_window.clear(sf::Color(245, 241, 226));
-	m_window.clear(sf::Color(128, 149, 108));
+	m_window.clear(sf::Color(28, 9, 38));
 	//m_window.clear(sf::Color(25, 51, 77));
 
 	if (m_currentState)
