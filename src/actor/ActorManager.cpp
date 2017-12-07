@@ -3,6 +3,12 @@
 
 ActorManager::ActorManager()
 {
+	m_actors.reserve(20);
+	for (int i = 0; i < 20; ++i)
+	{
+		m_actors.push_back(std::shared_ptr<NNActor>(new NNActor()));
+		m_actors.back()->setPosition(640, 80);
+	}
 }
 
 ActorManager::~ActorManager()
@@ -11,64 +17,37 @@ ActorManager::~ActorManager()
 
 std::weak_ptr<NNActor> ActorManager::getActor(const ActorId& id) const
 {
-	for (int i = 0; i < m_actors.size(); ++i)
-	{
-		if (m_actors[i]->getId() == id)
-			return m_actors[i];
-	}
+       for (int i = 0; i < m_actors.size(); ++i)
+       {
+               if (m_actors[i]->getId() == id)
+                       return m_actors[i];
+       }
 
-	return {};
+       return {};
 }
 
 std::weak_ptr<NNActor> ActorManager::getTopActor()
 {
-	if (m_actors.empty())
-	{
-		return std::weak_ptr<NNActor>();
-	}
-	
-	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
-	return *m_actors.begin();
-}
+       if (m_actors.empty())
+       {
+               return std::weak_ptr<NNActor>();
+       }
 
-ActorId ActorManager::addActor(std::shared_ptr<NNActor> actor)
-{
-	/*else if (auto playerActor = m_playerActor.lock())
-	{
-		NPCActor* npcActor = dynamic_cast<NPCActor*>(actor.get());
-		npcActor->setPlayerActor(m_playerActor);
-	}*/
-	ActorId id = m_actorIdTracker.addActor();
-	actor->assign(id);
-	m_actors.push_back(actor);
-	return id;
-}
-
-void ActorManager::removeActor(const ActorId& id)
-{
-	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
-	{
-		if ((*it)->getId() == id)
-		{
-			m_actors.erase(it);
-			m_actorIdTracker.removeActor(id);
-			return;
-		}
-	}
+       std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
+       return *m_actors.begin();
 }
 
 void ActorManager::update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree)
 {
 	m_topActor = getTopActor();
 	m_time += deltaTime;
+	if (m_time >= 10)
+	{
+		newGeneration();
+	}
 
 	for (auto it = m_actors.begin(); it != m_actors.end(); ++it)
 	{
-		if (m_time >= 300)
-		{
-			(*it)->setDead(true);
-		}
-
 		if ((*it)->isDead())
 		{
 			continue;
@@ -194,6 +173,7 @@ bool ActorManager::shouldResetActors() const
 	{
 		if (!(*it)->isDead())
 		{
+			std::cout << (*it)->getPosition().x << ':' << (*it)->getPosition().y << std::endl;
 			return false;
 		}
 	}
@@ -222,6 +202,7 @@ void ActorManager::resetActors(const std::vector<std::vector<float>> dna)
 
 void ActorManager::newGeneration()
 {
+	std::cout << "new gen" << std::endl;
 	m_time = 0;
 	std::sort(m_actors.begin(), m_actors.end(), ActorCompareDistance());
 	auto firstDna = m_actors[0]->getDna(), secondDna = m_actors[1]->getDna();

@@ -12,13 +12,6 @@ World::World(const long& seed) :
 	m_quadtree = std::shared_ptr<Quadtree>(new Quadtree({0, 0, (int)width, (int)height}, 0));
 	std::cout << "SEED: " << m_seed << std::endl;
 	srand(m_seed);
-
-	for (int i = 0; i < 10; ++i)
-	{
-		auto actor = std::shared_ptr<NNActor>(new NNActor());
-		actor->setPosition(width/2, 80);
-		m_actorManager.addActor(actor);
-	}
 }
 
 World::~World()

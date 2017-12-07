@@ -17,9 +17,6 @@ public:
 	ActorManager();
 	~ActorManager();
 
-	ActorId addActor(std::shared_ptr<NNActor> actor);
-	void removeActor(const ActorId& id);
-
 	void update(const float& deltaTime, std::shared_ptr<Quadtree> quadtree);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 	void drawNeuralNet(sf::RenderTarget& target, sf::RenderStates states) const;
